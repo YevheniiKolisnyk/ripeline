@@ -180,4 +180,32 @@ struct SessionTransitionTests {
             #expect(engine.snapshot == before, "\(setup) / \(action)")
         }
     }
+
+    // MARK: plan validation
+
+    private func segment(_ index: Int, _ start: Date, _ end: Date) -> PlannedSegment {
+        PlannedSegment(index: index, kind: .work, start: start, end: end)
+    }
+
+    @Test(arguments: [
+        ("segment ends before it starts", [PlannedSegment(index: 0, kind: .work, start: t(9, 30), end: t(9))]),
+        ("zero-length segment", [PlannedSegment(index: 0, kind: .work, start: t(9), end: t(9))]),
+        ("index does not match position", [PlannedSegment(index: 5, kind: .work, start: t(9), end: t(9, 50))]),
+        ("gap between segments", [
+            PlannedSegment(index: 0, kind: .work, start: t(9), end: t(9, 50)),
+            PlannedSegment(index: 1, kind: .shortBreak, start: t(9, 55), end: t(10)),
+        ]),
+        ("overlapping segments", [
+            PlannedSegment(index: 0, kind: .work, start: t(9), end: t(9, 50)),
+            PlannedSegment(index: 1, kind: .shortBreak, start: t(9, 45), end: t(10)),
+        ]),
+    ])
+    func startDayRejectsMalformedPlans(_ label: String, plan: [PlannedSegment]) throws {
+        var (engine, _) = try makeEngine()
+        let before = engine.snapshot
+        #expect(throws: SessionError.invalidPlan, Comment(rawValue: label)) {
+            try engine.startDay(plan: plan, settings: SessionSettings())
+        }
+        #expect(engine.snapshot == before)
+    }
 }

@@ -25,9 +25,13 @@ public enum SessionAction: String, Sendable, Equatable, CaseIterable {
     case endDay
 }
 
+/// Why the engine refused an action or a stored snapshot.
 public enum SessionError: Error, Sendable, Equatable {
     /// `startDay` was given an empty plan.
     case emptyPlan
+    /// `startDay` was given a plan whose segments are not contiguous, positive-length and
+    /// indexed by position.
+    case invalidPlan
     /// `extend` was given zero or negative minutes.
     case nonPositiveExtension
     /// The action is not valid in the current state.

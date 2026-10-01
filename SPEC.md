@@ -221,6 +221,10 @@ Clarifications of this specification are recorded here as they are made.
 - **D3 — Invalid input.** `PlanGenerator.generate` throws `PlanError` for non-positive
   preset values, `end <= start`, `focusMinutes <= 0`, `afterWorkBlock(n < 1)` and
   `minMinutes < 1`. A valid request whose day is too short for any block returns `[]`.
+  `SessionEngine.startDay` throws `SessionError.invalidPlan` for a plan whose segments are not
+  indexed by position, have non-positive length, or do not follow each other exactly.
+  Restoring a snapshot with a malformed plan, a negative remaining time, or a countdown that
+  ends before its open interval began throws `SessionError.invalidSnapshot`.
 
 ### Plan generation
 
@@ -275,7 +279,8 @@ Clarifications of this specification are recorded here as they are made.
 - **D17 — Lag when finished.** `projectedEnd` is the actual end of the day (the end of the
   last recorded interval). `ScheduleStatus` is `nil` for an empty plan, or when the day
   finished with nothing recorded. Segments that ran out before `now` are accounted for even
-  if the engine was not ticked.
+  if the engine was not ticked. Before the planned start of the day, an idle engine counts
+  from the planned start, so the lag is 0 rather than "ahead of schedule".
 - **D16 — Comparison.** Per-segment `delta = (work + rest + untracked) - planned`, i.e.
   wall-clock overrun, so for a segment still in progress it is negative. `actualEnd` is the
   end of the last recorded interval once the day is `finished`, and `nil` before that. The

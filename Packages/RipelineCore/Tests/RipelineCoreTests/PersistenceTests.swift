@@ -125,4 +125,29 @@ struct PersistenceTests {
         clock.set(t(9, 20)); try running.endDay()
         _ = try SessionEngine(restoring: running.snapshot, clock: clock)
     }
+
+    @Test func rejectsNegativeRemainingTime() throws {
+        var snapshot = try started().engine.snapshot
+        snapshot.state = .paused(segmentIndex: 0, remaining: -100)
+        snapshot.openInterval = OpenInterval(kind: .rest, start: t(9, 10))
+        #expect(throws: SessionError.invalidSnapshot) {
+            try SessionEngine(restoring: snapshot, clock: ManualClock(t(9)))
+        }
+    }
+
+    @Test func rejectsCountdownThatEndedBeforeItsOpenInterval() throws {
+        var snapshot = try started().engine.snapshot
+        snapshot.state = .running(segmentIndex: 0, endsAt: t(8))
+        #expect(throws: SessionError.invalidSnapshot) {
+            try SessionEngine(restoring: snapshot, clock: ManualClock(t(9)))
+        }
+    }
+
+    @Test func rejectsMalformedPlanInsideASnapshot() throws {
+        var snapshot = try started().engine.snapshot
+        snapshot.plan[1] = PlannedSegment(index: 1, kind: .shortBreak, start: t(9, 55), end: t(10, 5))
+        #expect(throws: SessionError.invalidSnapshot) {
+            try SessionEngine(restoring: snapshot, clock: ManualClock(t(9)))
+        }
+    }
 }
