@@ -3,6 +3,8 @@ import SwiftUI
 /// The History tab: the days on the left, the chosen one on the right.
 struct HistoryView: View {
     let model: HistoryModel
+    let crate: CrateModel
+    @Environment(GardenModel.self) private var garden: GardenModel?
     @State private var confirming = false
 
     var body: some View {
@@ -13,11 +15,21 @@ struct HistoryView: View {
                 HStack(spacing: 0) {
                     list.frame(width: 320)
                     Divider()
-                    detail.frame(maxWidth: .infinity, maxHeight: .infinity)
+                    VStack(spacing: 0) {
+                        CrateView(model: crate, highlight: model.selection)
+                        Divider()
+                        detail.frame(maxWidth: .infinity, maxHeight: .infinity)
+                    }
                 }
             }
         }
-        .onAppear { model.refresh() }
+        .onAppear {
+            model.refresh()
+            crate.refresh()
+        }
+        // A tomato picked while the history is open drops into the crate; a deleted day's tomatoes leave it.
+        .onChange(of: garden?.picked) { crate.refresh() }
+        .onChange(of: model.entries) { crate.refresh() }
         // The axis of an open day is drawn for the time zone in force when it was built.
         .onReceive(NotificationCenter.default.publisher(for: .NSSystemTimeZoneDidChange)) { _ in model.refresh() }
         .confirmationDialog(

@@ -16,7 +16,7 @@ struct RipelineApp: App {
         Window("app.name", id: MainWindow.id) {
             RipelineWindowView(
                 setupModel: environment.setupModel, overviewModel: environment.overviewModel,
-                historyModel: environment.historyModel, router: environment.router,
+                historyModel: environment.historyModel, crateModel: environment.crateModel, router: environment.router,
                 controller: environment.controller, settings: environment.settings
             )
             .environment(environment.garden)

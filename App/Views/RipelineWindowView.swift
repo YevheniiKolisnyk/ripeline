@@ -7,6 +7,7 @@ struct RipelineWindowView: View {
     let setupModel: DaySetupModel
     let overviewModel: DayOverviewModel
     let historyModel: HistoryModel
+    let crateModel: CrateModel
     let router: AppRouter
     let controller: SessionController
     let settings: AppSettings
@@ -36,7 +37,7 @@ struct RipelineWindowView: View {
             Divider()
             switch router.tab {
             case .today: today
-            case .history: HistoryView(model: historyModel)
+            case .history: HistoryView(model: historyModel, crate: crateModel)
             }
         }
         .frame(minWidth: 720, minHeight: 620)
