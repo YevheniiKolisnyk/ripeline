@@ -7,6 +7,7 @@ struct RipelineApp: App {
     var body: some Scene {
         MenuBarExtra {
             PopoverView(controller: environment.controller, settings: environment.settings, router: environment.router)
+                .environment(environment.garden)
         } label: {
             MenuBarLabel(controller: environment.controller, settings: environment.settings)
         }
@@ -18,6 +19,7 @@ struct RipelineApp: App {
                 historyModel: environment.historyModel, router: environment.router,
                 controller: environment.controller, settings: environment.settings
             )
+            .environment(environment.garden)
         }
         .defaultSize(width: 760, height: 700)
         .windowResizability(.contentMinSize)

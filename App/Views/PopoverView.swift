@@ -13,6 +13,7 @@ struct PopoverView: View {
         @Bindable var settings = settings
         VStack(alignment: .leading, spacing: 16) {
             header
+            TomatoPatchView(tomatoes: controller.tomatoes)
             if controller.isAllowed(.startDay) {
                 QuickStartSection(controller: controller, settings: settings)
             }

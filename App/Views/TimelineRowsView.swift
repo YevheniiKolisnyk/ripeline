@@ -9,6 +9,8 @@ struct TimelineRowsView: View {
 
     private let rowHeight: CGFloat = 28
     private let rowGap: CGFloat = 8
+    /// The garden bed above the rows: a tomato stands on each worked block.
+    private let bedHeight: CGFloat = 52
     private let labelWidth: CGFloat = 52
     /// A block is never drawn narrower than this, so a short break stays visible.
     private let minimumBlockWidth: CGFloat = 2
@@ -17,6 +19,7 @@ struct TimelineRowsView: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .top, spacing: 8) {
                 VStack(alignment: .trailing, spacing: rowGap) {
+                    Color.clear.frame(height: bedHeight)
                     Text("overview.plan").frame(height: rowHeight)
                     Text("overview.actual").frame(height: rowHeight)
                 }
@@ -25,9 +28,12 @@ struct TimelineRowsView: View {
                 .frame(width: labelWidth, alignment: .trailing)
 
                 GeometryReader { proxy in
-                    tracks(width: proxy.size.width)
+                    VStack(alignment: .leading, spacing: rowGap) {
+                        GardenBedView(plots: model.bed, width: proxy.size.width, height: bedHeight)
+                        tracks(width: proxy.size.width)
+                    }
                 }
-                .frame(height: rowHeight * 2 + rowGap + 24)
+                .frame(height: bedHeight + rowGap + rowHeight * 2 + rowGap + 24)
             }
             legend
         }
