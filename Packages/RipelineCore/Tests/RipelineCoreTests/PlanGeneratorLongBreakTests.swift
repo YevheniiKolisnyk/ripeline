@@ -140,4 +140,18 @@ struct PlanGeneratorLongBreakTests {
         #expect(longBreaks(plan).count == 1)
         expectWellFormed(plan)
     }
+
+    /// Review finding: with a long break shorter than the short break, adding it makes room for
+    /// one more work block, so the junction after the last block of the plain plan can exist.
+    @Test func longBreakShorterThanShortBreakCanUseTheLastPlainJunction() throws {
+        let preset = Preset(workMinutes: 50, shortBreakMinutes: 10, longBreakMinutes: 5)
+        let request = DayPlanRequest(
+            mode: .untilTime(start: t(9), end: t(11, 45)), longBreak: .atTime(t(10, 50)),
+            remainderStrategy: .leaveFree, preset: preset
+        )
+        let plan = try PlanGenerator.generate(request)
+        #expect(longBreaks(plan) == [longBreak(t(10, 50), t(10, 55))])
+        #expect(workCount(plan) == 3)
+        expectWellFormed(plan)
+    }
 }

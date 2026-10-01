@@ -237,6 +237,8 @@ Clarifications of this specification are recorded here as they are made.
   it (so the junction no longer exists), the next candidate is tried. If none fits, the plan
   has no long break. `.afterWorkBlock(n)` past the last junction gives no long break.
   The junction is chosen before stretching, so `.stretchBlocks` may move the long break later.
+  The junction after the plain plan's last block is also a candidate, because a long break
+  shorter than a short break can make room for one more work block.
 - **D5 — Long break and remainder.** With `.shortBlock`, if the remainder block follows the
   long-break junction, the long break is used there (it replaces the short one).
 
@@ -281,6 +283,8 @@ Clarifications of this specification are recorded here as they are made.
 - **D18 — Small additions to the engine API.** `updateSettings(_:)` changes settings for
   future transitions only (an open pause interval keeps its kind). `isAllowed(_:)` lets the UI
   enable or disable controls. `remainingTime()` and `overtimeElapsed()` feed the countdown and
-  never change the engine. `Timeline.bounds` gives the span for the shared axis.
+  never change the engine. `state` and `isAllowed(_:)` are evaluated as of the current time,
+  so they are correct between ticks; `snapshot` is the stored state and catches up on `tick()`
+  and on actions. `Timeline.bounds` gives the span for the shared axis.
   `SessionEngine(restoring:clock:)` validates a stored snapshot and throws
   `SessionError.invalidSnapshot` if it is inconsistent.

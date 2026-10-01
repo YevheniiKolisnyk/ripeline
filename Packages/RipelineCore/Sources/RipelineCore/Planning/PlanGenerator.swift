@@ -68,7 +68,9 @@ public enum PlanGenerator {
         func nominalJunction(_ k: Int) -> Date {
             start.addingTimeInterval(TimeInterval(k) * work + TimeInterval(k - 1) * shortBreak)
         }
-        return (1..<max(workBlockCount, 1))
+        // Junction `workBlockCount` is included: a long break shorter than a short break can make
+        // room for one more block, so the junction after the plain plan's last block may exist.
+        return (1..<(workBlockCount + 1))
             .sorted { lhs, rhs in
                 let left = abs(nominalJunction(lhs).timeIntervalSince(target))
                 let right = abs(nominalJunction(rhs).timeIntervalSince(target))
