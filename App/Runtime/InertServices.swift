@@ -4,8 +4,9 @@ import Foundation
 @MainActor
 final class NullNotifier: Notifier {
     func requestAuthorization() async {}
-    func schedule(_ kind: SignalKind, in interval: TimeInterval) {}
-    func cancelPending() {}
+    func schedule(_ kind: SignalKind, in interval: TimeInterval, id: String) {}
+    func cancel(id: String) {}
+    func cancelAllPending() {}
     func deliverNow(_ kind: SignalKind) {}
 }
 

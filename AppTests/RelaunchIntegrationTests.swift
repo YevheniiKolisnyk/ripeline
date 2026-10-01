@@ -69,7 +69,7 @@ struct RelaunchIntegrationTests {
         let (second, notifier, _) = world.launch(at: t(9, 55))
         #expect(second.phase == .overtime(onBreak: false))
         #expect(second.overtimeElapsed == minutes(5))
-        #expect(notifier.calls == [.deliver(.workEnded), .cancel])
+        #expect(notifier.calls == [.deliver(.workEnded), .cancelAll])
     }
 
     @Test func autoAdvanceWalksThroughSegmentsClosedInTheMeantime() async {

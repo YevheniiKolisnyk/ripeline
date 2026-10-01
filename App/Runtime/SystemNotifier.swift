@@ -1,12 +1,12 @@
 import Foundation
 import os
-import UserNotifications
+@preconcurrency import UserNotifications
 
 /// `Notifier` over `UserNotifications`. A thin adapter: what it is told to do is tested
 /// through `SessionController`; failures are logged locally and otherwise ignored.
 @MainActor
 final class SystemNotifier: NSObject, Notifier, UNUserNotificationCenterDelegate {
-    private static let pendingIdentifier = "ripeline.segment-end"
+    private static let pendingPrefix = "ripeline.segment-end."
     private static let immediateIdentifier = "ripeline.summary"
 
     private let center: UNUserNotificationCenter
@@ -26,13 +26,22 @@ final class SystemNotifier: NSObject, Notifier, UNUserNotificationCenterDelegate
         }
     }
 
-    func schedule(_ kind: SignalKind, in interval: TimeInterval) {
+    func schedule(_ kind: SignalKind, in interval: TimeInterval, id: String) {
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: max(1, interval), repeats: false)
-        add(Self.pendingIdentifier, kind, trigger)
+        add(Self.pendingPrefix + id, kind, trigger)
     }
 
-    func cancelPending() {
-        center.removePendingNotificationRequests(withIdentifiers: [Self.pendingIdentifier])
+    func cancel(id: String) {
+        center.removePendingNotificationRequests(withIdentifiers: [Self.pendingPrefix + id])
+    }
+
+    func cancelAllPending() {
+        let center = center
+        let prefix = Self.pendingPrefix
+        center.getPendingNotificationRequests { requests in
+            let identifiers = requests.map(\.identifier).filter { $0.hasPrefix(prefix) }
+            center.removePendingNotificationRequests(withIdentifiers: identifiers)
+        }
     }
 
     func deliverNow(_ kind: SignalKind) {
@@ -46,10 +55,11 @@ final class SystemNotifier: NSObject, Notifier, UNUserNotificationCenterDelegate
         content.body = text.body
         content.sound = .default
         let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
-        let center = center
         let logger = logger
-        Task {
-            do { try await center.add(request) } catch {
+        // The completion-handler form queues the request at once, so it stays ordered with a
+        // cancel that follows.
+        center.add(request) { error in
+            if let error {
                 logger.error("Could not add notification: \(error.localizedDescription, privacy: .public)")
             }
         }

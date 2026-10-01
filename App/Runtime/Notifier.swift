@@ -30,11 +30,16 @@ struct SignalContent: Equatable {
     /// Asks the system for permission to show notifications. Safe to call repeatedly.
     func requestAuthorization() async
 
-    /// Arranges one notification `interval` seconds from now, replacing any pending one.
-    func schedule(_ kind: SignalKind, in interval: TimeInterval)
+    /// Arranges a notification `interval` seconds from now. A request with the same `id`
+    /// is replaced; requests with other ids are left alone, so scheduling the next segment
+    /// never replaces the one that is due.
+    func schedule(_ kind: SignalKind, in interval: TimeInterval, id: String)
 
-    /// Removes the pending notification, if any.
-    func cancelPending()
+    /// Removes the pending notification with this id, if it has not fired yet.
+    func cancel(id: String)
+
+    /// Removes every pending segment-end notification, including ones an earlier run left behind.
+    func cancelAllPending()
 
     /// Shows a notification immediately.
     func deliverNow(_ kind: SignalKind)

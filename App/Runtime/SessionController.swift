@@ -27,9 +27,10 @@ final class SessionController {
     private(set) var now: Date
 
     @ObservationIgnored private var lastSaved: SessionSnapshot?
-    /// The notification currently arranged: what it says and when the segment ends.
-    @ObservationIgnored private var scheduled: (kind: SignalKind, endsAt: Date)?
-    /// Whether a notification request may be pending. True at launch: an earlier run may have left one.
+    /// The notification currently arranged: what it says, when the segment ends, and its id
+    /// (the segment's id, so each segment has its own request).
+    @ObservationIgnored private var scheduled: (kind: SignalKind, endsAt: Date, id: String)?
+    /// Whether requests an earlier run left behind may still be pending. True at launch.
     @ObservationIgnored private var mayHavePending = true
     @ObservationIgnored private var didRequestAuthorization = false
 
@@ -207,21 +208,29 @@ final class SessionController {
         }
     }
 
-    /// Keeps exactly one notification arranged, for the end of the running segment, and none otherwise.
+    /// Keeps one notification arranged, for the end of the running segment.
+    ///
+    /// A request that is due (the segment's time ran out) is never cancelled or replaced: it is
+    /// firing right now. Only a request the user made obsolete before it was due, by pausing,
+    /// skipping or ending the day, is cancelled.
     private func reconcileNotifier() {
         guard case let .running(index, endsAt) = engine.state else {
-            if mayHavePending {
-                notifier.cancelPending()
-                mayHavePending = false
+            if let pending = scheduled {
+                if pending.endsAt > now { notifier.cancel(id: pending.id) }
+                scheduled = nil
+            } else if mayHavePending {
+                notifier.cancelAllPending()
             }
-            scheduled = nil
+            mayHavePending = false
             return
         }
+        let id = plan[index].id.uuidString
+        guard scheduled?.id != id || scheduled?.endsAt != endsAt else { return }
+        if let old = scheduled, old.id != id, old.endsAt > now { notifier.cancel(id: old.id) }
         let kind = signalKind(endOfSegment: index)
-        guard scheduled?.kind != kind || scheduled?.endsAt != endsAt else { return }
-        notifier.schedule(kind, in: endsAt.timeIntervalSince(now))
-        scheduled = (kind, endsAt)
-        mayHavePending = true
+        notifier.schedule(kind, in: endsAt.timeIntervalSince(now), id: id)
+        scheduled = (kind, endsAt, id)
+        mayHavePending = false
     }
 
     /// The ticker runs only while there is something to count: a running segment or overtime.

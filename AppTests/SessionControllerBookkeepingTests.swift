@@ -47,11 +47,14 @@ struct SessionControllerBookkeepingTests {
         #expect(h.notifier.calls == [.schedule(.workEnded, 3300)])
     }
 
-    @Test func skippingIntoABreakSchedulesTheBreakEnd() async {
+    @Test func skippingCancelsTheOldRequestAndSchedulesTheBreakEnd() async {
         let h = await started(); defer { h.cleanUp() }
+        let firstID = h.notifier.scheduledIDs[0]
         h.clock.set(t(9, 20)); h.notifier.reset()
         h.controller.skip()
-        #expect(h.notifier.calls == [.schedule(.breakEnded, 600)])
+        #expect(h.notifier.calls == [.cancel, .schedule(.breakEnded, 600)])
+        #expect(h.notifier.cancelledIDs == [firstID])
+        #expect(h.notifier.scheduledIDs != [firstID])
     }
 
     @Test func endingTheDayCancelsAndStopsTheTicker() async {
@@ -62,13 +65,37 @@ struct SessionControllerBookkeepingTests {
         #expect(!h.ticker.isRunning)
     }
 
-    @Test func ordinaryExpiryCancelsButDoesNotDeliver() async {
+    /// The request for the segment end is due at this very moment: cancelling it would swallow it.
+    @Test func ordinaryExpiryLeavesTheDueNotificationAlone() async {
         let h = await started(); defer { h.cleanUp() }
         h.clock.set(t(9, 50)); h.notifier.reset()
         h.controller.refresh()
         #expect(h.controller.phase == .overtime(onBreak: false))
-        #expect(h.notifier.calls == [.cancel])
+        #expect(h.notifier.calls.isEmpty)
         #expect(h.ticker.isRunning)
+    }
+
+    @Test func pausingCancelsTheRequestItScheduled() async {
+        let h = await started(); defer { h.cleanUp() }
+        let id = h.notifier.scheduledIDs[0]
+        h.clock.set(t(9, 20)); h.controller.pause()
+        #expect(h.notifier.cancelledIDs == [id])
+    }
+
+    @Test func eachSegmentHasItsOwnRequest() async {
+        let h = await started(session: SessionSettings(autoAdvanceWorkToBreak: true)); defer { h.cleanUp() }
+        let first = h.notifier.scheduledIDs[0]
+        h.clock.set(t(9, 50)); h.controller.refresh()
+        #expect(h.notifier.scheduledIDs.count == 2)
+        #expect(h.notifier.scheduledIDs[1] != first)       // the next segment never replaces the one that is due
+        #expect(h.notifier.cancelledIDs.isEmpty)
+    }
+
+    @Test func extendingKeepsTheSameRequest() async {
+        let h = await started(); defer { h.cleanUp() }
+        h.controller.extend(minutes: 5)
+        #expect(Set(h.notifier.scheduledIDs).count == 1)
+        #expect(h.notifier.cancelledIDs.isEmpty)
     }
 
     @Test func advancingOutOfOvertimeSchedulesTheBreak() async {
@@ -124,7 +151,7 @@ struct SessionControllerBookkeepingTests {
     @Test func relaunchAfterOneEndDeliversOnceAndCancels() throws {
         let h = Harness(now: t(9, 55), stored: try startedSnapshot()); defer { h.cleanUp() }
         h.controller.restore()
-        #expect(h.notifier.calls == [.deliver(.workEnded), .cancel])
+        #expect(h.notifier.calls == [.deliver(.workEnded), .cancelAll])
         #expect(h.ticker.isRunning)
     }
 
@@ -139,7 +166,7 @@ struct SessionControllerBookkeepingTests {
         let h = Harness(now: t(14), stored: try startedSnapshot(settings: allAuto)); defer { h.cleanUp() }
         h.controller.restore()
         #expect(h.controller.phase == .finished)
-        #expect(h.notifier.calls == [.deliver(.dayFinished), .cancel])
+        #expect(h.notifier.calls == [.deliver(.dayFinished), .cancelAll])
         #expect(!h.ticker.isRunning)
     }
 
