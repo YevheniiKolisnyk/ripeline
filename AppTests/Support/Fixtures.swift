@@ -58,3 +58,17 @@ func tamperedSnapshot(_ snapshot: SessionSnapshot, edit: (inout [String: Any]) -
     edit(&object)
     return try JSONDecoder().decode(SessionSnapshot.self, from: JSONSerialization.data(withJSONObject: object))
 }
+
+/// A Gregorian calendar fixed at a UTC offset.
+func calendar(offsetHours: Int) -> Calendar {
+    var calendar = Calendar(identifier: .gregorian)
+    calendar.timeZone = TimeZone(secondsFromGMT: offsetHours * 3600)!
+    return calendar
+}
+
+/// A Gregorian calendar in a named time zone, for daylight saving tests.
+func calendar(zone: String) -> Calendar {
+    var calendar = Calendar(identifier: .gregorian)
+    calendar.timeZone = TimeZone(identifier: zone)!
+    return calendar
+}
