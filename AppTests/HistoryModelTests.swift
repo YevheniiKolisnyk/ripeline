@@ -97,6 +97,26 @@ struct HistoryModelTests {
         #expect(f.model.pendingDelete == nil && !f.model.deleteFailed)
     }
 
+    /// The dialog's button acts on the day the dialog showed, even if the pending request was cleared as it closed.
+    @Test func confirmingAnExplicitDayWorksEvenIfThePendingRequestWasCleared() throws {
+        let f = fixture(try threeDays())
+        f.model.refresh()
+        f.model.requestDelete("2026-01-14")
+        let shown = try #require(f.model.pendingDelete)
+        f.model.cancelDelete()                              // the dialog's dismissal got there first
+        f.model.confirmDelete(shown)
+        #expect(f.store.deleted.map(\.key) == ["2026-01-14"])
+        #expect(f.model.entries.map(\.id) == ["2026-01-15", "2026-01-13"])
+    }
+
+    @Test func confirmingADayThatIsNoLongerListedDoesNothing() throws {
+        let f = fixture(try threeDays())
+        f.model.refresh()
+        let stray = HistoryEntry(day: StoredDay(key: "2026-02-01", snapshot: try finishedDay(start: d(20))))
+        f.model.confirmDelete(stray)
+        #expect(f.store.deleted.isEmpty)
+    }
+
     @Test func deletingTheOldestMovesToTheNewerNeighbour() throws {
         let f = fixture(try threeDays())
         f.model.refresh()

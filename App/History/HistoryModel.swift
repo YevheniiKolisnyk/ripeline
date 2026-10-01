@@ -69,8 +69,14 @@ final class HistoryModel {
     /// Deletes the day that was asked for. If it started running meanwhile, nothing is deleted.
     func confirmDelete() {
         guard let entry = pendingDelete else { return }
+        confirmDelete(entry)
+    }
+
+    /// Deletes `entry`, the day the confirmation dialog showed. A day that is no longer listed, or
+    /// that started running meanwhile, is left alone.
+    func confirmDelete(_ entry: HistoryEntry) {
         pendingDelete = nil
-        guard !isRunning(entry) else { return }
+        guard entries.contains(where: { $0.id == entry.id }), !isRunning(entry) else { return }
         do {
             try store.delete(StoredDay(key: entry.id, snapshot: entry.snapshot))
         } catch {

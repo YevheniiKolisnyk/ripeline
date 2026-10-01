@@ -213,6 +213,22 @@
         }
       }
     },
+    "history.cancel": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancel"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Скасувати"
+          }
+        }
+      }
+    },
     "history.delete": {
       "localizations": {
         "en": {
