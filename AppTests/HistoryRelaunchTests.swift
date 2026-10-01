@@ -113,4 +113,25 @@ struct HistoryRelaunchTests {
         history.confirmDelete()
         #expect(try world.names() == filesBefore)
     }
+
+    /// Review finding: a deleted day must stay deleted even if a setting is toggled afterwards.
+    @Test func aDeletedDayDoesNotComeBackWhenASettingIsToggled() async throws {
+        let world = World(); defer { world.cleanUp() }
+        let live = world.launch(at: t(9))
+        await live.controller.startStandardDay(at: t(9))
+        live.clock.set(t(9, 30)); live.controller.endDay()
+
+        let history = world.history { live.controller.activeDayID }
+        history.refresh()
+        #expect(history.entries.count == 1)
+        history.requestDelete(history.entries[0].id)
+        history.confirmDelete()
+        #expect(try world.names().isEmpty)
+
+        live.controller.updateSessionSettings(SessionSettings(autoAdvanceWorkToBreak: true))
+        live.controller.refresh()
+        #expect(try world.names().isEmpty)
+        history.refresh()
+        #expect(history.entries.isEmpty)
+    }
 }

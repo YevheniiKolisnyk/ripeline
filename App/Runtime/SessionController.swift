@@ -210,7 +210,12 @@ final class SessionController {
         // not the new ones.
         engine.tick()
         settings.session = new
-        engine.updateSettings(new)
+        // A day that has ended (or none) keeps the settings it ran with: changing them would rewrite
+        // a day that is already history, and bring back one the user deleted. They apply to the next day.
+        switch engine.state {
+        case .idle, .finished: break
+        case .running, .paused, .overtime: engine.updateSettings(new)
+        }
         didChange()
     }
 
