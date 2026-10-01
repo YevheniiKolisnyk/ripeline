@@ -34,6 +34,23 @@
         }
       }
     },
+    "a11y.historyQuick" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "quick session"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "швидка сесія"
+          }
+        }
+      }
+    },
     "a11y.historyRow" : {
       "localizations" : {
         "en" : {
@@ -417,6 +434,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Не завершено"
+          }
+        }
+      }
+    },
+    "history.quick" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quick"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Швидка"
           }
         }
       }
@@ -1629,6 +1663,40 @@
         }
       }
     },
+    "ui.addBlock" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Another block"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ще один блок"
+          }
+        }
+      }
+    },
+    "ui.done" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Done"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Готово"
+          }
+        }
+      }
+    },
     "ui.endDay" : {
       "localizations" : {
         "en" : {
@@ -1742,6 +1810,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Спланувати день…"
+          }
+        }
+      }
+    },
+    "ui.quickLength" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Block length"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Довжина блоку"
+          }
+        }
+      }
+    },
+    "ui.quickStartButton" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Старт"
+          }
+        }
+      }
+    },
+    "ui.quickStartTitle" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quick start"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Швидкий старт"
           }
         }
       }

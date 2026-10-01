@@ -2,7 +2,7 @@ import Foundation
 
 /// State transitions. Each takes the instant it happens at; the engine supplies it from its clock.
 extension SessionSnapshot {
-    mutating func startDay(plan: [PlannedSegment], settings: SessionSettings) throws(SessionError) {
+    mutating func startDay(plan: [PlannedSegment], settings: SessionSettings, kind: SessionKind = .day) throws(SessionError) {
         guard isAllowed(.startDay) else { throw .notAllowed(.startDay) }
         guard !plan.isEmpty else { throw .emptyPlan }
         guard Self.isWellFormed(plan) else { throw .invalidPlan }
@@ -11,7 +11,8 @@ extension SessionSnapshot {
             actuals: plan.map { _ in SegmentActual() },
             settings: settings,
             state: .idle,
-            openInterval: nil
+            openInterval: nil,
+            kind: kind
         )
     }
 
@@ -81,12 +82,24 @@ extension SessionSnapshot {
         leave(segment: index, as: .completed, at: now)
     }
 
+    /// Adds segments to the end of a quick session's plan, with an empty record each. They must continue
+    /// the indices, start where the plan ends and have a positive length; if not, nothing changes.
+    mutating func appendSegments(_ segments: [PlannedSegment]) throws(SessionError) {
+        guard isAllowed(.append) else { throw .notAllowed(.append) }
+        guard !segments.isEmpty else { throw .emptyPlan }
+        let combined = plan + segments
+        guard Self.isWellFormed(combined) else { throw .invalidPlan }
+        plan = combined
+        actuals += segments.map { _ in SegmentActual() }
+    }
+
     /// Plays out every segment that ran out before `now`: either by moving on by itself
-    /// (auto-advance) or by waiting in overtime. Intervals get their real times.
+    /// (auto-advance) or by waiting in overtime. Intervals get their real times. The last segment of a
+    /// quick session never moves on by itself: it waits in overtime so another block can still be added.
     mutating func catchUp(to now: Date) {
         while case let .running(index, endsAt) = state, endsAt <= now {
             closeOpenInterval(at: endsAt)
-            if autoAdvances(from: plan[index].kind) {
+            if autoAdvances(from: plan[index].kind) && !(kind == .quick && index + 1 == plan.count) {
                 leave(segment: index, as: .completed, at: endsAt)
             } else {
                 state = .overtime(segmentIndex: index, since: endsAt)

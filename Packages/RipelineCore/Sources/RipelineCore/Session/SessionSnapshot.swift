@@ -12,6 +12,8 @@ public struct SessionSnapshot: Codable, Sendable, Equatable {
     public internal(set) var state: SessionState
     /// Present exactly while a segment is running, paused or in overtime.
     public internal(set) var openInterval: OpenInterval?
+    /// An ordinary day or a quick session. Files written before this existed read as a day.
+    public internal(set) var kind: SessionKind
 
     /// No day loaded.
     public static let empty = SessionSnapshot(
@@ -20,13 +22,39 @@ public struct SessionSnapshot: Codable, Sendable, Equatable {
 
     init(
         plan: [PlannedSegment], actuals: [SegmentActual], settings: SessionSettings,
-        state: SessionState, openInterval: OpenInterval?
+        state: SessionState, openInterval: OpenInterval?, kind: SessionKind = .day
     ) {
         self.plan = plan
         self.actuals = actuals
         self.settings = settings
         self.state = state
         self.openInterval = openInterval
+        self.kind = kind
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case plan, actuals, settings, state, openInterval, kind
+    }
+
+    /// Reads a snapshot, taking `kind` as `.day` when it is absent, as in every file written before it existed.
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        plan = try container.decode([PlannedSegment].self, forKey: .plan)
+        actuals = try container.decode([SegmentActual].self, forKey: .actuals)
+        settings = try container.decode(SessionSettings.self, forKey: .settings)
+        state = try container.decode(SessionState.self, forKey: .state)
+        openInterval = try container.decodeIfPresent(OpenInterval.self, forKey: .openInterval)
+        kind = try container.decodeIfPresent(SessionKind.self, forKey: .kind) ?? .day
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(plan, forKey: .plan)
+        try container.encode(actuals, forKey: .actuals)
+        try container.encode(settings, forKey: .settings)
+        try container.encode(state, forKey: .state)
+        try container.encodeIfPresent(openInterval, forKey: .openInterval)
+        try container.encode(kind, forKey: .kind)
     }
 
     /// The actuals with the open interval closed at `now`, for drawing and totals.
@@ -88,6 +116,7 @@ public struct SessionSnapshot: Codable, Sendable, Equatable {
         case (.running, .extend), (.paused, .extend), (.overtime, .extend): true
         case (.running, .skip), (.paused, .skip), (.overtime, .skip): true
         case (.overtime, .advance): true
+        case (.running, .append), (.paused, .append), (.overtime, .append): kind == .quick
         case (.running, .endDay), (.paused, .endDay), (.overtime, .endDay): true
         default: false
         }

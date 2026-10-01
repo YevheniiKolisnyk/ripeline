@@ -10,10 +10,10 @@ final class EngineSource: DayOverviewSource {
     /// Replaces the engine's schedule status, to test thresholds.
     var statusOverride: ScheduleStatus??
 
-    init(plan: [PlannedSegment]? = nil, settings: SessionSettings = SessionSettings(), at now: Date = t(9)) throws {
+    init(plan: [PlannedSegment]? = nil, settings: SessionSettings = SessionSettings(), kind: SessionKind = .day, at now: Date = t(9)) throws {
         clock = TestClock(now)
         engine = SessionEngine(clock: clock)
-        if let plan { try engine.startDay(plan: plan, settings: settings) }
+        if let plan { try engine.startDay(plan: plan, settings: settings, kind: kind) }
     }
 
     /// Moves the clock to `date`, then runs `action` on the engine.
@@ -45,4 +45,5 @@ final class EngineSource: DayOverviewSource {
         return engine.scheduleStatus()
     }
     var overviewNow: Date { clock.now }
+    var overviewIsQuick: Bool { engine.snapshot.kind == .quick }
 }

@@ -62,7 +62,7 @@ struct DayScreenView: View {
     @ViewBuilder private var actions: some View {
         switch model.mode {
         case .running:
-            Button("ui.endDay") { controller.endDay() }
+            Button(LocalizedStringKey(model.isQuick ? "ui.done" : "ui.endDay")) { controller.endDay() }
         case .finished:
             Button("overview.newDay", action: onNewDay).buttonStyle(.borderedProminent)
         case .noDay:

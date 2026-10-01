@@ -13,6 +13,9 @@ struct PopoverView: View {
         @Bindable var settings = settings
         VStack(alignment: .leading, spacing: 16) {
             header
+            if controller.isAllowed(.startDay) {
+                QuickStartSection(controller: controller, settings: settings)
+            }
             actions
             Divider()
             VStack(alignment: .leading, spacing: 8) {
@@ -60,16 +63,24 @@ struct PopoverView: View {
     // MARK: Actions
 
     private var actions: some View {
-        let visible = PopoverActions.visible(phase: controller.phase, isAllowed: controller.isAllowed)
+        let visible = PopoverActions.visible(phase: controller.phase, isQuick: controller.isQuickSession, isAllowed: controller.isAllowed)
         let buttons = visible.filter { $0 != .overview && $0 != .history }
+        // With the quick start above them, "Plan day…" is not the main button.
+        let firstIsMain = !controller.isAllowed(.startDay)
+        // Up to five buttons: laid out in rows of three so they fit.
+        let rows = stride(from: 0, to: buttons.count, by: 3).map { Array(buttons[$0..<min($0 + 3, buttons.count)]) }
         return VStack(alignment: .leading, spacing: 10) {
             GlassEffectContainer(spacing: 8) {
-                HStack(spacing: 8) {
-                    ForEach(Array(buttons.enumerated()), id: \.offset) { index, action in
-                        if index == 0 {
-                            button(for: action).buttonStyle(.glassProminent)
-                        } else {
-                            button(for: action).buttonStyle(.glass)
+                VStack(alignment: .leading, spacing: 8) {
+                    ForEach(Array(rows.enumerated()), id: \.offset) { rowIndex, row in
+                        HStack(spacing: 8) {
+                            ForEach(Array(row.enumerated()), id: \.offset) { index, action in
+                                if rowIndex == 0 && index == 0 && firstIsMain {
+                                    button(for: action).buttonStyle(.glassProminent)
+                                } else {
+                                    button(for: action).buttonStyle(.glass)
+                                }
+                            }
                         }
                     }
                 }
@@ -104,7 +115,8 @@ struct PopoverView: View {
         case .extend: controller.extend(minutes: 5)
         case .skip: controller.skip()
         case .next: controller.advance()
-        case .endDay: controller.endDay()
+        case .endDay, .done: controller.endDay()
+        case .addBlock: controller.addBlock()
         }
     }
 }

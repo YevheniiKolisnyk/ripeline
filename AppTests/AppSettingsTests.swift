@@ -110,4 +110,23 @@ struct AppSettingsTests {
         let stored = try #require(suite.defaults.data(forKey: "dayPlanForm"))
         #expect(try JSONDecoder().decode(DayPlanForm.self, from: stored).focusMinutes == 720)
     }
+
+    // MARK: quick block length
+
+    @Test func theQuickBlockLengthDefaultsToTheShortest() {
+        let suite = Suite(); defer { suite.cleanUp() }
+        #expect(AppSettings(defaults: suite.defaults).quickBlockLength == .short)
+    }
+
+    @Test func aChosenQuickBlockLengthPersists() {
+        let suite = Suite(); defer { suite.cleanUp() }
+        AppSettings(defaults: suite.defaults).quickBlockLength = .long
+        #expect(AppSettings(defaults: suite.defaults).quickBlockLength == .long)
+    }
+
+    @Test func anUnknownStoredLengthReadsAsTheShortest() {
+        let suite = Suite(); defer { suite.cleanUp() }
+        suite.defaults.set(33, forKey: "quickBlockMinutes")
+        #expect(AppSettings(defaults: suite.defaults).quickBlockLength == .short)
+    }
 }

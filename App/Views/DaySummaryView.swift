@@ -11,10 +11,15 @@ struct DaySummaryView: View {
                 GridRow { Text("summary.focus"); value("\(duration(summary.focusActual)) / \(duration(summary.focusPlanned))") }
                 GridRow { Text("summary.rest"); value("\(duration(summary.restActual)) / \(duration(summary.restPlanned))") }
                 GridRow { Text("summary.untracked"); value(duration(summary.untracked)) }
-                GridRow { Text("summary.plannedEnd"); value(time(summary.plannedEnd)) }
-                GridRow {
-                    Text(endLabel(summary.endKind))
-                    value(time(summary.endsAt))
+                if !model.isQuick {
+                    GridRow { Text("summary.plannedEnd"); value(time(summary.plannedEnd)) }
+                }
+                // A running quick session has no projected end; its final end is shown once it is over.
+                if !(model.isQuick && summary.endKind == .projected) {
+                    GridRow {
+                        Text(endLabel(summary.endKind))
+                        value(time(summary.endsAt))
+                    }
                 }
             }
         }
