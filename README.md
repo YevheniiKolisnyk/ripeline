@@ -8,9 +8,10 @@ break segments, walks you through it, and records what actually happened. Two ti
 on a shared time axis show the plan and the reality side by side.
 
 > **Status:** early development. The domain logic (`RipelineCore`) and the app shell are
-> implemented: a menu bar item and popover that run a day with a default plan, keep it across
-> relaunch and sleep, and notify when a segment ends. Choosing your own plan and the timeline
-> screens are next.
+> implemented: a menu bar item and popover that run a day, keep it across relaunch and sleep, and
+> notify when a segment ends, and a window where you choose a preset, the end of the day or your
+> focus time, a long break and what to do with leftover time, and see the plan before you start.
+> The timeline screens are next.
 
 ## Privacy
 
