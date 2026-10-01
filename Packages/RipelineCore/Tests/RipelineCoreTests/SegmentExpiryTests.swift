@@ -214,4 +214,35 @@ struct SegmentExpiryTests {
         #expect(engine.isAllowed(.advance) == true)
         #expect(engine.isAllowed(.extend) == true)
     }
+
+    // MARK: settings changed mid-day
+
+    @Test func turningAutoAdvanceOffMidDayAppliesToTheNextExpiry() throws {
+        var (engine, clock) = try started(settings: SessionSettings(autoAdvanceWorkToBreak: true))
+        clock.set(t(9, 20))
+        engine.updateSettings(SessionSettings(autoAdvanceWorkToBreak: false))
+        clock.set(t(9, 55)); engine.tick()
+        #expect(engine.state == .overtime(segmentIndex: 0, since: t(9, 50)))
+    }
+
+    @Test func turningAutoAdvanceOnMidDayAppliesToTheNextExpiry() throws {
+        var (engine, clock) = try started()
+        clock.set(t(9, 20))
+        engine.updateSettings(SessionSettings(autoAdvanceWorkToBreak: true))
+        clock.set(t(9, 50)); engine.tick()
+        #expect(engine.state == .running(segmentIndex: 1, endsAt: t(10, 0)))
+    }
+
+    @Test(arguments: [(true, ActualKind.rest), (false, ActualKind.untracked)])
+    func pausingRightAfterABreakAutoAdvancesIntoWorkFollowsThePauseSetting(restOn: Bool, kind: ActualKind) throws {
+        let plan = makePlan([(.shortBreak, 10), (.work, 50)])
+        var (engine, clock) = try started(
+            plan: plan, settings: SessionSettings(pausesCountAsRest: restOn, autoAdvanceBreakToWork: true)
+        )
+        clock.set(t(9, 10)); engine.tick()
+        #expect(engine.state == .running(segmentIndex: 1, endsAt: t(10, 0)))
+        try engine.pause()
+        clock.set(t(9, 15)); try engine.resume()
+        #expect(recorded(engine.snapshot.actuals[1]) == [Recorded(kind: kind, start: t(9, 10), end: t(9, 15))])
+    }
 }

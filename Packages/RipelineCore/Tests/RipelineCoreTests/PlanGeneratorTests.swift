@@ -95,6 +95,21 @@ struct PlanGeneratorTests {
         (.stretchBlocks, []),
     ]
 
+    @Test func nonMinuteAlignedStartWithShortBlockEndsExactlyAtTheEnd() throws {
+        let start = t(9, 3, 27)
+        let plan = try PlanGenerator.generate(untilTime(start, t(17, 23, 27), .shortBlock(minMinutes: 15)))
+        #expect(plan.last?.end == t(17, 23, 27))
+        #expect(blocks(plan).last == work(t(17, 3, 27), t(17, 23, 27)))
+        expectWellFormed(plan)
+    }
+
+    @Test func nonMinuteAlignedStartWithLeaveFreeKeepsEveryBlockExact() throws {
+        let plan = try PlanGenerator.generate(untilTime(t(9, 3, 27), t(17, 3, 27), .leaveFree))
+        #expect(plan.filter { $0.kind == .work }.count == 8)
+        #expect(plan.last?.end == t(16, 53, 27))
+        #expect(plan.allSatisfy { $0.duration == minutes(50) || $0.duration == minutes(10) })
+    }
+
     // MARK: .netFocus
 
     @Test func netFocusShortensLastBlock() throws {

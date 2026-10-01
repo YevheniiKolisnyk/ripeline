@@ -11,10 +11,18 @@ public struct ScheduleStatus: Sendable, Equatable {
     /// `projectedEnd - plannedEnd` in seconds. Positive: behind schedule. Negative: ahead.
     public var lag: TimeInterval { projectedEnd.timeIntervalSince(plannedEnd) }
 
+    /// Builds a status from ready-made dates, for previews and tests.
+    public init(plannedEnd: Date, projectedEnd: Date) {
+        self.plannedEnd = plannedEnd
+        self.projectedEnd = projectedEnd
+    }
+
     /// The status of `snapshot` at `now`, or `nil` when there is nothing to compare: no plan,
     /// or a finished day in which nothing was recorded.
     ///
     /// Segments that ran out before `now` are accounted for even if the engine was not ticked.
+    /// `now` is used as given; `SessionEngine.scheduleStatus()` also guards against a clock that
+    /// was set back.
     public init?(snapshot: SessionSnapshot, now: Date) {
         guard let plannedEnd = snapshot.plan.last?.end else { return nil }
         var current = snapshot
@@ -35,7 +43,12 @@ public struct ScheduleStatus: Sendable, Equatable {
             let notStarted = zip(current.plan, current.actuals)
                 .filter { $0.1.status == .notStarted }
                 .reduce(0) { $0 + $1.0.duration }
-            projectedEnd = now.addingTimeInterval(currentRemaining + notStarted)
+            // Before the day starts nothing can be ahead of schedule: count from the planned start.
+            var base = now
+            if case .idle = current.state, let plannedStart = current.plan.first?.start {
+                base = max(now, plannedStart)
+            }
+            projectedEnd = base.addingTimeInterval(currentRemaining + notStarted)
         }
         self.plannedEnd = plannedEnd
         self.projectedEnd = projectedEnd

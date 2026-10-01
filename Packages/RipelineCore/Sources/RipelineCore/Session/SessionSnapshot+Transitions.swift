@@ -5,6 +5,7 @@ extension SessionSnapshot {
     mutating func startDay(plan: [PlannedSegment], settings: SessionSettings) throws(SessionError) {
         guard isAllowed(.startDay) else { throw .notAllowed(.startDay) }
         guard !plan.isEmpty else { throw .emptyPlan }
+        guard Self.isWellFormed(plan) else { throw .invalidPlan }
         self = SessionSnapshot(
             plan: plan,
             actuals: plan.map { _ in SegmentActual() },

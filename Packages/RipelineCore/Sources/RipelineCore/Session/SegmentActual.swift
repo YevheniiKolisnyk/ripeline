@@ -10,6 +10,7 @@ public enum SegmentStatus: String, Codable, Sendable, Equatable {
 
 /// What actually happened in one planned segment.
 public struct SegmentActual: Codable, Sendable, Equatable {
+    /// Where the segment stands.
     public internal(set) var status: SegmentStatus
     /// Closed intervals in chronological order. The interval being recorded right now is
     /// held by `SessionSnapshot.openInterval` until it closes.
