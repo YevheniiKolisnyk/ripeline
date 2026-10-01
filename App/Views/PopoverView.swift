@@ -6,6 +6,7 @@ struct PopoverView: View {
     let controller: SessionController
     let settings: AppSettings
     @Environment(\.openWindow) private var openWindow
+    @Environment(\.locale) private var locale
 
     var body: some View {
         @Bindable var settings = settings
@@ -43,7 +44,10 @@ struct PopoverView: View {
                     .font(.system(size: 44, weight: .semibold, design: .rounded))
                     .monospacedDigit()
                     .accessibilityLabel(Text("a11y.timer"))
-                    .accessibilityValue(Text(verbatim: timerText))
+                    .accessibilityValue(Text(verbatim: AccessibilityText.timerValue(
+                        phase: controller.phase, remaining: controller.remaining,
+                        overtimeElapsed: controller.overtimeElapsed, locale: locale
+                    ) ?? timerText))
                     .accessibilityAddTraits(.updatesFrequently)
             }
             if let progress = controller.progress {

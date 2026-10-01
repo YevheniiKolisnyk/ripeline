@@ -8,7 +8,7 @@ struct PresentationTests {
     ]
 
     @Test(arguments: [
-        (Phase.idle, "timer"), (.working, "timer"), (.onBreak, "cup.and.saucer.fill"),
+        (Phase.idle, "circle.dashed"), (.working, "timer"), (.onBreak, "cup.and.saucer.fill"),
         (.paused(onBreak: false), "pause.circle.fill"), (.paused(onBreak: true), "pause.circle.fill"),
         (.overtime(onBreak: false), "exclamationmark.circle.fill"),
         (.overtime(onBreak: true), "exclamationmark.circle.fill"),
@@ -59,5 +59,15 @@ struct PresentationTests {
         let model = MenuBarLabelModel(phase: phase, remaining: 600, overtimeElapsed: 60, showTime: false)
         #expect(model.text == nil)
         #expect(!model.symbolName.isEmpty)
+    }
+
+    /// With the time hidden, the icon alone must tell a day that is not running from one that is.
+    @Test func idleAndWorkingLookDifferent() {
+        #expect(Phase.idle.symbolName != Phase.working.symbolName)
+    }
+
+    @Test func eachKindOfPhaseHasItsOwnSymbol() {
+        let symbols = [Phase.idle, .working, .onBreak, .paused(onBreak: false), .overtime(onBreak: false), .finished].map(\.symbolName)
+        #expect(Set(symbols).count == symbols.count)
     }
 }

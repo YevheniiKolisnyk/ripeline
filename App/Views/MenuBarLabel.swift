@@ -4,6 +4,7 @@ import SwiftUI
 struct MenuBarLabel: View {
     let controller: SessionController
     let settings: AppSettings
+    @Environment(\.locale) private var locale
 
     var body: some View {
         let model = MenuBarLabelModel(
@@ -16,5 +17,10 @@ struct MenuBarLabel: View {
                 Text(verbatim: text).monospacedDigit()
             }
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text(verbatim: AccessibilityText.menuBarLabel(
+            phase: controller.phase, remaining: controller.remaining,
+            overtimeElapsed: controller.overtimeElapsed, locale: locale
+        )))
     }
 }

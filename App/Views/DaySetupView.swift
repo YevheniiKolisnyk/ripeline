@@ -153,6 +153,13 @@ struct DaySetupView: View {
 
     // MARK: Bottom bar
 
+    /// Why Start is unavailable, for VoiceOver; empty when it is available.
+    private var startHint: String {
+        if model.canStartNow { return "" }
+        if case let .invalid(issue) = model.result { return SetupText.message(for: issue) }
+        return Bundle.main.localizedString(forKey: "a11y.startBlocked", value: nil, table: nil)
+    }
+
     private var bottomBar: some View {
         HStack {
             Spacer()
@@ -165,7 +172,7 @@ struct DaySetupView: View {
             .buttonStyle(.borderedProminent)
             .keyboardShortcut(.defaultAction)
             .disabled(!model.canStartNow)
-            .accessibilityHint(Text(model.canStartNow ? "" : "a11y.startBlocked"))
+            .accessibilityHint(Text(verbatim: startHint))
         }
         .padding(12)
     }
