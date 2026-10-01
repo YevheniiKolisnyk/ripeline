@@ -1,0 +1,13 @@
+// Local, machine-specific build settings.
+//
+// Copy this file to Config/Local.xcconfig and fill in your own values:
+//
+//     cp Config/Local.example.xcconfig Config/Local.xcconfig
+//
+// Config/Local.xcconfig is gitignored. Never commit it.
+
+// Your Apple Developer Team ID (Xcode > Settings > Accounts), e.g. ABCDE12345.
+DEVELOPMENT_TEAM =
+
+// A reverse-DNS bundle identifier you own, e.g. com.yourname.Ripeline.
+PRODUCT_BUNDLE_IDENTIFIER = com.example.Ripeline
