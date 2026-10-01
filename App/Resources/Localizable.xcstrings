@@ -17,6 +17,102 @@
         }
       }
     },
+    "notification.breakEnded.body": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back to work."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Час повертатися до роботи."
+          }
+        }
+      }
+    },
+    "notification.breakEnded.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Break is over"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Перерва закінчилась"
+          }
+        }
+      }
+    },
+    "notification.dayFinished.body": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nice work!"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Гарна робота!"
+          }
+        }
+      }
+    },
+    "notification.dayFinished.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Day finished"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "День завершено"
+          }
+        }
+      }
+    },
+    "notification.workEnded.body": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time for a break."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Час на перерву."
+          }
+        }
+      }
+    },
+    "notification.workEnded.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Work block finished"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Робочий блок завершено"
+          }
+        }
+      }
+    },
     "phase.break": {
       "localizations": {
         "en": {
