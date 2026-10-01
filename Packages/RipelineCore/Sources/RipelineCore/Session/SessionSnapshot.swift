@@ -43,6 +43,16 @@ public struct SessionSnapshot: Codable, Sendable, Equatable {
         }
     }
 
+    /// Checks that a snapshot read back from storage is internally consistent.
+    func validate() throws(SessionError) {
+        guard actuals.count == plan.count else { throw .invalidSnapshot }
+        if let index = currentIndex {
+            guard plan.indices.contains(index), openInterval != nil else { throw .invalidSnapshot }
+        } else {
+            guard openInterval == nil else { throw .invalidSnapshot }
+        }
+    }
+
     /// The latest instant anything was recorded at. The engine never moves time before it.
     var lastRecordedInstant: Date? {
         let closed = actuals.compactMap { $0.intervals.last?.end }

@@ -278,3 +278,9 @@ Clarifications of this specification are recorded here as they are made.
   wall-clock overrun, so for a segment still in progress it is negative. `actualEnd` is the
   end of the last recorded interval once the day is `finished`, and `nil` before that. The
   planned end of the day is the end of the last planned segment.
+- **D18 — Small additions to the engine API.** `updateSettings(_:)` changes settings for
+  future transitions only (an open pause interval keeps its kind). `isAllowed(_:)` lets the UI
+  enable or disable controls. `remainingTime()` and `overtimeElapsed()` feed the countdown and
+  never change the engine. `Timeline.bounds` gives the span for the shared axis.
+  `SessionEngine(restoring:clock:)` validates a stored snapshot and throws
+  `SessionError.invalidSnapshot` if it is inconsistent.

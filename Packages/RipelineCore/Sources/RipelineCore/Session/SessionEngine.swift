@@ -14,6 +14,16 @@ public struct SessionEngine: Sendable {
         self.clock = clock
     }
 
+    /// An engine continuing a day that was saved earlier. Call `tick()` afterwards to catch up
+    /// with the time that passed.
+    ///
+    /// - Throws: `SessionError.invalidSnapshot` if `snapshot` is inconsistent.
+    public init(restoring snapshot: SessionSnapshot, clock: any WallClock) throws(SessionError) {
+        try snapshot.validate()
+        self.snapshot = snapshot
+        self.clock = clock
+    }
+
     public var state: SessionState { snapshot.state }
 
     /// Whether `action` is valid right now, so the UI can enable or disable its controls.

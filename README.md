@@ -7,8 +7,8 @@ At the start of the day you pick a preset (for example 50 min work / 10 min brea
 break segments, walks you through it, and records what actually happened. Two timelines
 on a shared time axis show the plan and the reality side by side.
 
-> **Status:** early development. Stage 1 (domain logic in the `RipelineCore` package)
-> is in progress. There is no app UI yet.
+> **Status:** early development. Stage 1 (domain logic in the `RipelineCore` package) is
+> implemented and tested. There is no app UI yet.
 
 ## Privacy
 
