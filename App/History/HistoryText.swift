@@ -42,7 +42,9 @@ enum HistoryText {
             label = String(format: format, date, start, status, actual, planned)
         }
         // What a sighted user reads under the badge is heard too.
-        if let lag = entry.lag {
+        if entry.isQuick {
+            label += ", " + bundle.localizedString(forKey: "a11y.historyQuick", value: nil, table: nil)
+        } else if let lag = entry.lag {
             let format = bundle.localizedString(forKey: "a11y.historyLag", value: nil, table: nil)
             label += ", " + String(format: format, OverviewText.delta(lag, locale: locale))
         }

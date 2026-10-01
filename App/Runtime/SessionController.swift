@@ -367,6 +367,7 @@ extension SessionController: DayOverviewSource {
     var overviewTimeline: Timeline { timeline }
     var overviewComparison: DayComparison { comparison }
     var overviewStatus: ScheduleStatus? { scheduleStatus }
+    var overviewIsQuick: Bool { isQuickSession }
     var overviewNow: Date {
         _ = now
         // Never earlier than the last record, as in the engine: with the clock set back the marker

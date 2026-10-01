@@ -19,7 +19,11 @@ struct HistoryRowView: View {
                 Text(verbatim: HistoryText.badge(entry))
                     .font(.caption.weight(.medium))
                     .foregroundStyle(entry.isFinished ? Color.green : Color.orange)
-                if let lag = entry.lag {
+                if entry.isQuick {
+                    Text("history.quick")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                } else if let lag = entry.lag {
                     Text(verbatim: OverviewText.delta(lag, locale: locale))
                         .font(.caption2)
                         .foregroundStyle(.secondary)

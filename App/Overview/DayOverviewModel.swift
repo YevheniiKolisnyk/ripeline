@@ -13,10 +13,14 @@ import RipelineCore
     var overviewNow: Date { get }
     /// The last instant anything was recorded, for a stored day that was never ended; `nil` otherwise.
     var overviewLastRecord: Date? { get }
+    /// Whether this is a quick session: it has no plan to be ahead of or behind, so its lag, planned
+    /// end and projected end are not shown.
+    var overviewIsQuick: Bool { get }
 }
 
 extension DayOverviewSource {
     var overviewLastRecord: Date? { nil }
+    var overviewIsQuick: Bool { false }
 }
 
 /// A block placed on the axis, as fractions of its width.
@@ -90,6 +94,8 @@ final class DayOverviewModel {
     @ObservationIgnored private let calendar: Calendar
 
     private(set) var mode: Mode = .noDay
+    /// A quick session: no lag, planned end or projected end.
+    private(set) var isQuick = false
     private(set) var axis: TimeAxis?
     private(set) var planned: [BlockLayout<SegmentKind>] = []
     private(set) var actual: [BlockLayout<ActualKind>] = []
@@ -114,6 +120,7 @@ final class DayOverviewModel {
             return
         }
         mode = phase == .finished ? .finished : .running
+        isQuick = source.overviewIsQuick
 
         let timeline = source.overviewTimeline
         let comparison = source.overviewComparison
@@ -129,12 +136,12 @@ final class DayOverviewModel {
         actual = timeline.actual.map { layout($0.kind, $0.start, $0.end, on: axis) }
         nowX = mode == .running ? axis?.x(for: now) : nil
         // Lag is for a day still going; for a finished day the summary compares the ends.
-        lag = mode == .running ? status.map(Self.lagState) : nil
+        lag = mode == .running && !isQuick ? status.map(Self.lagState) : nil
 
         let totals = comparison.totals
         let end: (date: Date?, kind: DaySummary.EndKind)
         if mode == .running {
-            end = (status?.projectedEnd, .projected)
+            end = (isQuick ? nil : status?.projectedEnd, .projected)
         } else if let actualEnd = totals.actualEnd {
             end = (actualEnd, .final)
         } else if let lastRecord = source.overviewLastRecord {
@@ -145,7 +152,7 @@ final class DayOverviewModel {
         summary = DaySummary(
             focusPlanned: totals.focusPlanned, focusActual: totals.focusActual,
             restPlanned: totals.restPlanned, restActual: totals.restActual,
-            untracked: totals.untracked, plannedEnd: totals.plannedEnd,
+            untracked: totals.untracked, plannedEnd: isQuick ? nil : totals.plannedEnd,
             endsAt: end.date, endKind: end.kind
         )
         segments = comparison.rows.map {
@@ -158,6 +165,7 @@ final class DayOverviewModel {
 
     private func clear() {
         mode = .noDay
+        isQuick = false
         axis = nil
         planned = []
         actual = []

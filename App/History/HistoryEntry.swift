@@ -14,7 +14,9 @@ struct HistoryEntry: Equatable, Identifiable, Sendable {
     let focusPlanned: TimeInterval
     let restActual: TimeInterval
     let isFinished: Bool
-    /// The actual end minus the planned end, for a finished day with records; `nil` otherwise.
+    /// A quick session rather than an ordinary day.
+    let isQuick: Bool
+    /// The actual end minus the planned end, for a finished day with records; `nil` otherwise and for a quick session.
     let lag: TimeInterval?
 
     init(day: StoredDay) {
@@ -31,7 +33,8 @@ struct HistoryEntry: Equatable, Identifiable, Sendable {
         focusPlanned = comparison.totals.focusPlanned
         restActual = comparison.totals.restActual
         isFinished = snapshot.state == .finished
-        if isFinished, let end = comparison.totals.actualEnd, let planned = comparison.totals.plannedEnd {
+        isQuick = snapshot.kind == .quick
+        if isFinished, !isQuick, let end = comparison.totals.actualEnd, let planned = comparison.totals.plannedEnd {
             lag = end.timeIntervalSince(planned)
         } else {
             lag = nil

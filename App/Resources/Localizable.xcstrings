@@ -34,6 +34,23 @@
         }
       }
     },
+    "a11y.historyQuick" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "quick session"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "швидка сесія"
+          }
+        }
+      }
+    },
     "a11y.historyRow" : {
       "localizations" : {
         "en" : {
@@ -417,6 +434,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Не завершено"
+          }
+        }
+      }
+    },
+    "history.quick" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quick"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Швидка"
           }
         }
       }
@@ -1625,6 +1659,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Статус"
+          }
+        }
+      }
+    },
+    "ui.done" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Done"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Готово"
           }
         }
       }

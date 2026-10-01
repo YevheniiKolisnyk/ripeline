@@ -28,4 +28,5 @@ final class SnapshotSource: DayOverviewSource {
     var overviewStatus: ScheduleStatus? { nil }
     var overviewNow: Date { instant }
     var overviewLastRecord: Date? { Self.lastRecordedInstant(of: snapshot) }
+    var overviewIsQuick: Bool { snapshot.kind == .quick }
 }
