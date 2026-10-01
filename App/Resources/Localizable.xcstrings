@@ -1663,6 +1663,23 @@
         }
       }
     },
+    "ui.addBlock" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Another block"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ще один блок"
+          }
+        }
+      }
+    },
     "ui.done" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1793,6 +1810,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Спланувати день…"
+          }
+        }
+      }
+    },
+    "ui.quickLength" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Block length"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Довжина блоку"
+          }
+        }
+      }
+    },
+    "ui.quickStartButton" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Старт"
+          }
+        }
+      }
+    },
+    "ui.quickStartTitle" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quick start"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Швидкий старт"
           }
         }
       }

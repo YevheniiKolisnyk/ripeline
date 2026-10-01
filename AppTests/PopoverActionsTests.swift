@@ -67,3 +67,43 @@ struct OverviewActionTests {
         #expect(PopoverAction.history.titleKey == "ui.history")
     }
 }
+
+struct QuickPopoverActionsTests {
+    private let everything: (SessionAction) -> Bool = { _ in true }
+
+    @Test(arguments: [
+        (Phase.working, [PopoverAction.pause, .extend, .addBlock, .skip, .done, .overview, .history]),
+        (.onBreak, [.pause, .extend, .addBlock, .skip, .done, .overview, .history]),
+        (.paused(onBreak: false), [.resume, .extend, .addBlock, .skip, .done, .overview, .history]),
+        (.paused(onBreak: true), [.resume, .extend, .addBlock, .skip, .done, .overview, .history]),
+        (.overtime(onBreak: false), [.next, .extend, .addBlock, .done, .overview, .history]),
+        (.overtime(onBreak: true), [.next, .extend, .addBlock, .done, .overview, .history]),
+        (.idle, [.planDay, .history]),
+        (.finished, [.summary, .history]),
+    ])
+    func buttonsOfAQuickSession(phase: Phase, expected: [PopoverAction]) {
+        #expect(PopoverActions.visible(phase: phase, isQuick: true, isAllowed: everything) == expected)
+    }
+
+    @Test func anotherBlockAndDoneFollowTheEngine() {
+        let onlyPause: (SessionAction) -> Bool = { $0 == .pause }
+        #expect(PopoverActions.visible(phase: .working, isQuick: true, isAllowed: onlyPause) == [.pause, .overview, .history])
+        let noAppend: (SessionAction) -> Bool = { $0 != .append }
+        let shown = PopoverActions.visible(phase: .working, isQuick: true, isAllowed: noAppend)
+        #expect(!shown.contains(.addBlock) && shown.contains(.done))
+    }
+
+    @Test func anOrdinaryDayNeverOffersThem() {
+        for phase in [Phase.working, .onBreak, .paused(onBreak: false), .overtime(onBreak: false), .idle, .finished] {
+            let shown = PopoverActions.visible(phase: phase, isQuick: false, isAllowed: everything)
+            #expect(!shown.contains(.addBlock) && !shown.contains(.done), "\(phase)")
+        }
+    }
+
+    @Test func theNewActionsMapToEngineActionsAndTitles() {
+        #expect(PopoverAction.addBlock.sessionAction == .append)
+        #expect(PopoverAction.done.sessionAction == .endDay)
+        #expect(PopoverAction.addBlock.titleKey == "ui.addBlock")
+        #expect(PopoverAction.done.titleKey == "ui.done")
+    }
+}
