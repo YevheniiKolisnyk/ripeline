@@ -6,12 +6,15 @@ struct CrateView: View {
     let model: CrateModel
     let highlight: String?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var scene = CrateScene(size: CGSize(width: 1, height: 1))
+    /// Made once, when the view first appears, not each time its parent redraws.
+    @State private var scene: CrateScene?
 
     var body: some View {
         ZStack {
             CrateArt.Back()
-            SpriteView(scene: scene, options: [.allowsTransparency])
+            if let scene {
+                SpriteView(scene: scene, preferredFramesPerSecond: 30, options: [.allowsTransparency])
+            }
             CrateArt.Front(total: model.total)
             if model.total == 0 {
                 VStack(spacing: 4) {
@@ -32,6 +35,8 @@ struct CrateView: View {
     }
 
     private func push() {
+        let scene = scene ?? CrateScene(size: CGSize(width: 1, height: 1))
+        self.scene = scene
         scene.reduceMotion = reduceMotion
         scene.update(model.tomatoes, highlight: highlight)
     }

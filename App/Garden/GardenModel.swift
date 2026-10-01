@@ -26,7 +26,8 @@ final class GardenModel {
 
     func isPicked(_ id: UUID) -> Bool { picked.contains(id) }
 
-    /// Picks a tomato that is pickable and not yet picked. Returns whether anything was picked.
+    /// Picks a tomato that is pickable and not yet picked. Returns whether anything was picked. The caller's
+    /// `tomato` is trusted as current: views pass the tomatoes they just read from the controller.
     @discardableResult
     func pick(_ tomato: Tomato) -> Bool {
         guard tomato.availability == .pickable, !picked.contains(tomato.id) else { return false }
@@ -40,6 +41,11 @@ final class GardenModel {
         let before = picked
         picked.subtract(ids)
         if picked != before { persist() }
+    }
+
+    /// Forgets the tomatoes of every work block of `snapshot`, for a day that was deleted.
+    func forget(day snapshot: SessionSnapshot) {
+        forget(snapshot.plan.filter { $0.kind == .work }.map(\.id))
     }
 
     private func persist() {

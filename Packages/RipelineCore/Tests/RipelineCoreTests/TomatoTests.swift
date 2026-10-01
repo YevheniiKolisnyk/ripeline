@@ -133,4 +133,23 @@ struct TomatoTests {
         let first = try #require(engine.tomatoes().first)
         #expect(first.workTime >= 0)
     }
+
+    /// Review finding: a stored day whose block was still running when the app was closed is not running any more,
+    /// so its tomato can be picked instead of waiting for ever.
+    @Test func aSettledDayLetsAStillRunningBlockBePicked() throws {
+        let (engine, clock) = try started()
+        clock.set(t(9, 10))
+        let running = engine.tomatoes()
+        #expect(running[0].availability == .growing && running[1].availability == .upcoming)
+        let settled = Tomatoes.of(engine.snapshot, at: t(9, 10), settled: true)
+        #expect(close(settled[0].growth, 0.4))
+        #expect(settled[0].availability == .pickable)
+        #expect(settled[1].availability == .empty)                 // it never started and now never will
+    }
+
+    @Test func aSettledBlockWithNoWorkGivesNothing() throws {
+        let (engine, _) = try started()
+        let settled = Tomatoes.of(engine.snapshot, at: t(9), settled: true)
+        #expect(settled[0].availability == .empty)
+    }
 }

@@ -29,5 +29,6 @@ final class SnapshotSource: DayOverviewSource {
     var overviewNow: Date { instant }
     var overviewLastRecord: Date? { Self.lastRecordedInstant(of: snapshot) }
     var overviewIsQuick: Bool { snapshot.kind == .quick }
-    var overviewTomatoes: [Tomato] { Tomatoes.of(snapshot, at: instant) }
+    /// A stored day no longer runs: a block that was active when it was last recorded counts as over.
+    var overviewTomatoes: [Tomato] { Tomatoes.of(snapshot, at: instant, settled: true) }
 }

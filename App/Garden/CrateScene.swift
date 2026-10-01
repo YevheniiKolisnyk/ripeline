@@ -17,6 +17,11 @@ final class CrateScene: SKScene {
     var tomatoNodeCount: Int { nodes.count }
     var highlightedCount: Int { nodes.values.filter { $0.childNode(withName: "ring") != nil }.count }
     var dynamicBodyCount: Int { nodes.values.filter { $0.physicsBody?.isDynamic == true }.count }
+    var nodeIdentities: Set<ObjectIdentifier> { Set(nodes.values.map { ObjectIdentifier($0) }) }
+    var bodyIdentities: Set<ObjectIdentifier> { Set(nodes.values.compactMap { $0.physicsBody }.map { ObjectIdentifier($0) }) }
+    var nodePositions: [CGPoint] { nodes.values.map(\.position) }
+    /// The positions of the nodes of `tomatoes`, in that order; tomatoes without a node are left out.
+    func nodePositions(inOrderOf tomatoes: [CrateTomato]) -> [CGPoint] { tomatoes.compactMap { nodes[$0.id]?.position } }
 
     override init(size: CGSize) {
         super.init(size: size)
@@ -29,9 +34,11 @@ final class CrateScene: SKScene {
 
     required init?(coder: NSCoder) { fatalError("init(coder:) is not used") }
 
+    /// A new size moves the walls and keeps the tomatoes: the pile is not dropped again while the window is dragged.
     override func didChangeSize(_ oldSize: CGSize) {
         rebuildWalls()
-        if size != oldSize { respawn() }
+        guard size.width > 1, size.height > 1 else { return }
+        update(current, highlight: highlighted)
     }
 
     /// Shows `tomatoes` (oldest first) and rings the ones of the day `highlight`. New ones drop in;
@@ -48,8 +55,11 @@ final class CrateScene: SKScene {
             nodes[id] = nil
         }
         let diameter = CrateGeometry.baseDiameter(forCount: tomatoes.count)
-        for tomato in tomatoes {
-            if let node = nodes[tomato.id] { resize(node, growth: tomato.growth, diameter: diameter) }
+        let interior = CrateGeometry.interior(in: size)
+        for (index, tomato) in tomatoes.enumerated() {
+            guard let node = nodes[tomato.id] else { continue }
+            resize(node, growth: tomato.growth, diameter: diameter)
+            keepInside(node, index: index, interior: interior, diameter: diameter)
         }
         let fresh = tomatoes.enumerated().filter { nodes[$0.element.id] == nil }
         let spacing = min(0.04, 2.5 / Double(max(fresh.count, 1)))
@@ -104,13 +114,32 @@ final class CrateScene: SKScene {
         run(.sequence([.wait(forDuration: delay), drop]))
     }
 
+    /// Under Reduce Motion a tomato goes to its slot in the still pile; otherwise one that is outside the
+    /// (possibly smaller) crate is moved back inside, and the physics takes it from there.
+    private func keepInside(_ node: SKSpriteNode, index: Int, interior: CGRect, diameter: CGFloat) {
+        if reduceMotion {
+            node.position = CrateGeometry.settledPosition(index: index, in: interior, diameter: diameter)
+            return
+        }
+        let radius = node.size.width / 2
+        let x = min(max(node.position.x, interior.minX + radius), max(interior.minX + radius, interior.maxX - radius))
+        node.position = CGPoint(x: x, y: max(node.position.y, interior.minY + radius))
+    }
+
     private func resize(_ node: SKSpriteNode, growth: Double, diameter: CGFloat) {
         let side = diameter * CGFloat(TomatoLook(growth: growth).scale)
-        node.size = CGSize(width: side, height: side)
+        node.texture = textures.texture(growth: growth)
+        let changed = abs(node.size.width - side) > 0.01
+        if changed {
+            node.size = CGSize(width: side, height: side)
+            node.childNode(withName: "ring")?.removeFromParent()      // drawn again at the new size
+        }
         guard !reduceMotion else {
             node.physicsBody = nil
             return
         }
+        // A body is only replaced when the size changed, so a resting pile is not woken up for nothing.
+        guard changed || node.physicsBody == nil else { return }
         let body = SKPhysicsBody(circleOfRadius: side * 0.46)
         body.restitution = 0.35
         body.friction = 0.4
@@ -129,7 +158,6 @@ final class CrateScene: SKScene {
                 shape.strokeColor = .systemYellow
                 shape.lineWidth = 2.5
                 shape.fillColor = .clear
-                shape.glowWidth = 2
                 node.addChild(shape)
                 node.zPosition = 1
             } else if !want, let ring {

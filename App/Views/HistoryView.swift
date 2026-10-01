@@ -9,7 +9,7 @@ struct HistoryView: View {
 
     var body: some View {
         Group {
-            if model.entries.isEmpty && !model.loadFailed {
+            if model.showsEmptyState(crateTotal: crate.total) {
                 emptyState
             } else {
                 HStack(spacing: 0) {

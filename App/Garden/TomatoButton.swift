@@ -30,7 +30,9 @@ struct TomatoButton: View {
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(GardenText.tomatoLabel(growth: tomato.growth, availability: tomato.availability, isPicked: isPicked))
         .accessibilityAddTraits(ready ? .isButton : [])
-        .accessibilityAction(named: Text("a11y.pickTomato")) { if ready { garden?.pick(tomato) } }
+        .accessibilityActions {
+            if ready { Button("a11y.pickTomato") { garden?.pick(tomato) } }
+        }
     }
 }
 
@@ -45,10 +47,10 @@ struct TomatoPatchView: View {
         let pickedCount = shown.count - waiting.count
         if !shown.isEmpty {
             HStack(alignment: .bottom, spacing: 8) {
-                // The newest few fit the popover; older ones are still on the day screen's bed.
+                // The newest few fit the popover (268 pt wide, with the count); older ones are still on the day screen's bed.
                 HStack(alignment: .bottom, spacing: 6) {
-                    ForEach(waiting.suffix(6)) { tomato in
-                        TomatoButton(tomato: tomato, diameter: 34)
+                    ForEach(waiting.suffix(4)) { tomato in
+                        TomatoButton(tomato: tomato, diameter: 30)
                             .transition(.scale.combined(with: .opacity))
                     }
                 }

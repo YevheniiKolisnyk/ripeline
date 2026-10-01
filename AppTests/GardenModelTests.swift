@@ -77,4 +77,14 @@ struct GardenModelTests {
         #expect(garden.pick(tomato()))
         #expect(store.saves.isEmpty && store.picked == [old])
     }
+
+    @Test func forgettingADayForgetsEveryWorkBlockOfIt() throws {
+        let store = MemoryHarvestStore()
+        let garden = GardenModel(store: store)
+        let day = try twoTomatoDay()
+        let other = UUID()
+        garden.pick(tomato(id: day.plan[0].id)); garden.pick(tomato(id: day.plan[2].id)); garden.pick(tomato(id: other))
+        garden.forget(day: day)
+        #expect(garden.picked == [other] && store.picked == [other])
+    }
 }

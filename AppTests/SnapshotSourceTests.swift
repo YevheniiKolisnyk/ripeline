@@ -93,4 +93,12 @@ struct SnapshotSourceTests {
         #expect(model.summary?.endsAt == nil)
         #expect(model.axis != nil)
     }
+
+    /// Review finding: a stored day that was never ended has a tomato for the block that was running; it can be picked.
+    @Test func theTomatoOfABlockThatWasStillRunningCanBePicked() throws {
+        let source = SnapshotSource(snapshot: try abandonedDay())
+        let tomato = try #require(source.overviewTomatoes.first)
+        #expect(tomato.availability == .pickable)
+        #expect(tomato.workTime > 0)
+    }
 }

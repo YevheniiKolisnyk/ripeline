@@ -31,7 +31,7 @@ final class AppEnvironment {
         crateModel = CrateModel(store: store, garden: garden)
         historyModel = HistoryModel(
             store: store, activeDayID: { [weak controller] in controller?.activeDayID },
-            onDayDeleted: { [garden] snapshot in garden.forget(snapshot.plan.filter { $0.kind == .work }.map(\.id)) }
+            onDayDeleted: { [garden] snapshot in garden.forget(day: snapshot) }
         )
         setupModel = DaySetupModel(
             settings: settings, clock: SystemClock(),

@@ -296,4 +296,22 @@ struct HistoryModelTests {
         model.confirmDelete()
         #expect(forgotten.isEmpty)
     }
+
+    /// Review finding: the running day is not in the list, but its picked tomatoes are in the crate, so the crate must not be hidden.
+    @Test func theEmptyStateIsOnlyShownWhenThereIsNothingAtAll() {
+        let f = fixture([])
+        f.model.refresh()
+        #expect(f.model.showsEmptyState(crateTotal: 0))
+        #expect(!f.model.showsEmptyState(crateTotal: 1))
+    }
+
+    @Test func aListedDayOrAFailedLoadIsNotTheEmptyState() throws {
+        let f = fixture(try threeDays())
+        f.model.refresh()
+        #expect(!f.model.showsEmptyState(crateTotal: 0))
+        let failing = fixture([])
+        failing.store.failLoad = true
+        failing.model.refresh()
+        #expect(!failing.model.showsEmptyState(crateTotal: 0))
+    }
 }

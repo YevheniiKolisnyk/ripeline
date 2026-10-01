@@ -36,6 +36,12 @@ final class HistoryModel {
         self.onDayDeleted = onDayDeleted
     }
 
+    /// Whether the History tab has nothing at all to show: no listed day and no tomato in the crate.
+    /// The running day is not listed, but the tomatoes picked from it are in the crate.
+    func showsEmptyState(crateTotal: Int) -> Bool {
+        entries.isEmpty && !loadFailed && crateTotal == 0
+    }
+
     /// Reads the store again. The selection is kept if its day still exists, otherwise the newest is chosen.
     func refresh() {
         let oldIndex = entries.firstIndex(where: { $0.id == selection })

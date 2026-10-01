@@ -43,13 +43,17 @@ public enum Tomatoes {
     /// One tomato per work segment, in plan order, as of `now`. The day is first caught up with `now`
     /// and the interval being recorded counts up to it. Paused and untracked time is not work; breaks
     /// give no tomato.
-    public static func of(_ snapshot: SessionSnapshot, at now: Date) -> [Tomato] {
+    ///
+    /// - Parameter settled: The day is stored and no longer runs, for example because the app was closed in
+    ///   the middle of a block. A block that was still active counts as over, and one that never started
+    ///   gives nothing, so every tomato of the day can be picked.
+    public static func of(_ snapshot: SessionSnapshot, at now: Date, settled: Bool = false) -> [Tomato] {
         var current = snapshot
         current.catchUp(to: now)
         let actuals = current.actuals(at: now)
         var overtimeIndex: Int?
         if case let .overtime(index, _) = current.state { overtimeIndex = index }
-        let dayIsOver = current.state == .finished
+        let dayIsOver = settled || current.state == .finished
 
         var result: [Tomato] = []
         for segment in current.plan where segment.kind == .work {
@@ -61,7 +65,11 @@ public enum Tomatoes {
             case .notStarted:
                 availability = dayIsOver ? .empty : .upcoming
             case .active:
-                availability = segment.index == overtimeIndex && work > 0 ? .pickable : .growing
+                if settled {
+                    availability = work > 0 ? .pickable : .empty
+                } else {
+                    availability = segment.index == overtimeIndex && work > 0 ? .pickable : .growing
+                }
             case .completed, .skipped:
                 availability = work > 0 ? .pickable : .empty
             }
