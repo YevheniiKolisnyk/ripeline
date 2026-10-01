@@ -11,7 +11,9 @@ on a shared time axis show the plan and the reality side by side.
 > implemented: a menu bar item and popover that run a day, keep it across relaunch and sleep, and
 > notify when a segment ends, and a window where you choose a preset, the end of the day or your
 > focus time, a long break and what to do with leftover time, and see the plan before you start.
-> The timeline screens are next.
+> The same window shows how the day goes: planned and actual timelines on one axis, how far ahead
+> or behind you are, a plan-versus-actual summary and a table of segments. History of past days
+> is next.
 
 ## Privacy
 

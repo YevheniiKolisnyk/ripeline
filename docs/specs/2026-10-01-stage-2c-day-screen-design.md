@@ -1,6 +1,6 @@
 # Stage 2c — Day screen: design
 
-Status: draft for review. Parent specs: [`SPEC.md`](../../SPEC.md), [2a](2026-10-01-stage-2a-app-shell-design.md), [2b](2026-10-01-stage-2b-day-setup-design.md). Builds on the read models of `RipelineCore` (`Timeline`, `DayComparison`, `ScheduleStatus`), which already exist and are tested.
+Status: implemented. Parent specs: [`SPEC.md`](../../SPEC.md), [2a](2026-10-01-stage-2a-app-shell-design.md), [2b](2026-10-01-stage-2b-day-setup-design.md). Builds on the read models of `RipelineCore` (`Timeline`, `DayComparison`, `ScheduleStatus`), which already exist and are tested.
 
 ## 1. Goal
 
@@ -95,3 +95,20 @@ Before the PR: both suites green, a warning-free build, and a run of the app. Th
 ## 7. Out of scope
 
 History of past days (2d); export; zooming the axis; editing recorded time; reminders and sounds beyond 2a; autostart; a redesign of the popover.
+
+## 8. Decisions made during planning and implementation
+
+| # | Decision |
+|---|---|
+| R1 | The model reads the controller through a protocol, `DayOverviewSource`; tests put a real engine behind it. |
+| R2 | `PopoverAction.sessionAction` is optional; `nil` means "always shown" (the overview link and the summary button are not engine actions). |
+| R3 | The 2b scene is replaced by one `Window("app.name", id: MainWindow.id)`; the title is the app name, so no new catalog key. |
+| R4 | The axis domain is floored and ceiled to the step in the calendar's wall-clock time; ticks then advance by the absolute step. Across a daylight-saving change a tick label is the real local time of that instant. |
+| R5 | "Now" on screen comes from the clock, not from the controller's last update, which stands still while paused. |
+| R6 | The minimum drawn block width is applied by the view; the model returns exact fractions. |
+| R7 | No overtime marker (C10). |
+| R8 | The timelines were checked once by rendering them headlessly; forms, pickers and the window's behaviour are left to a real run. |
+| R9 | The Behaviour switches call `SessionController.updateSessionSettings` in every mode, including with no day. |
+| R10 | The window chooses its content from the controller's phase, not from the model's last refresh, so it switches to the day screen the moment a day starts. |
+| R11 | The Difference column is shown only for finished and skipped segments: a running segment has simply not finished, so its negative difference would mislead. |
+| R12 | A finished day is not restored as the active one after a relaunch (2a rule P9), so its summary is visible only until the app is closed; the file is kept for the history stage (2d). |
