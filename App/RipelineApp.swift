@@ -11,5 +11,11 @@ struct RipelineApp: App {
             MenuBarLabel(controller: environment.controller, settings: environment.settings)
         }
         .menuBarExtraStyle(.window)
+
+        Window("window.setup.title", id: DaySetupWindow.id) {
+            DaySetupView(model: environment.setupModel, controller: environment.controller)
+        }
+        .defaultSize(width: 600, height: 640)
+        .windowResizability(.contentSize)
     }
 }

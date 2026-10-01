@@ -2,12 +2,13 @@ import RipelineCore
 
 /// A button in the popover.
 enum PopoverAction: Equatable, Sendable {
-    case startDay, pause, resume, extend, skip, next, endDay
+    case planDay, pause, resume, extend, skip, next, endDay
 
-    /// The engine action this button performs, to ask whether it is allowed.
+    /// The engine action this button leads to, to ask whether it is allowed. "Plan day" opens the
+    /// setup window, which starts the day.
     var sessionAction: SessionAction {
         switch self {
-        case .startDay: .startDay
+        case .planDay: .startDay
         case .pause: .pause
         case .resume: .resume
         case .extend: .extend
@@ -20,7 +21,7 @@ enum PopoverAction: Equatable, Sendable {
     /// Key of the button's title in the String Catalog.
     var titleKey: String {
         switch self {
-        case .startDay: "ui.startDay"
+        case .planDay: "ui.planDay"
         case .pause: "ui.pause"
         case .resume: "ui.resume"
         case .extend: "ui.extend"
@@ -37,7 +38,7 @@ enum PopoverActions {
     static func visible(phase: Phase, isAllowed: (SessionAction) -> Bool) -> [PopoverAction] {
         let candidates: [PopoverAction]
         switch phase {
-        case .idle, .finished: candidates = [.startDay]
+        case .idle, .finished: candidates = [.planDay]
         case .working, .onBreak: candidates = [.pause, .extend, .skip, .endDay]
         case .paused: candidates = [.resume, .extend, .skip, .endDay]
         case .overtime: candidates = [.next, .extend, .endDay]

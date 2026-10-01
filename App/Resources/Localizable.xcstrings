@@ -289,6 +289,22 @@
         }
       }
     },
+    "ui.planDay": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plan day…"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Спланувати день…"
+          }
+        }
+      }
+    },
     "ui.quit": {
       "localizations": {
         "en": {
@@ -365,6 +381,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Почати день"
+          }
+        }
+      }
+    },
+    "window.setup.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plan your day"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "План дня"
           }
         }
       }

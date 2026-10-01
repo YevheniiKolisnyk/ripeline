@@ -11,7 +11,7 @@ struct SessionControllerActionTests {
         return h
     }
 
-    @Test func quickStartBuildsTheDefaultPlanAndRuns() async {
+    @Test func standardDayBuildsThePlanAndRuns() async {
         let h = await started(); defer { h.cleanUp() }
         #expect(h.controller.phase == .working)
         let plan = h.controller.plan
@@ -23,7 +23,7 @@ struct SessionControllerActionTests {
         #expect(h.notifier.calls.filter { $0 == .authorize }.count == 1)
     }
 
-    @Test func quickStartDoesNothingWhileADayIsRunning() async {
+    @Test func startingDoesNothingWhileADayIsRunning() async {
         let h = await started(); defer { h.cleanUp() }
         await h.startStandardDay()
         #expect(h.store.saved.count == 1)

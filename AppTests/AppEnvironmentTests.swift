@@ -29,8 +29,13 @@ struct AppEnvironmentTests {
         environment.controller.restore()
         await environment.controller.startStandardDay(at: Date())
         environment.controller.pause()
+        environment.controller.endDay()
+
+        // Starting through the setup model is just as inert (net focus works at any time of day).
+        environment.setupModel.form.mode = .netFocus
+        #expect(await environment.setupModel.startDay())
 
         #expect(listing() == before)
-        #expect(environment.controller.phase != .idle)    // it still works, in memory
+        #expect(environment.controller.phase == .working)    // it still works, in memory
     }
 }

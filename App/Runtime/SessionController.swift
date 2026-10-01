@@ -10,10 +10,6 @@ import RipelineCore
 /// whenever it is read, however late the last tick was.
 @MainActor @Observable
 final class SessionController {
-    /// The temporary plan behind "Start day", until the setup screen exists (stage 2b).
-    static let quickStartPreset = Preset(workMinutes: 50, shortBreakMinutes: 10, longBreakMinutes: 45)
-    static let quickStartFocusMinutes = 240
-
     @ObservationIgnored private let clock: any WallClock
     @ObservationIgnored private let store: any DayStore
     @ObservationIgnored private let notifier: any Notifier
@@ -167,16 +163,6 @@ final class SessionController {
         }
         didChange()
         return true
-    }
-
-    /// Starts a day with the default plan: net focus of four hours, 50/10 minutes.
-    /// Temporary: replaced by the day setup window.
-    func startQuickDay() async {
-        let request = DayPlanRequest(
-            mode: .netFocus(start: clock.now, focusMinutes: Self.quickStartFocusMinutes),
-            longBreak: .none, remainderStrategy: .leaveFree, preset: Self.quickStartPreset
-        )
-        await startDay(request: request)
     }
 
     func start() { act(.start) { try $0.start() } }
