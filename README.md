@@ -16,6 +16,8 @@ on a shared time axis show the plan and the reality side by side.
 > you have recorded and shows any of them with the same timelines and summary; a day can be deleted.
 > For a task you do not want to plan, "Quick start" in the popover starts a block of 25, 50 or 90 minutes at
 > once; you can add five minutes or another block, and press "Done" when finished.
+> Every work block is also a tomato that grows while you work (more when you work past the plan); pick it
+> when the block is over and it drops into a crate in the History tab.
 
 ## Privacy
 
@@ -70,7 +72,8 @@ To try it quickly: click the icon, choose "Plan day…", pick a preset (or "Cust
 and break) and "Net focus" of 15 minutes, press "Start day". The timer runs in the menu bar and the
 popover; after a minute a segment ends and a notification arrives (allow notifications when asked; an
 ad-hoc signed build may not be allowed to show them). Or skip the planning: pick a block length under "Quick start" and press "Start". The "Day overview…" link in the popover opens
-the day screen with the planned and actual timelines. Quit from the popover ("Quit Ripeline"), or stop
+the day screen with the planned and actual timelines. When a block is over, click its wiggling tomato
+to pick it; open History to see the crate fill up. Quit from the popover ("Quit Ripeline"), or stop
 the run in Xcode.
 
 ## Documentation

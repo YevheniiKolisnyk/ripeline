@@ -272,4 +272,46 @@ struct HistoryModelTests {
         #expect(f.model.deleteFailed)
         #expect(f.model.entries.count == 3)
     }
+
+    @Test func deletingADayTellsWhoWantsToForgetItsTomatoes() throws {
+        let store = MemoryDayStore()
+        let day = try twoTomatoDay()
+        store.days = [StoredDay(key: "2026-01-15", snapshot: day)]
+        var forgotten: [SessionSnapshot] = []
+        let model = HistoryModel(store: store, activeDayID: { nil }, calendar: utc, onDayDeleted: { forgotten.append($0) })
+        model.refresh()
+        model.requestDelete("2026-01-15")
+        model.confirmDelete()
+        #expect(forgotten == [day])
+    }
+
+    @Test func aDayThatWasNotDeletedIsNotForgotten() throws {
+        let store = MemoryDayStore()
+        store.days = [StoredDay(key: "2026-01-15", snapshot: try twoTomatoDay())]
+        store.failDelete = true
+        var forgotten: [SessionSnapshot] = []
+        let model = HistoryModel(store: store, activeDayID: { nil }, calendar: utc, onDayDeleted: { forgotten.append($0) })
+        model.refresh()
+        model.requestDelete("2026-01-15")
+        model.confirmDelete()
+        #expect(forgotten.isEmpty)
+    }
+
+    /// Review finding: the running day is not in the list, but its picked tomatoes are in the crate, so the crate must not be hidden.
+    @Test func theEmptyStateIsOnlyShownWhenThereIsNothingAtAll() {
+        let f = fixture([])
+        f.model.refresh()
+        #expect(f.model.showsEmptyState(crateTotal: 0))
+        #expect(!f.model.showsEmptyState(crateTotal: 1))
+    }
+
+    @Test func aListedDayOrAFailedLoadIsNotTheEmptyState() throws {
+        let f = fixture(try threeDays())
+        f.model.refresh()
+        #expect(!f.model.showsEmptyState(crateTotal: 0))
+        let failing = fixture([])
+        failing.store.failLoad = true
+        failing.model.refresh()
+        #expect(!failing.model.showsEmptyState(crateTotal: 0))
+    }
 }

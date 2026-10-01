@@ -246,4 +246,16 @@ struct DayOverviewModelTests {
         #expect(before == (m.mode, m.axis, m.planned, m.actual, m.nowX))
         #expect(beforeRest == (m.lag, m.summary, m.segments))
     }
+
+    @Test func theBedPutsAWorkedBlocksTomatoAtTheCentreOfItsBlock() throws {
+        let source = try EngineSource(plan: makePlan([(.work, 30), (.shortBreak, 30), (.work, 30)]))
+        try source.at(t(9)) { try $0.start() }
+        try source.at(t(9, 30))
+        let model = DayOverviewModel(source: source, calendar: utc)
+        let plot = try #require(model.bed.first)
+        let block = model.planned[0]
+        #expect(model.bed.count == 1)                              // the second block has not started
+        #expect(abs(plot.x - (block.x + block.width / 2)) < 1e-9)
+        #expect(plot.tomato.segmentIndex == 0 && plot.tomato.availability == .pickable)
+    }
 }

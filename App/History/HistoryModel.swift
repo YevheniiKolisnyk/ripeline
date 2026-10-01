@@ -11,6 +11,7 @@ final class HistoryModel {
     @ObservationIgnored private let store: any DayStore
     @ObservationIgnored private let activeDayID: @MainActor () -> UUID?
     @ObservationIgnored private let calendar: Calendar
+    @ObservationIgnored private let onDayDeleted: @MainActor (SessionSnapshot) -> Void
 
     /// Newest first.
     private(set) var entries: [HistoryEntry] = []
@@ -24,10 +25,21 @@ final class HistoryModel {
     private(set) var loadFailed = false
 
     /// - Parameter activeDayID: The id of the first segment of the day that is running now, if any.
-    init(store: any DayStore, activeDayID: @escaping @MainActor () -> UUID?, calendar: Calendar = .autoupdatingCurrent) {
+    /// - Parameter onDayDeleted: Called with the snapshot of a day that was deleted, for whoever keeps something about it.
+    init(
+        store: any DayStore, activeDayID: @escaping @MainActor () -> UUID?, calendar: Calendar = .autoupdatingCurrent,
+        onDayDeleted: @escaping @MainActor (SessionSnapshot) -> Void = { _ in }
+    ) {
         self.store = store
         self.activeDayID = activeDayID
         self.calendar = calendar
+        self.onDayDeleted = onDayDeleted
+    }
+
+    /// Whether the History tab has nothing at all to show: no listed day and no tomato in the crate.
+    /// The running day is not listed, but the tomatoes picked from it are in the crate.
+    func showsEmptyState(crateTotal: Int) -> Bool {
+        entries.isEmpty && !loadFailed && crateTotal == 0
     }
 
     /// Reads the store again. The selection is kept if its day still exists, otherwise the newest is chosen.
@@ -95,6 +107,7 @@ final class HistoryModel {
             return
         }
         deleteFailed = false
+        onDayDeleted(entry.snapshot)
         if let index = entries.firstIndex(where: { $0.id == entry.id }) {
             entries.remove(at: index)
             if selection == entry.id {

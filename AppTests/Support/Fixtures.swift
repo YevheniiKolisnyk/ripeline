@@ -116,3 +116,14 @@ func abandonedDay(start: Date = t(9)) throws -> SessionSnapshot {
         clock.set(start.addingTimeInterval(2100)); try engine.resume()
     }
 }
+
+/// A day with two worked blocks of 25 minutes (09:00 and 09:30 from `start`), ended after the second.
+/// Both tomatoes are pickable and fully grown. Plan indices 0 and 2 are the work blocks.
+func twoTomatoDay(start: Date = t(9)) throws -> SessionSnapshot {
+    try playedDay(plan: makePlan(start: start, [(.work, 25), (.shortBreak, 5), (.work, 25)])) { engine, clock in
+        try engine.start()
+        clock.set(start.addingTimeInterval(minutes(25))); try engine.skip()      // the first block, done
+        clock.set(start.addingTimeInterval(minutes(30))); try engine.advance()   // the break ran out; on to the second
+        clock.set(start.addingTimeInterval(minutes(55))); try engine.endDay()
+    }
+}

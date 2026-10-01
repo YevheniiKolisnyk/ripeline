@@ -107,6 +107,12 @@ final class SessionController {
         return engine.comparison()
     }
 
+    /// The tomatoes of the current day as of the current time.
+    var tomatoes: [Tomato] {
+        _ = now
+        return engine.tomatoes()
+    }
+
     /// Whether the running or last session is a quick session rather than an ordinary day.
     var isQuickSession: Bool {
         let snapshot = engine.snapshot
@@ -368,6 +374,7 @@ extension SessionController: DayOverviewSource {
     var overviewComparison: DayComparison { comparison }
     var overviewStatus: ScheduleStatus? { scheduleStatus }
     var overviewIsQuick: Bool { isQuickSession }
+    var overviewTomatoes: [Tomato] { tomatoes }
     var overviewNow: Date {
         _ = now
         // Never earlier than the last record, as in the engine: with the clock set back the marker

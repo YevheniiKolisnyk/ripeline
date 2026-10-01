@@ -10,6 +10,8 @@ final class AppEnvironment {
     let setupModel: DaySetupModel
     let overviewModel: DayOverviewModel
     let historyModel: HistoryModel
+    let garden: GardenModel
+    let crateModel: CrateModel
     let router = AppRouter()
     let store: any DayStore
     let notifier: any Notifier
@@ -18,13 +20,19 @@ final class AppEnvironment {
     private let wakeObserver: WakeObserver?
 
     private init(
-        settings: AppSettings, controller: SessionController, store: any DayStore,
+        settings: AppSettings, controller: SessionController, store: any DayStore, harvest: any HarvestStore,
         notifier: any Notifier, isInert: Bool, wakeObserver: WakeObserver?
     ) {
         self.settings = settings
         self.controller = controller
         overviewModel = DayOverviewModel(source: controller)
-        historyModel = HistoryModel(store: store, activeDayID: { [weak controller] in controller?.activeDayID })
+        let garden = GardenModel(store: harvest)
+        self.garden = garden
+        crateModel = CrateModel(store: store, garden: garden)
+        historyModel = HistoryModel(
+            store: store, activeDayID: { [weak controller] in controller?.activeDayID },
+            onDayDeleted: { [garden] snapshot in garden.forget(day: snapshot) }
+        )
         setupModel = DaySetupModel(
             settings: settings, clock: SystemClock(),
             canStart: { [weak controller] in controller?.isAllowed(.startDay) ?? false },
@@ -57,7 +65,7 @@ final class AppEnvironment {
             clock: SystemClock(), store: store, notifier: notifier, ticker: NullTicker(), settings: settings
         )
         return AppEnvironment(
-            settings: settings, controller: controller, store: store, notifier: notifier,
+            settings: settings, controller: controller, store: store, harvest: InMemoryHarvestStore(), notifier: notifier,
             isInert: true, wakeObserver: nil
         )
     }
@@ -72,6 +80,14 @@ final class AppEnvironment {
                 .error("Cannot use the days directory; days will not be saved: \(error.localizedDescription, privacy: .public)")
             store = InMemoryDayStore()
         }
+        let harvest: any HarvestStore
+        do {
+            harvest = FileHarvestStore(file: try FileHarvestStore.defaultFile())
+        } catch {
+            Logger(subsystem: Bundle.main.bundleIdentifier ?? "Ripeline", category: "launch")
+                .error("Cannot use the harvest file; picked tomatoes will not be saved: \(error.localizedDescription, privacy: .public)")
+            harvest = InMemoryHarvestStore()
+        }
         let notifier = SystemNotifier()
         let controller = SessionController(
             clock: SystemClock(), store: store, notifier: notifier, ticker: TaskTicker(), settings: settings
@@ -79,7 +95,7 @@ final class AppEnvironment {
         controller.restore()
         let observer = WakeObserver { [weak controller] in controller?.refresh() }
         return AppEnvironment(
-            settings: settings, controller: controller, store: store, notifier: notifier,
+            settings: settings, controller: controller, store: store, harvest: harvest, notifier: notifier,
             isInert: false, wakeObserver: observer
         )
     }

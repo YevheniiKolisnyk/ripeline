@@ -46,4 +46,5 @@ final class EngineSource: DayOverviewSource {
     }
     var overviewNow: Date { clock.now }
     var overviewIsQuick: Bool { engine.snapshot.kind == .quick }
+    var overviewTomatoes: [Tomato] { engine.tomatoes() }
 }
