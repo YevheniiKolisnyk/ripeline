@@ -33,12 +33,20 @@ enum HistoryText {
         let start = SetupText.time(entry.startedAt, locale: locale, timeZone: timeZone)
         let actual = SetupText.duration(entry.focusActual, locale: locale)
         let planned = SetupText.duration(entry.focusPlanned, locale: locale)
+        var label: String
         if let end = entry.endedAt {
             let format = bundle.localizedString(forKey: "a11y.historyRow", value: nil, table: nil)
-            return String(format: format, date, start, SetupText.time(end, locale: locale, timeZone: timeZone), status, actual, planned)
+            label = String(format: format, date, start, SetupText.time(end, locale: locale, timeZone: timeZone), status, actual, planned)
+        } else {
+            let format = bundle.localizedString(forKey: "a11y.historyRowStarted", value: nil, table: nil)
+            label = String(format: format, date, start, status, actual, planned)
         }
-        let format = bundle.localizedString(forKey: "a11y.historyRowStarted", value: nil, table: nil)
-        return String(format: format, date, start, status, actual, planned)
+        // What a sighted user reads under the badge is heard too.
+        if let lag = entry.lag {
+            let format = bundle.localizedString(forKey: "a11y.historyLag", value: nil, table: nil)
+            label += ", " + String(format: format, OverviewText.delta(lag, locale: locale))
+        }
+        return label
     }
 
     private static func times(_ entry: HistoryEntry, locale: Locale, timeZone: TimeZone) -> String {

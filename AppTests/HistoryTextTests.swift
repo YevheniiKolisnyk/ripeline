@@ -76,9 +76,9 @@ struct HistoryTextTests {
     @Test func accessibilityLabelOfAFinishedDay() throws {
         let e = entry(try finishedDay())
         #expect(HistoryText.accessibilityLabel(e, locale: en, timeZone: utcZone, bundle: try bundle("en"))
-            == "Thursday 15 January, from 9:00 to 9:30, finished, focus 30 min of 2 hrs, 30 min")
+            == "Thursday 15 January, from 9:00 to 9:30, finished, focus 30 min of 2 hrs, 30 min, \u{2212}2 hrs, 20 min against plan")
         #expect(HistoryText.accessibilityLabel(e, locale: uk, timeZone: utcZone, bundle: try bundle("uk"))
-            == "четвер, 15 січня, з 9:00 до 9:30, завершено, фокус 30 хв із 2 год, 30 хв")
+            == "четвер, 15 січня, з 9:00 до 9:30, завершено, фокус 30 хв із 2 год, 30 хв, \u{2212}2 год, 20 хв відносно плану")
     }
 
     @Test func accessibilityLabelOfADayNeverEnded() throws {
@@ -93,5 +93,20 @@ struct HistoryTextTests {
         let label = HistoryText.accessibilityLabel(e, locale: en, timeZone: utcZone, bundle: try bundle("en"))
         #expect(label.contains("from 9:00,"))
         #expect(!label.contains(" to "))
+    }
+
+    // MARK: review finding: what a sighted user sees under the badge is heard too
+
+    @Test func theAccessibilityLabelIncludesTheLagOfAFinishedDay() throws {
+        let e = entry(try finishedDay())                      // ended 2 h 20 min before the plan
+        let english = HistoryText.accessibilityLabel(e, locale: en, timeZone: utcZone, bundle: try bundle("en"))
+        #expect(english.hasSuffix(", \u{2212}2 hrs, 20 min against plan"))
+        let ukrainian = HistoryText.accessibilityLabel(e, locale: uk, timeZone: utcZone, bundle: try bundle("uk"))
+        #expect(ukrainian.hasSuffix(", \u{2212}2 год, 20 хв відносно плану"))
+    }
+
+    @Test func aDayWithoutALagHasNoSuffix() throws {
+        let label = HistoryText.accessibilityLabel(entry(try abandonedDay()), locale: en, timeZone: utcZone, bundle: try bundle("en"))
+        #expect(!label.contains("against plan"))
     }
 }

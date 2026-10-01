@@ -32,16 +32,23 @@ final class HistoryModel {
 
     /// Reads the store again. The selection is kept if its day still exists, otherwise the newest is chosen.
     func refresh() {
+        let oldIndex = entries.firstIndex(where: { $0.id == selection })
         let days: [StoredDay]
         do { days = try store.loadAll() } catch {
             loadFailed = true
             return
         }
         loadFailed = false
+        deleteFailed = false
         let active = activeDayID()
         entries = days.filter { active == nil || $0.snapshot.plan.first?.id != active }.map(HistoryEntry.init(day:))
         if selection == nil || !entries.contains(where: { $0.id == selection }) {
-            selection = entries.first?.id
+            // The day that was selected is gone: the one that took its place, else the newer neighbour.
+            if let oldIndex, !entries.isEmpty {
+                selection = entries[min(oldIndex, entries.count - 1)].id
+            } else {
+                selection = entries.first?.id
+            }
         }
         rebuildDetail()
     }
@@ -49,6 +56,7 @@ final class HistoryModel {
     /// Chooses a day; an id that is not in the list is ignored. `nil` clears the choice.
     func select(_ id: String?) {
         if let id, !entries.contains(where: { $0.id == id }) { return }
+        deleteFailed = false
         selection = id
         rebuildDetail()
     }
@@ -57,6 +65,7 @@ final class HistoryModel {
 
     /// Asks to delete a day. The running day and unknown ids are refused.
     func requestDelete(_ id: String) {
+        deleteFailed = false
         guard let entry = entries.first(where: { $0.id == id }), !isRunning(entry) else {
             pendingDelete = nil
             return
@@ -80,6 +89,8 @@ final class HistoryModel {
         do {
             try store.delete(StoredDay(key: entry.id, snapshot: entry.snapshot))
         } catch {
+            // Perhaps the file is not the day shown any more: re-read, then say it failed.
+            refresh()
             deleteFailed = true
             return
         }

@@ -142,4 +142,46 @@ struct FileDayStoreHistoryTests {
         try store.save(try finishedDay(start: d(15, 13)))
         #expect(try names(url) == ["2026-01-15.json"])
     }
+
+    // MARK: review findings
+
+    /// An entry held for a moment must never delete a different day that took the same file name.
+    @Test func deletingChecksWhichDayIsInTheFile() throws {
+        let (store, url) = try makeStore(); defer { try? FileManager.default.removeItem(at: url) }
+        try store.save(try finishedDay(start: d(15)))
+        let shown = try #require(try store.loadAll().first)
+        try store.delete(shown)                                      // the shown day goes away ...
+        let replacement = try finishedDay(start: d(15, 13))
+        try store.save(replacement)                                  // ... and another day takes its name
+        #expect(throws: DayStoreError.dayChanged) { try store.delete(shown) }
+        #expect(try store.loadAll().first?.snapshot == replacement)
+        #expect(try names(url) == ["2026-01-15.json"])
+    }
+
+    @Test func aDirectoryUnderADayNameIsNeverRemoved() throws {
+        let (store, url) = try makeStore(); defer { try? FileManager.default.removeItem(at: url) }
+        let dir = url.appendingPathComponent("2026-01-16.json")
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: false)
+        try Data("inside".utf8).write(to: dir.appendingPathComponent("keep.txt"))
+        let day = StoredDay(key: "2026-01-16", snapshot: try finishedDay(start: d(16)))
+        #expect(throws: (any Error).self) { try store.delete(day) }
+        #expect(FileManager.default.fileExists(atPath: dir.appendingPathComponent("keep.txt").path))
+    }
+
+    @Test func listingDoesNotChangeWhereADaySaves() throws {
+        let (store, url) = try makeStore(); defer { try? FileManager.default.removeItem(at: url) }
+        let day = try finishedDay(start: d(15))
+        try store.save(day)
+        // A duplicate copy of the same day under another name.
+        try FileManager.default.copyItem(at: url.appendingPathComponent("2026-01-15.json"), to: url.appendingPathComponent("2026-01-15-2.json"))
+        let duplicateBefore = try Data(contentsOf: url.appendingPathComponent("2026-01-15-2.json"))
+
+        let fresh = FileDayStore(directory: url, calendar: utc)
+        _ = try fresh.loadAll()                                      // listing alone must not pick a save target
+        var engine = SessionEngine(clock: TestClock(day.plan[0].start))
+        try engine.startDay(plan: day.plan, settings: SessionSettings())
+        try engine.start()
+        try fresh.save(engine.snapshot)
+        #expect(try Data(contentsOf: url.appendingPathComponent("2026-01-15-2.json")) == duplicateBefore)
+    }
 }

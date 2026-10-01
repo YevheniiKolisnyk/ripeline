@@ -30,6 +30,7 @@ struct RipelineWindowView: View {
             }
             .pickerStyle(.segmented)
             .labelsHidden()
+            .accessibilityLabel(Text("tab.label"))
             .frame(width: 240)
             .padding(.vertical, 10)
             Divider()
