@@ -154,4 +154,14 @@ struct PlanGeneratorLongBreakTests {
         #expect(workCount(plan) == 3)
         expectWellFormed(plan)
     }
+
+    @Test func nonMinuteAlignedStartShiftsTheRequiredDayExactly() throws {
+        let shift: TimeInterval = 3 * 60 + 27
+        let mode = DayPlanRequest.Mode.untilTime(start: t(9).addingTimeInterval(shift), end: t(17).addingTimeInterval(shift))
+        let plan = try PlanGenerator.generate(request(mode, .atTime(t(13).addingTimeInterval(shift))))
+        let expected = Self.requiredBlocks.map {
+            Block(kind: $0.kind, start: $0.start.addingTimeInterval(shift), end: $0.end.addingTimeInterval(shift))
+        }
+        #expect(blocks(plan) == expected)
+    }
 }
