@@ -14,7 +14,8 @@ SwiftUI, macOS 26+. Open source (MIT), intended for the Mac App Store.
 ```
 .
 ├── README.md, SPEC.md, CLAUDE.md, LICENSE
-├── docs/plans/                  # implementation plans, one per stage
+├── docs/specs/                  # design specs, one per sub-project
+├── docs/plans/                  # implementation plans, one per sub-project
 ├── Config/
 │   ├── Local.example.xcconfig   # committed template
 │   └── Local.xcconfig           # gitignored: DEVELOPMENT_TEAM, PRODUCT_BUNDLE_IDENTIFIER
