@@ -113,7 +113,8 @@ Protocol: load the most recent stored day, save a snapshot. `FileDayStore` is th
 implementation.
 
 - Location: `Application Support/Ripeline/days/YYYY-MM-DD.json` inside the sandbox container.
-  The key is the local calendar date of the plan's first segment.
+  The key is the local calendar date of the plan's first segment; a second day that starts on the same date is
+  stored as `YYYY-MM-DD-2.json`, `-3`, … so it never overwrites the first (decision P12).
 - Format: `{"version": 1, "snapshot": <SessionSnapshot>}`. Dates use the default
   (exact `Double`) encoding so restored instants keep full precision. Writes are atomic.
 - Saved on every state change, not on every tick: a running segment is fully described by

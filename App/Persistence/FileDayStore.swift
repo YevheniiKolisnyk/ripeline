@@ -1,7 +1,8 @@
 import Foundation
 import RipelineCore
 
-/// Keeps each day as its own JSON file, `YYYY-MM-DD.json`, in one directory.
+/// Keeps each day as its own JSON file in one directory: `YYYY-MM-DD.json`, and
+/// `YYYY-MM-DD-2.json`, `-3`, … for further days that start on the same date.
 ///
 /// A file holds `{"version": 1, "snapshot": …}`. Files are written atomically. A file that
 /// cannot be read is renamed rather than deleted, so nothing the user recorded is ever lost.
@@ -29,7 +30,7 @@ final class FileDayStore: DayStore {
     // MARK: DayStore
 
     func loadLatest() throws -> StoredDay? {
-        for name in try dayFileNames().sorted(by: >) {
+        for name in try dayFileNames() {
             let key = String(name.dropLast(".json".count))
             switch try read(name) {
             case let .snapshot(snapshot):
@@ -49,7 +50,7 @@ final class FileDayStore: DayStore {
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
         let data = try encoder.encode(Envelope(version: Self.currentVersion, snapshot: snapshot))
-        try data.write(to: file(named: "\(key(for: start)).json"), options: .atomic)
+        try data.write(to: file(named: try fileName(for: snapshot, startingAt: start)), options: .atomic)
     }
 
     func quarantine(_ day: StoredDay) throws {
@@ -90,10 +91,31 @@ final class FileDayStore: DayStore {
         try fileManager.moveItem(at: source, to: target)
     }
 
+    /// Day files, newest first: by date, then by number within a date.
     private func dayFileNames() throws -> [String] {
         guard fileManager.fileExists(atPath: directory.path) else { return [] }
-        return try fileManager.contentsOfDirectory(atPath: directory.path)
-            .filter { $0.wholeMatch(of: /\d{4}-\d{2}-\d{2}\.json/) != nil }
+        let parsed = try fileManager.contentsOfDirectory(atPath: directory.path).compactMap {
+            name -> (name: String, date: String, sequence: Int)? in
+            guard let match = name.wholeMatch(of: /(\d{4}-\d{2}-\d{2})(?:-(\d+))?\.json/) else { return nil }
+            return (name, String(match.1), match.2.flatMap { Int($0) } ?? 1)
+        }
+        return parsed
+            .sorted { ($0.date, $0.sequence) > ($1.date, $1.sequence) }
+            .map(\.name)
+    }
+
+    /// The file this snapshot belongs in: its own file if it was saved before, otherwise the
+    /// first free number on its date. A second day on one date never overwrites the first.
+    private func fileName(for snapshot: SessionSnapshot, startingAt start: Date) throws -> String {
+        let date = key(for: start)
+        let dayID = snapshot.plan.first?.id
+        var sequence = 1
+        while true {
+            let name = sequence == 1 ? "\(date).json" : "\(date)-\(sequence).json"
+            guard fileManager.fileExists(atPath: file(named: name).path) else { return name }
+            if case let .snapshot(existing)? = try? read(name), existing.plan.first?.id == dayID { return name }
+            sequence += 1
+        }
     }
 
     private func file(named name: String) -> URL {

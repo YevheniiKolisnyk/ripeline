@@ -40,8 +40,9 @@ struct FileDayStoreTests {
     @Test func savingTwiceKeepsOneFileWithTheLatestSnapshot() throws {
         let (store, url) = try makeStore()
         defer { try? FileManager.default.removeItem(at: url) }
-        try store.save(try idleSnapshot())
-        let started = try startedSnapshot()
+        let plan = fivePlan()
+        try store.save(try idleSnapshot(plan: plan))
+        let started = try startedSnapshot(plan: plan)
         try store.save(started)
         #expect(try names(in: url) == ["2026-01-15.json"])
         #expect(try store.loadLatest()?.snapshot == started)
@@ -144,5 +145,59 @@ struct FileDayStoreTests {
         }
         #expect(try store.loadLatest() == nil)
         #expect(try names(in: url).count == 4)
+    }
+
+    // MARK: several days on one date
+
+    /// A different day on the same date: another plan with other segment ids.
+    private func anotherDay(startedAt hour: Int = 13) throws -> SessionSnapshot {
+        try idleSnapshot(plan: fivePlan(start: d(15, hour)))
+    }
+
+    @Test func aSecondDayOnTheSameDateDoesNotOverwriteTheFirst() throws {
+        let (store, url) = try makeStore()
+        defer { try? FileManager.default.removeItem(at: url) }
+        let first = try idleSnapshot()
+        let second = try anotherDay()
+        try store.save(first)
+        try store.save(second)
+        #expect(try names(in: url) == ["2026-01-15-2.json", "2026-01-15.json"])
+        #expect(try store.loadLatest() == StoredDay(key: "2026-01-15-2", snapshot: second))
+    }
+
+    @Test func savingTheSameDayAgainReplacesItsOwnFile() throws {
+        let (store, url) = try makeStore()
+        defer { try? FileManager.default.removeItem(at: url) }
+        let first = try idleSnapshot()
+        let second = try anotherDay()
+        try store.save(first)
+        try store.save(second)
+        var engine = SessionEngine(clock: TestClock(second.plan[0].start))
+        try engine.startDay(plan: second.plan, settings: SessionSettings())
+        try engine.start()
+        try store.save(engine.snapshot)
+        #expect(try names(in: url) == ["2026-01-15-2.json", "2026-01-15.json"])
+        #expect(try store.loadLatest()?.snapshot == engine.snapshot)
+        try store.save(first)
+        #expect(try names(in: url).count == 2)
+    }
+
+    @Test func theLatestDayOfADateIsTheHighestNumber() throws {
+        let (store, url) = try makeStore()
+        defer { try? FileManager.default.removeItem(at: url) }
+        for hour in [9, 11, 13] { try store.save(try anotherDay(startedAt: hour)) }
+        try store.save(try idleSnapshot(plan: dayPlan(14)))
+        #expect(try store.loadLatest()?.key == "2026-01-15-3")
+    }
+
+    @Test func quarantineUsesTheNumberedFile() throws {
+        let (store, url) = try makeStore()
+        defer { try? FileManager.default.removeItem(at: url) }
+        try store.save(try idleSnapshot())
+        try store.save(try anotherDay())
+        let latest = try #require(try store.loadLatest())
+        try store.quarantine(latest)
+        #expect(try names(in: url) == ["2026-01-15-2.json.corrupt", "2026-01-15.json"])
+        #expect(try store.loadLatest()?.key == "2026-01-15")
     }
 }
