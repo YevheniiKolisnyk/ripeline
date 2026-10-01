@@ -239,3 +239,16 @@ Clarifications of this specification are recorded here as they are made.
   The junction is chosen before stretching, so `.stretchBlocks` may move the long break later.
 - **D5 — Long break and remainder.** With `.shortBlock`, if the remainder block follows the
   long-break junction, the long break is used there (it replaces the short one).
+
+### Session engine
+
+- **D1 — Naming.** `Settings` is `SessionSettings` (avoids clashing with SwiftUI's `Settings`
+  scene). The clock protocol is `WallClock` (avoids Swift's `Clock`). The states enum is
+  `SessionState`; the full persisted value is `SessionSnapshot`.
+- **D12 — Segment statuses (part 1).** `endDay` while running or paused marks the current
+  segment `.skipped` and keeps what was recorded. Untouched segments stay `.notStarted`.
+- **D13 — `startDay` scope.** Valid only when idle or finished. A day in progress must be
+  ended first.
+- **D14 — Interval recording.** Every state change closes the open interval and opens the
+  next one, so a segment holds one interval per stretch of running, paused or overtime.
+  Zero-length intervals are dropped. Merging adjacent intervals is the timeline's job.

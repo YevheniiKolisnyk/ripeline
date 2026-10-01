@@ -56,3 +56,47 @@ func expectWellFormed(_ plan: [PlannedSegment], sourceLocation: SourceLocation =
     #expect(plan.allSatisfy { $0.duration > 0 }, sourceLocation: sourceLocation)
     #expect(plan.last.map { $0.kind == .work } ?? true, sourceLocation: sourceLocation)
 }
+
+/// Builds a contiguous plan by hand, so engine tests don't depend on the generator.
+func makePlan(start: Date = t(9), _ items: [(SegmentKind, Int)]) -> [PlannedSegment] {
+    var cursor = start
+    return items.enumerated().map { index, item in
+        let end = cursor.addingTimeInterval(minutes(item.1))
+        defer { cursor = end }
+        return PlannedSegment(index: index, kind: item.0, start: cursor, end: end)
+    }
+}
+
+/// Work 50, break 10, work 50: the plan most engine tests use. Runs 09:00–10:50.
+func shortPlan() -> [PlannedSegment] {
+    makePlan([(.work, 50), (.shortBreak, 10), (.work, 50)])
+}
+
+/// An engine with a day loaded, driven by a manual clock that starts at `at`.
+func makeEngine(
+    plan: [PlannedSegment] = shortPlan(),
+    settings: SessionSettings = SessionSettings(),
+    at start: Date = t(9)
+) throws -> (engine: SessionEngine, clock: ManualClock) {
+    let clock = ManualClock(start)
+    var engine = SessionEngine(clock: clock)
+    try engine.startDay(plan: plan, settings: settings)
+    return (engine, clock)
+}
+
+/// A compact, comparable description of recorded intervals.
+struct Recorded: Equatable, CustomStringConvertible {
+    let kind: ActualKind
+    let start: Date
+    let end: Date
+
+    var description: String { "\(kind) \(start.formatted(.iso8601.time(includingFractionalSeconds: false)))–\(end.formatted(.iso8601.time(includingFractionalSeconds: false)))" }
+}
+
+func recorded(_ actual: SegmentActual) -> [Recorded] {
+    actual.intervals.map { Recorded(kind: $0.kind, start: $0.start, end: $0.end) }
+}
+
+func workedFor(_ start: Date, _ end: Date) -> Recorded { Recorded(kind: .work, start: start, end: end) }
+func rested(_ start: Date, _ end: Date) -> Recorded { Recorded(kind: .rest, start: start, end: end) }
+func untracked(_ start: Date, _ end: Date) -> Recorded { Recorded(kind: .untracked, start: start, end: end) }
