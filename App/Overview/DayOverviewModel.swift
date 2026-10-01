@@ -1,0 +1,157 @@
+import Foundation
+import Observation
+import RipelineCore
+
+/// What the day overview reads. The controller implements it; tests use a real engine behind it.
+@MainActor protocol DayOverviewSource: AnyObject {
+    var hasDay: Bool { get }
+    var overviewPhase: Phase { get }
+    var overviewTimeline: Timeline { get }
+    var overviewComparison: DayComparison { get }
+    var overviewStatus: ScheduleStatus? { get }
+    /// The clock's time, not the controller's last update: the marker must move even while paused.
+    var overviewNow: Date { get }
+}
+
+/// A block placed on the axis, as fractions of its width.
+struct BlockLayout<Kind: Equatable & Sendable>: Equatable, Sendable {
+    let kind: Kind
+    let start: Date
+    let end: Date
+    /// Where the block begins, from 0 to 1.
+    let x: Double
+    /// How wide it is, as a fraction of the axis.
+    let width: Double
+}
+
+enum LagState: Equatable, Sendable {
+    /// Within a minute of the plan, either way.
+    case onSchedule
+    case behind(TimeInterval)
+    case ahead(TimeInterval)
+}
+
+/// Plan against reality for the whole day.
+struct DaySummary: Equatable, Sendable {
+    let focusPlanned: TimeInterval
+    let focusActual: TimeInterval
+    let restPlanned: TimeInterval
+    let restActual: TimeInterval
+    /// Paused time that counts as neither work nor rest.
+    let untracked: TimeInterval
+    let plannedEnd: Date?
+    /// The projected end while the day runs, the actual end once it is finished; `nil` if unknown.
+    let endsAt: Date?
+    let endIsFinal: Bool
+}
+
+/// One line of the segment table.
+struct SegmentRow: Equatable, Sendable {
+    let index: Int
+    let start: Date
+    let kind: SegmentKind
+    let planned: TimeInterval
+    let work: TimeInterval
+    let rest: TimeInterval
+    let untracked: TimeInterval
+    let status: SegmentStatus
+
+    var actual: TimeInterval { work + rest + untracked }
+    var delta: TimeInterval { actual - planned }
+}
+
+/// The numbers and positions behind the day screen. The views only draw them.
+@MainActor @Observable
+final class DayOverviewModel {
+    enum Mode: Equatable, Sendable {
+        case noDay
+        case running
+        case finished
+    }
+
+    /// Lag within this many seconds of zero counts as on schedule.
+    static let onScheduleTolerance: TimeInterval = 60
+
+    @ObservationIgnored private let source: any DayOverviewSource
+    @ObservationIgnored private let calendar: Calendar
+
+    private(set) var mode: Mode = .noDay
+    private(set) var axis: TimeAxis?
+    private(set) var planned: [BlockLayout<SegmentKind>] = []
+    private(set) var actual: [BlockLayout<ActualKind>] = []
+    /// Where "now" falls on the axis; only while the day runs.
+    private(set) var nowX: Double?
+    private(set) var lag: LagState?
+    private(set) var summary: DaySummary?
+    private(set) var segments: [SegmentRow] = []
+
+    init(source: any DayOverviewSource, calendar: Calendar = .autoupdatingCurrent) {
+        self.source = source
+        self.calendar = calendar
+        refresh()
+    }
+
+    /// Re-reads the source. Does nothing visible when nothing changed, and never fails: with no day
+    /// every output is empty.
+    func refresh() {
+        let phase = source.overviewPhase
+        guard source.hasDay, phase != .idle else {
+            clear()
+            return
+        }
+        mode = phase == .finished ? .finished : .running
+
+        let timeline = source.overviewTimeline
+        let comparison = source.overviewComparison
+        let status = source.overviewStatus
+        let now = source.overviewNow
+
+        var dates = timeline.planned.flatMap { [$0.start, $0.end] } + timeline.actual.flatMap { [$0.start, $0.end] }
+        if mode == .running { dates.append(now) }
+        let axis = TimeAxis(covering: dates, calendar: calendar)
+        self.axis = axis
+
+        planned = timeline.planned.map { layout($0.kind, $0.start, $0.end, on: axis) }
+        actual = timeline.actual.map { layout($0.kind, $0.start, $0.end, on: axis) }
+        nowX = mode == .running ? axis?.x(for: now) : nil
+        lag = status.map(Self.lagState)
+
+        let totals = comparison.totals
+        summary = DaySummary(
+            focusPlanned: totals.focusPlanned, focusActual: totals.focusActual,
+            restPlanned: totals.restPlanned, restActual: totals.restActual,
+            untracked: totals.untracked, plannedEnd: totals.plannedEnd,
+            endsAt: mode == .finished ? totals.actualEnd : status?.projectedEnd,
+            endIsFinal: mode == .finished
+        )
+        segments = comparison.rows.map {
+            SegmentRow(
+                index: $0.segment.index, start: $0.segment.start, kind: $0.segment.kind,
+                planned: $0.planned, work: $0.work, rest: $0.rest, untracked: $0.untracked, status: $0.status
+            )
+        }
+    }
+
+    private func clear() {
+        mode = .noDay
+        axis = nil
+        planned = []
+        actual = []
+        nowX = nil
+        lag = nil
+        summary = nil
+        segments = []
+    }
+
+    private func layout<Kind: Equatable & Sendable>(_ kind: Kind, _ start: Date, _ end: Date, on axis: TimeAxis?) -> BlockLayout<Kind> {
+        let from = axis?.x(for: start) ?? 0
+        let to = axis?.x(for: end) ?? 0
+        return BlockLayout(kind: kind, start: start, end: end, x: from, width: max(0, to - from))
+    }
+
+    private static func lagState(_ status: ScheduleStatus) -> LagState {
+        let lag = status.lag
+        if abs(lag) < onScheduleTolerance { return .onSchedule }
+        return lag > 0 ? .behind(lag) : .ahead(-lag)
+    }
+}

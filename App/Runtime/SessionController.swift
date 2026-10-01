@@ -301,3 +301,15 @@ final class SessionController {
         }
     }
 }
+
+extension SessionController: DayOverviewSource {
+    var hasDay: Bool { !plan.isEmpty }
+    var overviewPhase: Phase { phase }
+    var overviewTimeline: Timeline { timeline }
+    var overviewComparison: DayComparison { comparison }
+    var overviewStatus: ScheduleStatus? { scheduleStatus }
+    var overviewNow: Date {
+        _ = now
+        return clock.now
+    }
+}
