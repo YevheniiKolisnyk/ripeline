@@ -12,8 +12,8 @@ on a shared time axis show the plan and the reality side by side.
 > notify when a segment ends, and a window where you choose a preset, the end of the day or your
 > focus time, a long break and what to do with leftover time, and see the plan before you start.
 > The same window shows how the day goes: planned and actual timelines on one axis, how far ahead
-> or behind you are, a plan-versus-actual summary and a table of segments. History of past days
-> is next.
+> or behind you are, a plan-versus-actual summary and a table of segments. A History tab lists the days
+> you have recorded and shows any of them with the same timelines and summary; a day can be deleted.
 
 ## Privacy
 
