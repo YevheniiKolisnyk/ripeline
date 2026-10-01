@@ -17,7 +17,7 @@ enum BuiltInPreset: String, Codable, CaseIterable, Sendable {
     }
 }
 
-enum PresetChoice: Codable, Equatable, Sendable {
+enum PresetChoice: Codable, Equatable, Hashable, Sendable {
     case builtIn(BuiltInPreset)
     case custom
 }
