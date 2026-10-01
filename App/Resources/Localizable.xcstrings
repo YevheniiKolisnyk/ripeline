@@ -673,18 +673,34 @@
         }
       }
     },
-    "setup.notice.remainderLeftFree": {
+    "setup.notice.longBreakTimePassed": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ at the end of the day are left free."
+            "value": "The long break time has already passed; it was moved to the nearest break."
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ наприкінці дня лишаються вільними."
+            "value": "Час довгої перерви вже минув; її перенесено на найближчу перерву."
+          }
+        }
+      }
+    },
+    "setup.notice.remainderLeftFree": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Left free at the end of the day: %@"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Лишається вільним наприкінці дня: %@"
           }
         }
       }

@@ -88,12 +88,16 @@ struct AppSettingsTests {
         #expect(AppSettings(defaults: suite.defaults).dayPlanForm == .standard)
     }
 
-    @Test func anUnknownCaseGivesTheStandardForm() throws {
+    @Test func anUnknownCaseKeepsTheRestOfTheStoredForm() throws {
         let suite = Suite(); defer { suite.cleanUp() }
-        let json = try String(decoding: JSONEncoder().encode(DayPlanForm.standard), as: UTF8.self)
+        var form = DayPlanForm.standard
+        form.focusMinutes = 100
+        let json = try String(decoding: JSONEncoder().encode(form), as: UTF8.self)
             .replacingOccurrences(of: "deepWork", with: "removedInALaterVersion")
         suite.defaults.set(Data(json.utf8), forKey: "dayPlanForm")
-        #expect(AppSettings(defaults: suite.defaults).dayPlanForm == .standard)
+        let restored = AppSettings(defaults: suite.defaults).dayPlanForm
+        #expect(restored.focusMinutes == 100)
+        #expect(restored.presetChoice == DayPlanForm.standard.presetChoice)
     }
 
     @Test func writingAnOutOfRangeFormStoresTheClampedOne() throws {

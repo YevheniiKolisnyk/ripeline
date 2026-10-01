@@ -85,7 +85,7 @@ struct DaySetupView: View {
             }
 
             Section {
-                Picker("setup.longBreak", selection: longBreakKind) {
+                Picker("setup.longBreak", selection: $model.longBreakKind) {
                     Text("longBreak.none").tag(LongBreakKind.none)
                     Text("longBreak.atTime").tag(LongBreakKind.atTime)
                     Text("longBreak.afterBlock").tag(LongBreakKind.afterBlock)
@@ -141,27 +141,6 @@ struct DaySetupView: View {
         Binding(
             get: { get().date(on: model.now, calendar: .autoupdatingCurrent) },
             set: { set(TimeOfDay(date: $0, calendar: .autoupdatingCurrent)) }
-        )
-    }
-
-    private enum LongBreakKind: Hashable { case none, atTime, afterBlock }
-
-    private var longBreakKind: Binding<LongBreakKind> {
-        Binding(
-            get: {
-                switch model.form.longBreak {
-                case .none: .none
-                case .atTime: .atTime
-                case .afterBlock: .afterBlock
-                }
-            },
-            set: { kind in
-                switch kind {
-                case .none: model.form.longBreak = .none
-                case .atTime: model.form.longBreak = .atTime(TimeOfDay(hour: 13, minute: 0))
-                case .afterBlock: model.form.longBreak = .afterBlock(2)
-                }
-            }
         )
     }
 

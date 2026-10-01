@@ -62,4 +62,14 @@ struct TimeOfDayTests {
         #expect(parts.hour == 1)
         #expect(parts.minute == 30)
     }
+
+    @Test func aRepeatedTimeCanBeAskedForTheSecondOccurrence() {
+        let newYork = calendar(zone: "America/New_York")
+        let day = newYork.date(from: DateComponents(year: 2026, month: 11, day: 1, hour: 0))!
+        let time = TimeOfDay(hour: 1, minute: 30)
+        let first = time.date(on: day, calendar: newYork)
+        let last = time.date(on: day, calendar: newYork, repeatedTimePolicy: .last)
+        #expect(first == utcDate(2026, 11, 1, 5, 30))      // 01:30 EDT
+        #expect(last == utcDate(2026, 11, 1, 6, 30))       // 01:30 EST, an hour later
+    }
 }
