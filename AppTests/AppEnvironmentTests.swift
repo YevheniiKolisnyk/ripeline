@@ -46,6 +46,15 @@ struct AppEnvironmentTests {
 
         environment.overviewModel.refresh()
         #expect(environment.overviewModel.mode == .running)
+        // Starting a day never hops tabs by itself, and the running day is not in the history.
+        #expect(environment.router.tab == .today)
+        environment.historyModel.refresh()
+        #expect(environment.historyModel.entries.isEmpty)
         #expect(listing() == before)
+    }
+
+    @Test func theRouterStartsOnToday() {
+        #expect(AppRouter().tab == .today)
+        #expect(AppEnvironment.make(processEnvironment: ["XCTestConfigurationFilePath": "x"]).router.tab == .today)
     }
 }
