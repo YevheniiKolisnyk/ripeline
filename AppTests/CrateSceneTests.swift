@@ -95,4 +95,88 @@ struct CrateSceneTests {
         scene.update(all, highlight: "2026-01-10")
         #expect(scene.bodyIdentities == before)
     }
+
+    // MARK: grabbing and tossing
+
+    private func oneTomatoScene(reduceMotion: Bool = false) -> (scene: CrateScene, tomato: CrateTomato) {
+        let scene = CrateScene(size: CGSize(width: 400, height: 260))
+        scene.reduceMotion = reduceMotion
+        let tomato = tomatoes(1)[0]
+        scene.update([tomato], highlight: nil)                      // the only tomato drops in at once
+        return (scene, tomato)
+    }
+
+    @Test func aTomatoCanBeGrabbedWhereItLies() throws {
+        let (scene, tomato) = oneTomatoScene()
+        let at = try #require(scene.nodePositions(inOrderOf: [tomato]).first)
+        #expect(scene.beginGrab(at: at, time: 0))
+        #expect(scene.isGrabbing)
+    }
+
+    @Test func nothingIsGrabbedWhereThereIsNoTomato() {
+        let (scene, _) = oneTomatoScene()
+        #expect(scene.beginGrab(at: CGPoint(x: 5, y: 5), time: 0) == false)
+        #expect(!scene.isGrabbing)
+    }
+
+    @Test func withReduceMotionNothingCanBeGrabbed() throws {
+        let (scene, tomato) = oneTomatoScene(reduceMotion: true)
+        let at = try #require(scene.nodePositions(inOrderOf: [tomato]).first)
+        #expect(scene.beginGrab(at: at, time: 0) == false)
+    }
+
+    @Test func aHeldTomatoIsPulledTowardThePointerAndIgnoresGravity() throws {
+        let (scene, tomato) = oneTomatoScene()
+        let start = try #require(scene.nodePositions(inOrderOf: [tomato]).first)
+        let goal = CGPoint(x: 200, y: 100)
+        scene.beginGrab(at: start, time: 0)
+        scene.moveGrab(to: goal, time: 0.05)
+        scene.update(0.05)
+        let velocity = try #require(scene.grabbedVelocity)
+        #expect((velocity.dx > 0) == (goal.x > start.x))            // towards the pointer, whichever side it is on
+        #expect(velocity.dy < 0)                                    // a new tomato starts above the crate
+        #expect(scene.grabbedFeelsGravity == false)
+    }
+
+    @Test func releasingTossesWithTheSpeedOfTheHand() throws {
+        let (scene, tomato) = oneTomatoScene()
+        let start = try #require(scene.nodePositions(inOrderOf: [tomato]).first)
+        scene.beginGrab(at: start, time: 0)
+        scene.moveGrab(to: CGPoint(x: 200, y: 100), time: 0.01)
+        scene.moveGrab(to: CGPoint(x: 240, y: 140), time: 0.06)
+        scene.moveGrab(to: CGPoint(x: 280, y: 180), time: 0.11)
+        scene.endGrab(time: 0.11)
+        #expect(!scene.isGrabbing)
+        let velocity = try #require(scene.firstBodyVelocity)
+        #expect(abs(velocity.dx - 800) < 1 && abs(velocity.dy - 800) < 1)   // 80 pt in 0.1 s each way
+        #expect(scene.firstBodyFeelsGravity)
+    }
+
+    @Test func holdingStillBeforeLettingGoDropsTheTomato() throws {
+        let (scene, tomato) = oneTomatoScene()
+        let start = try #require(scene.nodePositions(inOrderOf: [tomato]).first)
+        scene.beginGrab(at: start, time: 0)
+        scene.moveGrab(to: CGPoint(x: start.x + 80, y: start.y), time: 0.05)
+        scene.moveGrab(to: CGPoint(x: start.x + 80, y: start.y), time: 0.60)   // stayed put for half a second
+        scene.endGrab(time: 0.60)
+        let velocity = try #require(scene.firstBodyVelocity)
+        #expect(abs(velocity.dx) < 50 && abs(velocity.dy) < 50)
+    }
+
+    @Test func aTossIsNotFasterThanTheLimit() {
+        let fast = [(time: 0.0, point: CGPoint(x: 0, y: 0)), (time: 0.01, point: CGPoint(x: 500, y: 0))]
+        let velocity = CrateScene.tossVelocity(from: fast, releasedAt: 0.01)
+        #expect((velocity.dx * velocity.dx + velocity.dy * velocity.dy).squareRoot() <= CrateScene.maxTossSpeed + 1e-6)
+        #expect(velocity.dx > 0)
+    }
+
+    @Test func aTomatoRemovedWhileHeldEndsTheGrab() throws {
+        let (scene, tomato) = oneTomatoScene()
+        let start = try #require(scene.nodePositions(inOrderOf: [tomato]).first)
+        scene.beginGrab(at: start, time: 0)
+        scene.update([], highlight: nil)
+        #expect(!scene.isGrabbing)
+        scene.moveGrab(to: CGPoint(x: 10, y: 10), time: 0.1)         // must not crash
+        scene.endGrab(time: 0.1)
+    }
 }
