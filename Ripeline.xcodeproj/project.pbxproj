@@ -1,0 +1,359 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A10000000000000000000001 /* RipelineCore in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000020 /* RipelineCore */; };
+		A10000000000000000000002 /* RipelineCore in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000021 /* RipelineCore */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A10000000000000000000030 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A10000000000000000000100 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A10000000000000000000040;
+			remoteInfo = Ripeline;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		A10000000000000000000050 /* Ripeline.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Ripeline.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A10000000000000000000051 /* RipelineTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RipelineTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A10000000000000000000052 /* Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Shared.xcconfig; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		A10000000000000000000060 /* Exceptions for "App" folder in "Ripeline" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Ripeline.entitlements,
+			);
+			target = A10000000000000000000040 /* Ripeline */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		A10000000000000000000070 /* App */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				A10000000000000000000060 /* Exceptions for "App" folder in "Ripeline" target */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		A10000000000000000000071 /* AppTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = AppTests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A10000000000000000000080 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000000000000000000001 /* RipelineCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A10000000000000000000081 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000000000000000000002 /* RipelineCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A10000000000000000000090 = {
+			isa = PBXGroup;
+			children = (
+				A10000000000000000000070 /* App */,
+				A10000000000000000000071 /* AppTests */,
+				A10000000000000000000091 /* Config */,
+				A10000000000000000000092 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A10000000000000000000091 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				A10000000000000000000052 /* Shared.xcconfig */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+		A10000000000000000000092 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A10000000000000000000050 /* Ripeline.app */,
+				A10000000000000000000051 /* RipelineTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A10000000000000000000040 /* Ripeline */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A10000000000000000000110 /* Build configuration list for PBXNativeTarget "Ripeline" */;
+			buildPhases = (
+				A10000000000000000000082 /* Sources */,
+				A10000000000000000000080 /* Frameworks */,
+				A10000000000000000000083 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				A10000000000000000000070 /* App */,
+			);
+			name = Ripeline;
+			packageProductDependencies = (
+				A10000000000000000000020 /* RipelineCore */,
+			);
+			productName = Ripeline;
+			productReference = A10000000000000000000050 /* Ripeline.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A10000000000000000000041 /* RipelineTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A10000000000000000000111 /* Build configuration list for PBXNativeTarget "RipelineTests" */;
+			buildPhases = (
+				A10000000000000000000084 /* Sources */,
+				A10000000000000000000081 /* Frameworks */,
+				A10000000000000000000085 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A10000000000000000000031 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				A10000000000000000000071 /* AppTests */,
+			);
+			name = RipelineTests;
+			packageProductDependencies = (
+				A10000000000000000000021 /* RipelineCore */,
+			);
+			productName = RipelineTests;
+			productReference = A10000000000000000000051 /* RipelineTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A10000000000000000000100 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2700;
+				LastUpgradeCheck = 2700;
+				TargetAttributes = {
+					A10000000000000000000040 = {
+						CreatedOnToolsVersion = 27.0;
+					};
+					A10000000000000000000041 = {
+						CreatedOnToolsVersion = 27.0;
+						TestTargetID = A10000000000000000000040;
+					};
+				};
+			};
+			buildConfigurationList = A10000000000000000000112 /* Build configuration list for PBXProject "Ripeline" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				uk,
+				Base,
+			);
+			mainGroup = A10000000000000000000090;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				A10000000000000000000022 /* XCLocalSwiftPackageReference "Packages/RipelineCore" */,
+			);
+			productRefGroup = A10000000000000000000092 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A10000000000000000000040 /* Ripeline */,
+				A10000000000000000000041 /* RipelineTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A10000000000000000000083 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A10000000000000000000085 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A10000000000000000000082 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A10000000000000000000084 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A10000000000000000000031 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A10000000000000000000040 /* Ripeline */;
+			targetProxy = A10000000000000000000030 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		A10000000000000000000120 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A10000000000000000000052 /* Shared.xcconfig */;
+			buildSettings = {
+				SDKROOT = macosx;
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+			};
+			name = Debug;
+		};
+		A10000000000000000000121 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A10000000000000000000052 /* Shared.xcconfig */;
+			buildSettings = {
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+			};
+			name = Release;
+		};
+		A10000000000000000000122 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				GENERATE_INFOPLIST_FILE = YES;
+				CODE_SIGN_ENTITLEMENTS = App/Ripeline.entitlements;
+				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				CURRENT_PROJECT_VERSION = 1;
+				MARKETING_VERSION = 0.1.0;
+				ENABLE_PREVIEWS = YES;
+			};
+			name = Debug;
+		};
+		A10000000000000000000123 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				GENERATE_INFOPLIST_FILE = YES;
+				CODE_SIGN_ENTITLEMENTS = App/Ripeline.entitlements;
+				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				CURRENT_PROJECT_VERSION = 1;
+				MARKETING_VERSION = 0.1.0;
+			};
+			name = Release;
+		};
+		A10000000000000000000124 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				GENERATE_INFOPLIST_FILE = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Ripeline.app/Contents/MacOS/Ripeline";
+			};
+			name = Debug;
+		};
+		A10000000000000000000125 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				GENERATE_INFOPLIST_FILE = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Ripeline.app/Contents/MacOS/Ripeline";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A10000000000000000000110 /* Build configuration list for PBXNativeTarget "Ripeline" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A10000000000000000000122 /* Debug */,
+				A10000000000000000000123 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A10000000000000000000111 /* Build configuration list for PBXNativeTarget "RipelineTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A10000000000000000000124 /* Debug */,
+				A10000000000000000000125 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A10000000000000000000112 /* Build configuration list for PBXProject "Ripeline" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A10000000000000000000120 /* Debug */,
+				A10000000000000000000121 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		A10000000000000000000022 /* XCLocalSwiftPackageReference "Packages/RipelineCore" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/RipelineCore;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A10000000000000000000020 /* RipelineCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = RipelineCore;
+		};
+		A10000000000000000000021 /* RipelineCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = RipelineCore;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = A10000000000000000000100 /* Project object */;
+}

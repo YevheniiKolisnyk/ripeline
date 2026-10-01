@@ -28,8 +28,14 @@ The domain logic lives in a local Swift package and is tested with Swift Testing
 swift test --package-path Packages/RipelineCore
 ```
 
-To build the app (once the Xcode project exists), copy the local configuration template
-and fill in your own team ID and bundle identifier:
+The app has its own tests, run through a small wrapper around `xcodebuild`:
+
+```sh
+scripts/test-app.sh
+```
+
+To sign the app with your own team, copy the local configuration template and fill in your
+team ID and bundle identifier (a fresh clone builds without it, using ad-hoc signing):
 
 ```sh
 cp Config/Local.example.xcconfig Config/Local.xcconfig
