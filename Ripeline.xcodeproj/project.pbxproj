@@ -27,22 +27,9 @@
 		A10000000000000000000052 /* Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Shared.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		A10000000000000000000060 /* Exceptions for "App" folder in "Ripeline" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Ripeline.entitlements,
-			);
-			target = A10000000000000000000040 /* Ripeline */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		A10000000000000000000070 /* App */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				A10000000000000000000060 /* Exceptions for "App" folder in "Ripeline" target */,
-			);
 			path = App;
 			sourceTree = "<group>";
 		};
@@ -182,6 +169,7 @@
 			packageReferences = (
 				A10000000000000000000022 /* XCLocalSwiftPackageReference "Packages/RipelineCore" */,
 			);
+			preferredProjectObjectVersion = 77;
 			productRefGroup = A10000000000000000000092 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -239,12 +227,12 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = A10000000000000000000052 /* Shared.xcconfig */;
 			buildSettings = {
-				SDKROOT = macosx;
-				ONLY_ACTIVE_ARCH = YES;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_TESTABILITY = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
@@ -252,46 +240,46 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = A10000000000000000000052 /* Shared.xcconfig */;
 			buildSettings = {
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 			};
 			name = Release;
 		};
 		A10000000000000000000122 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				GENERATE_INFOPLIST_FILE = YES;
 				CODE_SIGN_ENTITLEMENTS = App/Ripeline.entitlements;
-				INFOPLIST_KEY_LSUIElement = YES;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				CURRENT_PROJECT_VERSION = 1;
-				MARKETING_VERSION = 0.1.0;
 				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_LSUIElement = YES;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
 		};
 		A10000000000000000000123 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				GENERATE_INFOPLIST_FILE = YES;
 				CODE_SIGN_ENTITLEMENTS = App/Ripeline.entitlements;
-				INFOPLIST_KEY_LSUIElement = YES;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_LSUIElement = YES;
 				MARKETING_VERSION = 0.1.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
 		};
 		A10000000000000000000124 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				GENERATE_INFOPLIST_FILE = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "$(inherited).Tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Ripeline.app/Contents/MacOS/Ripeline";
 			};
 			name = Debug;
@@ -299,10 +287,10 @@
 		A10000000000000000000125 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				GENERATE_INFOPLIST_FILE = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "$(inherited).Tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Ripeline.app/Contents/MacOS/Ripeline";
 			};
 			name = Release;
