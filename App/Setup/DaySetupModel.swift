@@ -33,7 +33,7 @@ final class DaySetupModel {
     ///   - canStart: Whether a new day may start now (no day is running).
     ///   - start: Starts the day; returns whether one was started.
     init(
-        settings: AppSettings, clock: any WallClock, calendar: Calendar = .current,
+        settings: AppSettings, clock: any WallClock, calendar: Calendar = .autoupdatingCurrent,
         canStart: @escaping @MainActor () -> Bool,
         start: @escaping @MainActor (DayPlanRequest) async -> Bool
     ) {

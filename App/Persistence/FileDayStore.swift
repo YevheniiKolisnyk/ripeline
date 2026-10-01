@@ -18,7 +18,7 @@ final class FileDayStore: DayStore {
     /// the calendar's time zone changes between launches.
     private var fileForDay: [UUID: String] = [:]
 
-    init(directory: URL, calendar: Calendar = .current, fileManager: FileManager = .default) {
+    init(directory: URL, calendar: Calendar = .autoupdatingCurrent, fileManager: FileManager = .default) {
         self.directory = directory
         self.calendar = calendar
         self.fileManager = fileManager

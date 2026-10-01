@@ -20,6 +20,7 @@ struct SessionControllerStartDayTests {
         let h = Harness(); defer { h.cleanUp() }
         let req = request()
         let started = await h.controller.startDay(request: req)
+        await settleBackgroundWork()
         #expect(started)
         let expected = try PlanGenerator.generate(req)
         #expect(h.controller.plan.map(\.kind) == expected.map(\.kind))
@@ -34,8 +35,10 @@ struct SessionControllerStartDayTests {
     @Test func refusesWhileADayIsRunning() async {
         let h = Harness(); defer { h.cleanUp() }
         await h.controller.startDay(request: request())
+        await settleBackgroundWork()
         let saves = h.store.saved.count
         let started = await h.controller.startDay(request: request(focus: 200))
+        await settleBackgroundWork()
         #expect(!started)
         #expect(h.store.saved.count == saves)
         #expect(h.notifier.calls.filter { $0 == .authorize }.count == 1)
@@ -66,5 +69,27 @@ struct SessionControllerStartDayTests {
         let h = Harness(now: t(9)); defer { h.cleanUp() }
         await h.controller.startDay(request: request(start: t(8)))
         #expect(h.controller.remaining == minutes(25))
+    }
+
+    /// Review finding: a slow permission prompt must not delay the countdown behind the plan.
+    @Test func aSlowPermissionPromptDoesNotDelayTheDay() async {
+        let h = Harness(now: t(9)); defer { h.cleanUp() }
+        h.notifier.onAuthorize = { h.clock.set(t(9, 1)) }       // the prompt takes a minute
+        let started = await h.controller.startDay(request: request())
+        await settleBackgroundWork()
+        #expect(started)
+        #expect(h.clock.now == t(9, 1))
+        // The countdown started at the click (09:00), so a minute has passed, and nothing is behind.
+        #expect(h.controller.remaining == minutes(24))
+        #expect(h.controller.scheduleStatus?.lag == 0)
+    }
+
+    @Test func theDayStartsBeforeThePermissionIsAnswered() async {
+        let h = Harness(now: t(9)); defer { h.cleanUp() }
+        var phaseDuringPrompt: Phase?
+        h.notifier.onAuthorize = { phaseDuringPrompt = h.controller.phase }
+        await h.controller.startDay(request: request())
+        await settleBackgroundWork()
+        #expect(phaseDuringPrompt == .working)
     }
 }

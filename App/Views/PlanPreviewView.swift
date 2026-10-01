@@ -46,7 +46,7 @@ struct PlanPreviewView: View {
     }
 
     private func time(_ date: Date) -> String {
-        SetupText.time(date, locale: locale, timeZone: .current)
+        SetupText.time(date, locale: locale, timeZone: .autoupdatingCurrent)
     }
 
     private func row(_ segment: PlannedSegment) -> some View {
@@ -63,6 +63,6 @@ struct PlanPreviewView: View {
         .padding(.horizontal, 8)
         .background(segment.kind == .longBreak ? Color.accentColor.opacity(0.12) : .clear, in: RoundedRectangle(cornerRadius: 6))
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(SetupText.segmentLabel(segment, locale: locale, timeZone: .current))
+        .accessibilityLabel(SetupText.segmentLabel(segment, locale: locale, timeZone: .autoupdatingCurrent))
     }
 }

@@ -78,7 +78,7 @@ Notices, which do not block:
 
 ### 3.4 Controller
 
-`SessionController.startDay(request:) async` replaces `startQuickDay`: guards `isAllowed(.startDay)`, awaits authorization once, generates the plan, calls `engine.startDay` and `start()`, saves once. The quick-start constants and tests are removed or migrated.
+`SessionController.startDay(request:) async` replaces `startQuickDay`: guards `isAllowed(.startDay)`, generates the plan, calls `engine.startDay` and `start()` at once, saves once, and only then asks for notification permission (once per launch) without waiting for the answer, because the prompt can stay open for minutes and the countdown must begin at the click. The quick-start constants and tests are removed or migrated.
 
 ## 4. Interface
 
@@ -129,4 +129,5 @@ The day screen with timelines and the plan-vs-actual summary, and the session se
 | Q7 | Durations use the locale-aware `Duration.UnitsFormatStyle` (`6 hr, 15 min` / `6 год, 15 хв`); times use the locale's short time style. |
 | Q8 | The preview refreshes through a `TimelineView` every 30 seconds and when the window appears. |
 | Q9 | `startDay()` returns whether a day was started; the window closes only on `true`. |
-| Q10 | `SessionController.startDay(request:)` generates the plan before asking for notification permission, so a request the generator rejects never triggers the prompt, and it re-checks that starting is still allowed after the prompt. |
+| Q10 | `SessionController.startDay(request:)` generates the plan before anything else, so a request the generator rejects never triggers the permission prompt, and it starts the day immediately; notification permission is requested afterwards in the background (found in review: waiting for the prompt before starting delayed the countdown behind the plan by however long the prompt stayed open). |
+| Q11 | The model, the store and the views use `Calendar.autoupdatingCurrent` / `TimeZone.autoupdatingCurrent`, so a time zone change while the app runs is followed (found in review: `Calendar.current` is a snapshot taken at launch). |

@@ -32,12 +32,18 @@ struct Harness {
     func cleanUp() { UserDefaults().removePersistentDomain(forName: suite) }
 
     /// Starts the standard day (four hours of focus, 50/10) at the harness clock.
-    func startStandardDay() async { await controller.startDay(request: standardRequest(at: clock.now)) }
+    func startStandardDay() async {
+        await controller.startDay(request: standardRequest(at: clock.now))
+        await settleBackgroundWork()
+    }
 }
 
 extension SessionController {
     /// Starts the standard day at `now`, for tests that build controllers by hand.
-    func startStandardDay(at now: Date) async { await startDay(request: standardRequest(at: now)) }
+    func startStandardDay(at now: Date) async {
+        await startDay(request: standardRequest(at: now))
+        await settleBackgroundWork()
+    }
 }
 
 /// A snapshot of a finished day.
@@ -47,4 +53,9 @@ func finishedSnapshot(plan: [PlannedSegment] = fivePlan()) throws -> SessionSnap
     try engine.start()
     try engine.endDay()
     return engine.snapshot
+}
+
+/// Lets work the controller starts in the background, such as the permission request, finish.
+@MainActor func settleBackgroundWork() async {
+    for _ in 0..<30 { await Task.yield() }
 }

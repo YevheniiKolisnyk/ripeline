@@ -32,7 +32,7 @@ final class SessionController {
 
     init(
         clock: any WallClock, store: any DayStore, notifier: any Notifier, ticker: any Ticker,
-        settings: AppSettings, calendar: Calendar = .current
+        settings: AppSettings, calendar: Calendar = .autoupdatingCurrent
     ) {
         self.clock = clock
         self.store = store
@@ -136,9 +136,12 @@ final class SessionController {
 
     // MARK: Actions
 
-    /// Starts a day from `request`. The plan is generated first, so a request the generator
-    /// rejects never triggers the permission prompt. Does nothing, and returns `false`, when
-    /// starting is not allowed now.
+    /// Starts a day from `request`, at once. The plan is generated first, so a request the
+    /// generator rejects never triggers the permission prompt. Does nothing, and returns `false`,
+    /// when starting is not allowed now.
+    ///
+    /// The permission prompt is requested after the day has started and does not hold it up: it
+    /// can stay unanswered for minutes, and the countdown must begin at the click.
     @discardableResult
     func startDay(request: DayPlanRequest) async -> Bool {
         guard engine.isAllowed(.startDay) else { return false }
@@ -147,12 +150,6 @@ final class SessionController {
             logger.error("Could not generate the plan: \(error.localizedDescription, privacy: .public)")
             return false
         }
-        if !didRequestAuthorization {
-            didRequestAuthorization = true
-            await notifier.requestAuthorization()
-        }
-        // The state may have changed while the permission prompt was open.
-        guard engine.isAllowed(.startDay) else { return false }
         do {
             try engine.startDay(plan: plan, settings: settings.session)
             try engine.start()
@@ -162,7 +159,16 @@ final class SessionController {
             return false
         }
         didChange()
+        requestAuthorizationOnce()
         return true
+    }
+
+    /// Asks for notification permission the first time a day starts, without waiting for the answer.
+    private func requestAuthorizationOnce() {
+        guard !didRequestAuthorization else { return }
+        didRequestAuthorization = true
+        let notifier = notifier
+        Task { @MainActor in await notifier.requestAuthorization() }
     }
 
     func start() { act(.start) { try $0.start() } }

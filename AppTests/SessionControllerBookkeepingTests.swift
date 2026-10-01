@@ -19,7 +19,7 @@ struct SessionControllerBookkeepingTests {
 
     @Test func startingSchedulesTheEndOfTheFirstSegment() async {
         let h = await started(); defer { h.cleanUp() }
-        #expect(h.notifier.calls == [.authorize, .schedule(.workEnded, 3000)])
+        #expect(h.notifier.calls == [.schedule(.workEnded, 3000), .authorize])
         #expect(h.ticker.isRunning)
     }
 

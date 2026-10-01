@@ -18,8 +18,13 @@ final class SpyNotifier: Notifier {
     private(set) var cancelledIDs: [String] = []
     /// Set to `false` to model notifications that are unavailable: everything is ignored.
     var recording = true
+    /// Runs when authorization is requested, to model a prompt during which time passes.
+    var onAuthorize: (@MainActor () -> Void)?
 
-    func requestAuthorization() async { if recording { calls.append(.authorize) } }
+    func requestAuthorization() async {
+        onAuthorize?()
+        if recording { calls.append(.authorize) }
+    }
     func schedule(_ kind: SignalKind, in interval: TimeInterval, id: String) {
         guard recording else { return }
         calls.append(.schedule(kind, interval))

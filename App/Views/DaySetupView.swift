@@ -139,8 +139,8 @@ struct DaySetupView: View {
     /// A `Date` binding for a `TimeOfDay`, on the day of the preview.
     private func timeBinding(get: @escaping () -> TimeOfDay, set: @escaping (TimeOfDay) -> Void) -> Binding<Date> {
         Binding(
-            get: { get().date(on: model.now, calendar: .current) },
-            set: { set(TimeOfDay(date: $0, calendar: .current)) }
+            get: { get().date(on: model.now, calendar: .autoupdatingCurrent) },
+            set: { set(TimeOfDay(date: $0, calendar: .autoupdatingCurrent)) }
         )
     }
 
