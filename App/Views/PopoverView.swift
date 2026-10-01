@@ -90,12 +90,12 @@ struct PopoverView: View {
     private func perform(_ action: PopoverAction) {
         switch action {
         case .planDay, .overview, .summary:
-            router.tab = .today
+            router.showToday()
             openWindow(id: MainWindow.id)
             // An app without a Dock icon does not come to the front by itself.
             NSApplication.shared.activate()
         case .history:
-            router.tab = .history
+            router.showHistory()
             openWindow(id: MainWindow.id)
             // An app without a Dock icon does not come to the front by itself.
             NSApplication.shared.activate()

@@ -11,4 +11,17 @@ enum WindowTab: Hashable, Sendable {
 @MainActor @Observable
 final class AppRouter {
     var tab: WindowTab = .today
+    /// The user pressed "New day" on a finished day's screen and is planning another.
+    var planningNewDay = false
+
+    /// Shows the Today tab as it is for the day: a summary of a finished day, not a planning form
+    /// that "New day" left open.
+    func showToday() {
+        tab = .today
+        planningNewDay = false
+    }
+
+    func showHistory() {
+        tab = .history
+    }
 }

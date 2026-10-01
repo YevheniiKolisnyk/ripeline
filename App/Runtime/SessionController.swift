@@ -107,6 +107,15 @@ final class SessionController {
         return engine.comparison()
     }
 
+    /// The settings the switches show: those the running day was started with (a restored day keeps
+    /// the ones stored with it), or the defaults for the next day when none is running.
+    var effectiveSessionSettings: SessionSettings {
+        switch engine.state {
+        case .running, .paused, .overtime: engine.snapshot.settings
+        case .idle, .finished: settings.session
+        }
+    }
+
     /// The id of the first segment of the day that is running, paused or in overtime; `nil` otherwise.
     /// The history leaves that day out.
     var activeDayID: UUID? {
@@ -327,6 +336,8 @@ extension SessionController: DayOverviewSource {
     var overviewStatus: ScheduleStatus? { scheduleStatus }
     var overviewNow: Date {
         _ = now
-        return clock.now
+        // Never earlier than the last record, as in the engine: with the clock set back the marker
+        // must not sit left of where the actual row ends.
+        return max(clock.now, SnapshotSource.lastRecordedInstant(of: engine.snapshot) ?? .distantPast)
     }
 }

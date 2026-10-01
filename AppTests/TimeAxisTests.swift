@@ -107,4 +107,34 @@ struct TimeAxisTests {
             expectWellFormed(a, covering: [from, to])
         }
     }
+
+    // MARK: review findings
+
+    /// On a daylight-saving fall-back day an hour repeats; the axis must still reach the latest date.
+    @Test func theAxisReachesTheLatestDateOnAFallBackDay() throws {
+        let newYork = calendar(zone: "America/New_York")
+        let evening = newYork.date(from: DateComponents(year: 2026, month: 10, day: 31, hour: 23))!
+        let second130 = utcDate(2026, 11, 1, 6, 30)             // 01:30 EST, the second 01:30
+        let a = try axis([evening, second130], calendar: newYork)
+        #expect(a.end >= second130)
+        expectWellFormed(a, covering: [evening, second130])
+
+        let b = try axis([utcDate(2026, 11, 1, 6, 10), utcDate(2026, 11, 1, 6, 40)], calendar: newYork)
+        #expect(b.end >= utcDate(2026, 11, 1, 6, 40))
+        expectWellFormed(b, covering: [utcDate(2026, 11, 1, 6, 10), utcDate(2026, 11, 1, 6, 40)])
+    }
+
+    /// If the clock jumps years ahead during overtime, the axis must not grow thousands of ticks.
+    /// 60 hours, a week, a year, five years.
+    @Test(arguments: [216_000.0, 604_800.0, 31_536_000.0, 157_680_000.0])
+    func theNumberOfTicksIsBounded(span: Double) throws {
+        let a = try axis([t(9), t(9).addingTimeInterval(span)])
+        #expect(a.ticks.count <= 27)
+        expectWellFormed(a, covering: [t(9), t(9).addingTimeInterval(span)])
+    }
+
+    @Test func ordinaryDaysKeepTheirSteps() throws {
+        #expect(try axis([t(8), t(20)]).step == 7200)                                  // 12 h
+        #expect(try axis([t(8), t(8).addingTimeInterval(47 * 3600)]).step == 7200)     // just under two days
+    }
 }

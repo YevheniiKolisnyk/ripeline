@@ -18,7 +18,7 @@ final class AppSettings {
         didSet { defaults.set(showTimeInMenuBar, forKey: Key.showTime) }
     }
 
-    /// How sessions behave: pauses and auto-advance. Has no screen of its own until stage 2c.
+    /// How sessions behave: pauses and auto-advance. Changed from the Behaviour section of the window.
     var session: SessionSettings {
         didSet { defaults.set(try? JSONEncoder().encode(session), forKey: Key.session) }
     }

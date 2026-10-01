@@ -155,4 +155,31 @@ struct SessionControllerOverviewTests {
         h.clock.set(t(11)); await h.startStandardDay()
         #expect(h.store.saved.last?.settings == chosen)
     }
+
+    // MARK: effective settings and the now marker (review)
+
+    /// A restored day runs on the settings stored with it; the switches must show those, not the
+    /// defaults, which can differ (for example after a failed save).
+    @Test func theSwitchesShowTheSettingsTheRunningDayUses() async {
+        let h = await started(); defer { h.cleanUp() }
+        let running = h.controller.effectiveSessionSettings
+        h.settings.session = SessionSettings(pausesCountAsRest: false, autoAdvanceWorkToBreak: true)   // differs from the day's
+        #expect(h.controller.effectiveSessionSettings == running)
+        h.clock.set(t(9, 30)); h.controller.endDay()
+        #expect(h.controller.effectiveSessionSettings == h.settings.session)       // no day running: the defaults for the next
+    }
+
+    @Test func withNoDayTheSwitchesShowTheDefaults() {
+        let h = Harness(session: SessionSettings(autoAdvanceBreakToWork: true)); defer { h.cleanUp() }
+        #expect(h.controller.effectiveSessionSettings == SessionSettings(autoAdvanceBreakToWork: true))
+    }
+
+    /// With the clock set back, the now marker must not sit left of where the actual row ends.
+    @Test func theNowMarkerNeverPrecedesTheLastRecord() async {
+        let h = await started(); defer { h.cleanUp() }
+        h.clock.set(t(9, 20)); h.controller.pause()
+        h.clock.set(t(9, 25)); h.controller.resume()
+        h.clock.set(t(9, 10))                                   // the clock is set back
+        #expect(h.controller.overviewNow >= t(9, 25))
+    }
 }
