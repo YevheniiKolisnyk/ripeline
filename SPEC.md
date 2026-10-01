@@ -41,6 +41,7 @@ The UI shows two timelines on a shared time axis: **planned** and **actual**.
 | 2b | Day setup screen: form, live plan preview, start from now. Done; see `docs/specs/2026-10-01-stage-2b-day-setup-design.md`. |
 | 2c | Day screen: timelines, lag, summary, segment table, session settings, one window. Done; see `docs/specs/2026-10-01-stage-2c-day-screen-design.md`. |
 | 2d | History: a tab listing recorded days with the day screen's details, and deleting a day. Done; see `docs/specs/2026-10-01-stage-2d-history-design.md`. |
+| Quick session | Quick start from the popover: pick a block length, start at once, add five minutes or another block, press Done. Done; see `docs/specs/2026-10-01-quick-session-design.md`. |
 
 ## 4. Stage 1 — Domain logic
 
@@ -301,4 +302,5 @@ Decisions for the app (stage 2) are recorded in the specs of the sub-projects:
 [2a](docs/specs/2026-10-01-stage-2a-app-shell-design.md) (section 10) and
 [2b](docs/specs/2026-10-01-stage-2b-day-setup-design.md) (section 8) and
 [2c](docs/specs/2026-10-01-stage-2c-day-screen-design.md) (section 8) and
-[2d](docs/specs/2026-10-01-stage-2d-history-design.md) (section 8).
+[2d](docs/specs/2026-10-01-stage-2d-history-design.md) (section 8) and
+[quick session](docs/specs/2026-10-01-quick-session-design.md) (section 9).

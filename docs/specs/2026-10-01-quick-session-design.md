@@ -1,6 +1,6 @@
 # Quick session: design
 
-Status: draft for review. Parent specs: [`SPEC.md`](../../SPEC.md), stages 1 and 2a–2d. Adds a way to start work in one tap, without planning a day, and a small change to `RipelineCore` to support it.
+Status: implemented. Parent specs: [`SPEC.md`](../../SPEC.md), stages 1 and 2a–2d. Adds a way to start work in one tap, without planning a day, and a small change to `RipelineCore` to support it.
 
 ## 1. Goal
 
@@ -76,3 +76,19 @@ The only change to the core; everything else is the app. All additions are backw
 ## 8. Out of scope
 
 A mode with no block length (a stopwatch); custom block lengths; a name or label for a task; templates; changing the plan of an ordinary day.
+
+## 9. Decisions made during planning and implementation
+
+| # | Decision |
+|---|---|
+| S1 | `appendSegments` catches the engine up to the clock first. If that finishes the session, the append is refused: a block cannot be added to a session that has already ended. |
+| S2 | The snapshot's `kind` is read with `decodeIfPresent` and defaults to `day`; a test decodes a literal old-format file to pin this. |
+| S3 | The combined plan (existing plus added segments) must be well formed, or the append fails with `invalidPlan` and nothing changes. An empty append fails with `emptyPlan`. |
+| S4 | The last segment of a quick session says "block finished", never "day finished": the notification kind depends on the session kind. |
+| S5 | Every segment has its own notification request (by segment id), so a block added later is announced without cancelling or replacing one that is already due. |
+| S6 | "Done" is the engine's existing end-day action under another label; there is no new engine action for it. |
+| S7 | A quick session hides lag, planned end and projected end on the day screen. The history row shows "Quick" in place of the lag chip, and the accessibility label says "quick session". |
+| S8 | The remembered block length is stored as minutes under `quickBlockMinutes`; an unknown stored value falls back to 25. |
+| S9 | The Quick start section is shown whenever starting a day is allowed. Because it then holds the prominent Start button, "Plan day…" is an ordinary glass button. |
+| S10 | Popover buttons are laid out in rows of three, so a quick session's five buttons fit the fixed popover width. |
+

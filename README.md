@@ -14,6 +14,8 @@ on a shared time axis show the plan and the reality side by side.
 > The same window shows how the day goes: planned and actual timelines on one axis, how far ahead
 > or behind you are, a plan-versus-actual summary and a table of segments. A History tab lists the days
 > you have recorded and shows any of them with the same timelines and summary; a day can be deleted.
+> For a task you do not want to plan, "Quick start" in the popover starts a block of 25, 50 or 90 minutes at
+> once; you can add five minutes or another block, and press "Done" when finished.
 
 ## Privacy
 
@@ -67,7 +69,7 @@ open build/Build/Products/Debug/Ripeline.app
 To try it quickly: click the icon, choose "Plan day…", pick a preset (or "Custom" with 1-minute work
 and break) and "Net focus" of 15 minutes, press "Start day". The timer runs in the menu bar and the
 popover; after a minute a segment ends and a notification arrives (allow notifications when asked; an
-ad-hoc signed build may not be allowed to show them). The "Day overview…" link in the popover opens
+ad-hoc signed build may not be allowed to show them). Or skip the planning: pick a block length under "Quick start" and press "Start". The "Day overview…" link in the popover opens
 the day screen with the planned and actual timelines. Quit from the popover ("Quit Ripeline"), or stop
 the run in Xcode.
 
