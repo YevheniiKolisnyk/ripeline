@@ -11,6 +11,12 @@ struct AppEnvironmentTests {
         #expect(!AppEnvironment.isRunningTests(["HOME": "/Users/someone"]))
     }
 
+    /// If a runner change ever hid the XCTest variables, the hosted tests would silently switch to
+    /// the developer's real days and the real notification center. This pins the detection.
+    @Test func theHostedTestProcessIsRecognisedAsATestRun() {
+        #expect(AppEnvironment.isRunningTests(ProcessInfo.processInfo.environment))
+    }
+
     @Test func underTestsTheEnvironmentIsInert() {
         let environment = AppEnvironment.make(processEnvironment: ["XCTestConfigurationFilePath": "x"])
         #expect(environment.isInert)

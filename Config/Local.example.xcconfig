@@ -13,5 +13,6 @@ DEVELOPMENT_TEAM =
 // A reverse-DNS bundle identifier you own, e.g. com.yourname.Ripeline.
 PRODUCT_BUNDLE_IDENTIFIER = com.example.Ripeline
 
-// Set this together with DEVELOPMENT_TEAM to sign with your team instead of ad-hoc.
-// CODE_SIGN_IDENTITY = Apple Development
+// Sign with your team. Fill in DEVELOPMENT_TEAM above: this needs it. (Without
+// Local.xcconfig the app is signed ad hoc, which is enough to build and test.)
+CODE_SIGN_IDENTITY = Apple Development
