@@ -37,9 +37,61 @@ extension SessionSnapshot {
         guard isAllowed(.endDay) else { throw .notAllowed(.endDay) }
         if let index = currentIndex {
             closeOpenInterval(at: now)
-            actuals[index].status = .skipped
+            if case .overtime = state {
+                actuals[index].status = .completed
+            } else {
+                actuals[index].status = .skipped
+            }
         }
         state = .finished
+    }
+
+    mutating func extend(minutes: Int, at now: Date) throws(SessionError) {
+        guard isAllowed(.extend) else { throw .notAllowed(.extend) }
+        guard minutes > 0 else { throw .nonPositiveExtension }
+        let extra = TimeInterval(minutes) * 60
+        switch state {
+        case let .running(index, endsAt):
+            state = .running(segmentIndex: index, endsAt: endsAt.addingTimeInterval(extra))
+        case let .paused(index, remaining):
+            state = .paused(segmentIndex: index, remaining: remaining + extra)
+        case let .overtime(index, _):
+            closeOpenInterval(at: now)
+            state = .running(segmentIndex: index, endsAt: now.addingTimeInterval(extra))
+            openInterval = OpenInterval(kind: runningKind(of: index), start: now)
+        case .idle, .finished:
+            break
+        }
+    }
+
+    /// Gives up on the current segment. Overtime counts as having finished it.
+    mutating func skip(at now: Date) throws(SessionError) {
+        guard isAllowed(.skip), let index = currentIndex else { throw .notAllowed(.skip) }
+        if case .overtime = state {
+            leave(segment: index, as: .completed, at: now)
+        } else {
+            leave(segment: index, as: .skipped, at: now)
+        }
+    }
+
+    /// Leaves overtime and goes on to the next segment.
+    mutating func advance(at now: Date) throws(SessionError) {
+        guard isAllowed(.advance), let index = currentIndex else { throw .notAllowed(.advance) }
+        leave(segment: index, as: .completed, at: now)
+    }
+
+    /// Plays out every segment that ran out before `now`: either by moving on by itself
+    /// (auto-advance) or by waiting in overtime. Intervals get their real times.
+    mutating func catchUp(to now: Date) {
+        while case let .running(index, endsAt) = state, endsAt <= now {
+            closeOpenInterval(at: endsAt)
+            if autoAdvances(from: plan[index].kind) {
+                leave(segment: index, as: .completed, at: endsAt)
+            } else {
+                state = .overtime(segmentIndex: index, since: endsAt)
+                openInterval = OpenInterval(kind: runningKind(of: index), start: endsAt)
+            }
+        }
     }
 
     // MARK: Building blocks
@@ -49,6 +101,22 @@ extension SessionSnapshot {
         actuals[index].status = .active
         state = .running(segmentIndex: index, endsAt: now.addingTimeInterval(plan[index].duration))
         openInterval = OpenInterval(kind: runningKind(of: index), start: now)
+    }
+
+    /// Closes `index` with `status` and starts the next segment, or finishes the day after the last one.
+    mutating func leave(segment index: Int, as status: SegmentStatus, at now: Date) {
+        closeOpenInterval(at: now)
+        actuals[index].status = status
+        if index + 1 < plan.count {
+            begin(segment: index + 1, at: now)
+        } else {
+            state = .finished
+        }
+    }
+
+    /// Whether the end of a segment of `kind` moves on by itself.
+    func autoAdvances(from kind: SegmentKind) -> Bool {
+        kind == .work ? settings.autoAdvanceWorkToBreak : settings.autoAdvanceBreakToWork
     }
 
     /// Running time in a work segment is work; running time in a break is rest.

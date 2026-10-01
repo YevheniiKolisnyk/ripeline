@@ -114,7 +114,7 @@ struct SessionTransitionTests {
     // MARK: the full transition table
 
     enum Setup: CaseIterable, CustomTestStringConvertible {
-        case emptyIdle, idle, running, paused, finished
+        case emptyIdle, idle, running, paused, overtime, finished
 
         var testDescription: String { "\(self)" }
 
@@ -127,24 +127,26 @@ struct SessionTransitionTests {
             case .emptyIdle, .idle: break
             case .running: try engine.start()
             case .paused: try engine.start(); clock.set(t(9, 10)); try engine.pause()
+            case .overtime: try engine.start(); clock.set(t(9, 55)); engine.tick()
             case .finished: try engine.endDay()
             }
             return engine
         }
 
-        /// Actions (of those covered so far) allowed in this setup.
+        /// Actions allowed in this setup.
         var allowed: Set<SessionAction> {
             switch self {
             case .emptyIdle: [.startDay]
             case .idle: [.startDay, .start, .endDay]
-            case .running: [.pause, .endDay]
-            case .paused: [.resume, .endDay]
+            case .running: [.pause, .extend, .skip, .endDay]
+            case .paused: [.resume, .extend, .skip, .endDay]
+            case .overtime: [.extend, .skip, .advance, .endDay]
             case .finished: [.startDay]
             }
         }
     }
 
-    static let coveredActions: [SessionAction] = [.startDay, .start, .pause, .resume, .endDay]
+    static let coveredActions = SessionAction.allCases
 
     static func apply(_ action: SessionAction, to engine: inout SessionEngine) throws(SessionError) {
         switch action {
@@ -152,8 +154,10 @@ struct SessionTransitionTests {
         case .start: try engine.start()
         case .pause: try engine.pause()
         case .resume: try engine.resume()
+        case .extend: try engine.extend(minutes: 5)
+        case .skip: try engine.skip()
+        case .advance: try engine.advance()
         case .endDay: try engine.endDay()
-        default: Issue.record("action \(action) is not covered yet")
         }
     }
 

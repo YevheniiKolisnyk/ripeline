@@ -252,3 +252,18 @@ Clarifications of this specification are recorded here as they are made.
 - **D14 — Interval recording.** Every state change closes the open interval and opens the
   next one, so a segment holds one interval per stretch of running, paused or overtime.
   Zero-length intervals are dropped. Merging adjacent intervals is the timeline's job.
+- **D9 — Manual moves.** `start` is valid only when idle and starts segment 0. `skip` and
+  `advance` start the next segment immediately. The auto-advance flags only decide what
+  happens when time runs out.
+- **D10 — Which flag applies.** Chosen by the kind of the segment that is ending: work uses
+  `autoAdvanceWorkToBreak`; any break uses `autoAdvanceBreakToWork`. After the last segment
+  with the flag on the day is `finished`; with it off the engine waits in overtime and
+  `advance` finishes the day.
+- **D11 — Pause and extend scope.** `pause` is valid only while running (not in overtime:
+  use `advance` or `extend`). `extend` is valid while running, paused or in overtime; from
+  overtime it returns to running with `endsAt = now + minutes`.
+- **D12 — Segment statuses (part 2).** `skip` while running or paused gives `.skipped`
+  (recorded intervals are kept). `skip` in overtime behaves like `advance` and gives
+  `.completed`. `endDay` in overtime gives `.completed`.
+- **D15 — Clock going backwards.** The engine uses `max(clock.now, latest recorded instant)`,
+  so it never produces negative or reordered intervals.

@@ -43,6 +43,12 @@ public struct SessionSnapshot: Codable, Sendable, Equatable {
         }
     }
 
+    /// The latest instant anything was recorded at. The engine never moves time before it.
+    var lastRecordedInstant: Date? {
+        let closed = actuals.compactMap { $0.intervals.last?.end }
+        return (closed + [openInterval?.start].compactMap { $0 }).max()
+    }
+
     /// Whether `action` is valid in the current state.
     public func isAllowed(_ action: SessionAction) -> Bool {
         switch (state, action) {
@@ -51,7 +57,10 @@ public struct SessionSnapshot: Codable, Sendable, Equatable {
         case (.idle, .endDay): !plan.isEmpty
         case (.running, .pause): true
         case (.paused, .resume): true
-        case (.running, .endDay), (.paused, .endDay): true
+        case (.running, .extend), (.paused, .extend), (.overtime, .extend): true
+        case (.running, .skip), (.paused, .skip), (.overtime, .skip): true
+        case (.overtime, .advance): true
+        case (.running, .endDay), (.paused, .endDay), (.overtime, .endDay): true
         default: false
         }
     }
