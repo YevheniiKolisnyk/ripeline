@@ -5,9 +5,13 @@
 //     cp Config/Local.example.xcconfig Config/Local.xcconfig
 //
 // Config/Local.xcconfig is gitignored. Never commit it.
+// Without it the app still builds, using the defaults in Shared.xcconfig and ad-hoc signing.
 
 // Your Apple Developer Team ID (Xcode > Settings > Accounts), e.g. ABCDE12345.
 DEVELOPMENT_TEAM =
 
 // A reverse-DNS bundle identifier you own, e.g. com.yourname.Ripeline.
 PRODUCT_BUNDLE_IDENTIFIER = com.example.Ripeline
+
+// Set this together with DEVELOPMENT_TEAM to sign with your team instead of ad-hoc.
+// CODE_SIGN_IDENTITY = Apple Development

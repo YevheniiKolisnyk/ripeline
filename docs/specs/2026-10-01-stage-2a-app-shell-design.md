@@ -1,6 +1,6 @@
 # Stage 2a — App shell and runtime: design
 
-Status: draft for review. Parent spec: [`SPEC.md`](../../SPEC.md). Builds on `RipelineCore` (stage 1).
+Status: implemented. Parent spec: [`SPEC.md`](../../SPEC.md). Builds on `RipelineCore` (stage 1).
 
 ## 1. Goal
 
@@ -113,7 +113,8 @@ Protocol: load the most recent stored day, save a snapshot. `FileDayStore` is th
 implementation.
 
 - Location: `Application Support/Ripeline/days/YYYY-MM-DD.json` inside the sandbox container.
-  The key is the local calendar date of the plan's first segment.
+  The key is the local calendar date of the plan's first segment; a second day that starts on the same date is
+  stored as `YYYY-MM-DD-2.json`, `-3`, … so it never overwrites the first (decision P12).
 - Format: `{"version": 1, "snapshot": <SessionSnapshot>}`. Dates use the default
   (exact `Double`) encoding so restored instants keep full precision. Writes are atomic.
 - Saved on every state change, not on every tick: a running segment is fully described by
@@ -134,9 +135,11 @@ running stays active.
 A protocol over `UserNotifications`.
 
 - When a segment is running, one local notification is scheduled for its `endsAt`, with the
-  default system sound. The pending request is replaced on every state change and removed on
-  pause, skip (replaced by the next segment's), end of day and when nothing is running. Because
-  it is scheduled ahead of time it still fires if the timer is late.
+  default system sound. Each segment has its own request id (the segment's id), so scheduling
+  the next segment never replaces one that is due. A request is cancelled only when the user
+  makes it obsolete before it is due (pause, skip, end of day); a request whose time has come is
+  never cancelled or replaced, because it is firing right now. Because it is scheduled ahead of
+  time it still fires if the timer is late.
 - When catch-up (sleep, relaunch) crosses one or more segment ends, one immediate
   notification summarizes the current situation instead of one per missed segment.
 - Text: work ended → "Time for a break"; break ended → "Back to work"; last segment ended →
@@ -213,3 +216,24 @@ delivery is verified together with the developer on a signed build.
 Day setup UI (2b); timelines, lag display, comparison and session settings UI (2c); history
 (2d); final app icon (a placeholder is used); launch at login; global keyboard shortcuts; any
 network, analytics or telemetry.
+
+## 10. Decisions made during planning and implementation
+
+| # | Decision |
+|---|---|
+| P1 | `App/Ripeline.entitlements` lives in `App/` and is excluded from the target's resources by a synchronized-group membership exception. |
+| P2 | Under XCTest the composition root builds an inert environment (in-memory store, no-op notifier and ticker, throwaway defaults). The unit tests are hosted in the app, so otherwise they would read the real day and use the real notification center. |
+| P3 | Timer text is plain integer math (`32:10`, `1:02:05`, `+2:15`), identical in `en` and `uk`. The countdown rounds up, so `0:00` appears only at expiry; overtime rounds down. |
+| P4 | The immediate summary notification is sent only when a relaunch finds that segments ended while the app was closed. On wake the system delivers the already scheduled request. To be confirmed on a signed build. |
+| P5 | No app icon asset in 2a; it needs artwork. |
+| P6 | Controller actions that are not allowed are ignored and logged, not reported. |
+| P7 | The store is written only when the snapshot changed since the last save, which keeps `refresh()` idempotent. |
+| P8 | A file with a newer `version` is renamed `*.unsupported`; a corrupt file `*.corrupt`. Nothing is overwritten or deleted. |
+| P9 | A stored day is stale if it is finished, or its last planned segment ended before the start of today. |
+| P10 | No counts are shown in 2a, so the catalog has no plural variations yet. |
+| P11 | The auto-generated `Ripeline` scheme is used. |
+| P12 | A second day that starts on the same date is stored as `YYYY-MM-DD-2.json`, `-3`, …, found by the first segment's id, so it never overwrites the first. Without this a finished morning day would be lost when the user starts another one. |
+| P13 | The catalog completeness test compares the compiled `en` and `uk` string tables from the app bundle; the hosted test runs in the sandbox and cannot read the source tree. |
+| P14 | `WakeObserver` tests are serialized: every observer hears every wake and clock notification. |
+| P15 | A segment's notification request is never cancelled or replaced once its time has come (found in review: cancelling on entry to overtime, or replacing under one shared id on auto-advance, could swallow the notification at the moment it should fire). |
+| P16 | `FileDayStore` remembers which file each day lives in, and "latest" is the day that started last among the newest two dates, not the file whose name sorts last, so a change of time zone between launches cannot revert progress. Setting a damaged file aside never overwrites or deletes an earlier one (`.corrupt`, `.corrupt-2`, …), and one unreadable entry is skipped instead of hiding older days. |

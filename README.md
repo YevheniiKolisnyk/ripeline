@@ -7,8 +7,10 @@ At the start of the day you pick a preset (for example 50 min work / 10 min brea
 break segments, walks you through it, and records what actually happened. Two timelines
 on a shared time axis show the plan and the reality side by side.
 
-> **Status:** early development. Stage 1 (domain logic in the `RipelineCore` package) is
-> implemented and tested. There is no app UI yet.
+> **Status:** early development. The domain logic (`RipelineCore`) and the app shell are
+> implemented: a menu bar item and popover that run a day with a default plan, keep it across
+> relaunch and sleep, and notify when a segment ends. Choosing your own plan and the timeline
+> screens are next.
 
 ## Privacy
 
@@ -28,8 +30,14 @@ The domain logic lives in a local Swift package and is tested with Swift Testing
 swift test --package-path Packages/RipelineCore
 ```
 
-To build the app (once the Xcode project exists), copy the local configuration template
-and fill in your own team ID and bundle identifier:
+The app has its own tests, run through a small wrapper around `xcodebuild`:
+
+```sh
+scripts/test-app.sh
+```
+
+To sign the app with your own team, copy the local configuration template and fill in your
+team ID and bundle identifier (a fresh clone builds without it, using ad-hoc signing):
 
 ```sh
 cp Config/Local.example.xcconfig Config/Local.xcconfig

@@ -1,0 +1,19 @@
+// Build settings shared by every target. Machine-specific values (team, bundle id)
+// come from Local.xcconfig, which is gitignored; see Local.example.xcconfig.
+
+MACOSX_DEPLOYMENT_TARGET = 26.0
+SWIFT_VERSION = 6.0
+SWIFT_STRICT_CONCURRENCY = complete
+SWIFT_EMIT_LOC_STRINGS = YES
+LOCALIZATION_PREFERS_STRING_CATALOGS = YES
+ALWAYS_SEARCH_USER_PATHS = NO
+
+ENABLE_APP_SANDBOX = YES
+ENABLE_HARDENED_RUNTIME = YES
+
+// Defaults that let a fresh clone build without any local setup.
+PRODUCT_BUNDLE_IDENTIFIER = com.example.Ripeline
+CODE_SIGN_STYLE = Automatic
+CODE_SIGN_IDENTITY = -
+
+#include? "Local.xcconfig"

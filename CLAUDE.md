@@ -14,11 +14,17 @@ SwiftUI, macOS 26+. Open source (MIT), intended for the Mac App Store.
 ```
 .
 ├── README.md, SPEC.md, CLAUDE.md, LICENSE
-├── docs/specs/                  # design specs, one per sub-project
-├── docs/plans/                  # implementation plans, one per sub-project
+├── Ripeline.xcodeproj/          # hand-written; folder-synchronized groups (new files are picked up)
+├── App/                         # menu bar app target
+│   ├── Resources/               # Localizable.xcstrings (en + uk), PrivacyInfo.xcprivacy, Assets
+│   └── Ripeline.entitlements    # only com.apple.security.app-sandbox
+├── AppTests/                    # app unit tests (Swift Testing), hosted in the app
 ├── Config/
+│   ├── Shared.xcconfig          # committed: shared build settings
 │   ├── Local.example.xcconfig   # committed template
 │   └── Local.xcconfig           # gitignored: DEVELOPMENT_TEAM, PRODUCT_BUNDLE_IDENTIFIER
+├── scripts/test-app.sh          # quiet xcodebuild test wrapper
+├── docs/specs/, docs/plans/     # design specs and implementation plans, one per sub-project
 └── Packages/
     └── RipelineCore/            # domain logic, Swift package (stage 1)
         ├── Package.swift
@@ -26,7 +32,8 @@ SwiftUI, macOS 26+. Open source (MIT), intended for the Mac App Store.
         └── Tests/RipelineCoreTests/
 ```
 
-The Xcode app project (menu bar UI, String Catalog, entitlements) arrives in stage 2.
+The app (stage 2) is built in sub-projects 2a (shell and runtime), 2b (day setup), 2c (day
+screen) and 2d (history); see `docs/specs/`.
 
 ## Commands
 
@@ -39,7 +46,15 @@ swift test --package-path Packages/RipelineCore --filter PlanGeneratorTests
 
 # Build only
 swift build --package-path Packages/RipelineCore
+
+# App unit tests (all, or one suite). Prints only errors, warnings and the result.
+scripts/test-app.sh
+scripts/test-app.sh SessionControllerTests
 ```
+
+A fresh clone builds and tests without `Config/Local.xcconfig` (ad-hoc signing, placeholder
+bundle id). Tests are hosted inside the app, so the app builds an inert environment under
+XCTest and must never touch real user data or the notification center from a test.
 
 Tests must pass with zero warnings before a change is considered done.
 
