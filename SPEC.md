@@ -213,3 +213,21 @@ Cover with tests:
 ## 5. Decisions log
 
 Clarifications of this specification are recorded here as they are made.
+
+### Units and input validation
+
+- **D2 — Units.** Inputs stay in whole minutes (preset, focus, `minMinutes`, `extend`).
+  Computed durations are `TimeInterval` (seconds); the UI formats them.
+- **D3 — Invalid input.** `PlanGenerator.generate` throws `PlanError` for non-positive
+  preset values, `end <= start`, `focusMinutes <= 0`, `afterWorkBlock(n < 1)` and
+  `minMinutes < 1`. A valid request whose day is too short for any block returns `[]`.
+
+### Plan generation
+
+- **D6 — Day shorter than one block.** `.shortBlock(min)`: one block filling the whole
+  window if it is at least `min`, otherwise `[]`. `.leaveFree` and `.stretchBlocks`: `[]`
+  (there is no full block to stretch).
+- **D7 — Stretch rounding.** Extra time is spread in whole minutes, earliest blocks first.
+  Any sub-minute residue (only possible with non-minute-aligned input) goes to the last
+  block.
+- **D8 — `.netFocus`.** `remainderStrategy` is ignored.
