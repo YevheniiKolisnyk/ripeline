@@ -9,6 +9,7 @@ final class AppSettings {
         static let showTime = "showTimeInMenuBar"
         static let session = "sessionSettings"
         static let dayPlanForm = "dayPlanForm"
+        static let quickBlockMinutes = "quickBlockMinutes"
     }
 
     @ObservationIgnored private let defaults: UserDefaults
@@ -32,11 +33,17 @@ final class AppSettings {
         }
     }
 
+    /// The block length last chosen for a quick start. The shortest by default.
+    var quickBlockLength: QuickBlockLength {
+        didSet { defaults.set(quickBlockLength.minutes, forKey: Key.quickBlockMinutes) }
+    }
+
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
         showTimeInMenuBar = defaults.object(forKey: Key.showTime) as? Bool ?? true
         session = defaults.data(forKey: Key.session)
             .flatMap { try? JSONDecoder().decode(SessionSettings.self, from: $0) } ?? SessionSettings()
+        quickBlockLength = QuickBlockLength(rawValue: defaults.integer(forKey: Key.quickBlockMinutes)) ?? .short
         dayPlanForm = defaults.data(forKey: Key.dayPlanForm)
             .flatMap { try? JSONDecoder().decode(DayPlanForm.self, from: $0) }?.normalized() ?? .standard
     }
