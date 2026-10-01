@@ -2,7 +2,7 @@ import Foundation
 
 /// State transitions. Each takes the instant it happens at; the engine supplies it from its clock.
 extension SessionSnapshot {
-    mutating func startDay(plan: [PlannedSegment], settings: SessionSettings) throws(SessionError) {
+    mutating func startDay(plan: [PlannedSegment], settings: SessionSettings, kind: SessionKind = .day) throws(SessionError) {
         guard isAllowed(.startDay) else { throw .notAllowed(.startDay) }
         guard !plan.isEmpty else { throw .emptyPlan }
         guard Self.isWellFormed(plan) else { throw .invalidPlan }
@@ -11,7 +11,8 @@ extension SessionSnapshot {
             actuals: plan.map { _ in SegmentActual() },
             settings: settings,
             state: .idle,
-            openInterval: nil
+            openInterval: nil,
+            kind: kind
         )
     }
 

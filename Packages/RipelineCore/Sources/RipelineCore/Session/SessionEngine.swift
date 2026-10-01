@@ -39,8 +39,8 @@ public struct SessionEngine: Sendable {
     // MARK: Actions
 
     /// Loads a plan. Valid when idle or finished; the engine stays idle until `start`.
-    public mutating func startDay(plan: [PlannedSegment], settings: SessionSettings) throws(SessionError) {
-        try snapshot.startDay(plan: plan, settings: settings)
+    public mutating func startDay(plan: [PlannedSegment], settings: SessionSettings, kind: SessionKind = .day) throws(SessionError) {
+        try snapshot.startDay(plan: plan, settings: settings, kind: kind)
     }
 
     /// Starts the first segment.
