@@ -27,6 +27,10 @@ final class SessionController {
     private(set) var now: Date
 
     @ObservationIgnored private var lastSaved: SessionSnapshot?
+    /// The notification currently arranged: what it says and when the segment ends.
+    @ObservationIgnored private var scheduled: (kind: SignalKind, endsAt: Date)?
+    /// Whether a notification request may be pending. True at launch: an earlier run may have left one.
+    @ObservationIgnored private var mayHavePending = true
     @ObservationIgnored private var didRequestAuthorization = false
 
     init(
@@ -114,6 +118,16 @@ final class SessionController {
         }
         lastSaved = stored.snapshot
         engine.tick()
+        if engine.snapshot != stored.snapshot, let ended = lastEndedSegmentSignal() {
+            // Segments ended while the app was closed: tell the user once, about the latest one.
+            notifier.deliverNow(ended)
+        }
+        didChange()
+    }
+
+    /// Brings the day up to the current time. Called by the ticker, on wake and when the clock changes.
+    func refresh() {
+        engine.tick()
         didChange()
     }
 
@@ -173,6 +187,51 @@ final class SessionController {
     private func didChange() {
         now = clock.now
         persistIfChanged()
+        reconcileNotifier()
+        reconcileTicker()
+    }
+
+    /// What a notification about the end of segment `index` should say.
+    private func signalKind(endOfSegment index: Int) -> SignalKind {
+        if index == plan.count - 1 { return .dayFinished }
+        return plan[index].kind == .work ? .workEnded : .breakEnded
+    }
+
+    /// The signal for the segment that ended most recently, judging by the current state.
+    private func lastEndedSegmentSignal() -> SignalKind? {
+        switch engine.state {
+        case .finished: .dayFinished
+        case let .overtime(index, _): signalKind(endOfSegment: index)
+        case let .running(index, _): index > 0 ? signalKind(endOfSegment: index - 1) : nil
+        case .idle, .paused: nil
+        }
+    }
+
+    /// Keeps exactly one notification arranged, for the end of the running segment, and none otherwise.
+    private func reconcileNotifier() {
+        guard case let .running(index, endsAt) = engine.state else {
+            if mayHavePending {
+                notifier.cancelPending()
+                mayHavePending = false
+            }
+            scheduled = nil
+            return
+        }
+        let kind = signalKind(endOfSegment: index)
+        guard scheduled?.kind != kind || scheduled?.endsAt != endsAt else { return }
+        notifier.schedule(kind, in: endsAt.timeIntervalSince(now))
+        scheduled = (kind, endsAt)
+        mayHavePending = true
+    }
+
+    /// The ticker runs only while there is something to count: a running segment or overtime.
+    private func reconcileTicker() {
+        switch engine.state {
+        case .running, .overtime:
+            ticker.start { [weak self] in self?.refresh() }
+        case .idle, .paused, .finished:
+            ticker.stop()
+        }
     }
 
     /// Saves the snapshot if it differs from the last one saved. A failed save is retried on the next change.
