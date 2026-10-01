@@ -135,9 +135,11 @@ running stays active.
 A protocol over `UserNotifications`.
 
 - When a segment is running, one local notification is scheduled for its `endsAt`, with the
-  default system sound. The pending request is replaced on every state change and removed on
-  pause, skip (replaced by the next segment's), end of day and when nothing is running. Because
-  it is scheduled ahead of time it still fires if the timer is late.
+  default system sound. Each segment has its own request id (the segment's id), so scheduling
+  the next segment never replaces one that is due. A request is cancelled only when the user
+  makes it obsolete before it is due (pause, skip, end of day); a request whose time has come is
+  never cancelled or replaced, because it is firing right now. Because it is scheduled ahead of
+  time it still fires if the timer is late.
 - When catch-up (sleep, relaunch) crosses one or more segment ends, one immediate
   notification summarizes the current situation instead of one per missed segment.
 - Text: work ended → "Time for a break"; break ended → "Back to work"; last segment ended →
@@ -233,3 +235,5 @@ network, analytics or telemetry.
 | P12 | A second day that starts on the same date is stored as `YYYY-MM-DD-2.json`, `-3`, …, found by the first segment's id, so it never overwrites the first. Without this a finished morning day would be lost when the user starts another one. |
 | P13 | The catalog completeness test compares the compiled `en` and `uk` string tables from the app bundle; the hosted test runs in the sandbox and cannot read the source tree. |
 | P14 | `WakeObserver` tests are serialized: every observer hears every wake and clock notification. |
+| P15 | A segment's notification request is never cancelled or replaced once its time has come (found in review: cancelling on entry to overtime, or replacing under one shared id on auto-advance, could swallow the notification at the moment it should fire). |
+| P16 | `FileDayStore` remembers which file each day lives in, and "latest" is the day that started last among the newest two dates, not the file whose name sorts last, so a change of time zone between launches cannot revert progress. Setting a damaged file aside never overwrites or deletes an earlier one (`.corrupt`, `.corrupt-2`, …), and one unreadable entry is skipped instead of hiding older days. |

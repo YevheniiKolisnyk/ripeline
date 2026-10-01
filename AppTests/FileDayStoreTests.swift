@@ -200,4 +200,79 @@ struct FileDayStoreTests {
         #expect(try names(in: url) == ["2026-01-15-2.json.corrupt", "2026-01-15.json"])
         #expect(try store.loadLatest()?.key == "2026-01-15")
     }
+
+    // MARK: review findings
+
+    /// Setting a second damaged file aside must not delete the first one (nothing is ever deleted).
+    @Test func settingAsideTwiceKeepsBothDamagedFiles() throws {
+        let (store, url) = try makeStore()
+        defer { try? FileManager.default.removeItem(at: url) }
+        let file = url.appendingPathComponent("2026-01-15.json")
+        try Data("AAAA".utf8).write(to: file)
+        #expect(try store.loadLatest() == nil)
+        try Data("BBBB".utf8).write(to: file)
+        #expect(try store.loadLatest() == nil)
+        #expect(try names(in: url) == ["2026-01-15.json.corrupt", "2026-01-15.json.corrupt-2"])
+        let kept = try names(in: url).map { try String(contentsOf: url.appendingPathComponent($0), encoding: .utf8) }
+        #expect(Set(kept) == ["AAAA", "BBBB"])
+    }
+
+    /// A day keeps its file even if the calendar's time zone differs between launches.
+    @Test func aDayKeepsItsFileAcrossATimeZoneChange() throws {
+        var plus3 = Calendar(identifier: .gregorian)
+        plus3.timeZone = TimeZone(secondsFromGMT: 3 * 3600)!
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("ripeline-tests-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let plan = fivePlan(start: d(14, 22, 30))      // 01:30 on the 15th in +03:00, 22:30 on the 14th in UTC
+
+        let before = FileDayStore(directory: directory, calendar: plus3)
+        try before.save(try idleSnapshot(plan: plan))
+        #expect(try names(in: directory) == ["2026-01-15.json"])
+
+        // Relaunch in another time zone: load, then save progress on the same day.
+        let after = FileDayStore(directory: directory, calendar: utc)
+        _ = try after.loadLatest()
+        var engine = SessionEngine(clock: TestClock(plan[0].start))
+        try engine.startDay(plan: plan, settings: SessionSettings())
+        try engine.start()
+        try after.save(engine.snapshot)
+
+        #expect(try names(in: directory) == ["2026-01-15.json"])
+        #expect(try after.loadLatest()?.snapshot == engine.snapshot)
+    }
+
+    /// "Latest" is the day that started last, not the file whose name sorts last.
+    @Test func theLatestDayIsTheOneThatStartedLast() throws {
+        var minus5 = Calendar(identifier: .gregorian)
+        minus5.timeZone = TimeZone(secondsFromGMT: -5 * 3600)!
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("ripeline-tests-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: directory) }
+
+        let earlier = try finishedDay(plan: fivePlan(start: d(15, 1, 0)))     // key 2026-01-15 in UTC
+        let later = try idleSnapshot(plan: fivePlan(start: d(15, 2, 0)))      // key 2026-01-14 at -05:00
+        try FileDayStore(directory: directory, calendar: utc).save(earlier)
+        try FileDayStore(directory: directory, calendar: minus5).save(later)
+        #expect(try names(in: directory) == ["2026-01-14.json", "2026-01-15.json"])
+
+        let loaded = try FileDayStore(directory: directory, calendar: utc).loadLatest()
+        #expect(loaded == StoredDay(key: "2026-01-14", snapshot: later))
+    }
+
+    private func finishedDay(plan: [PlannedSegment]) throws -> SessionSnapshot {
+        var engine = SessionEngine(clock: TestClock(plan[0].start))
+        try engine.startDay(plan: plan, settings: SessionSettings())
+        try engine.start()
+        try engine.endDay()
+        return engine.snapshot
+    }
+
+    /// One unreadable entry must not hide the valid days behind it.
+    @Test func anUnreadableEntryDoesNotHideOlderDays() throws {
+        let (store, url) = try makeStore()
+        defer { try? FileManager.default.removeItem(at: url) }
+        let older = try idleSnapshot(plan: dayPlan(14))
+        try store.save(older)
+        try FileManager.default.createDirectory(at: url.appendingPathComponent("2026-01-16.json"), withIntermediateDirectories: false)
+        #expect(try store.loadLatest() == StoredDay(key: "2026-01-14", snapshot: older))
+    }
 }

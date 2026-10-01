@@ -1,4 +1,5 @@
 import Foundation
+import os
 import RipelineCore
 
 /// Keeps each day as its own JSON file in one directory: `YYYY-MM-DD.json`, and
@@ -12,6 +13,10 @@ final class FileDayStore: DayStore {
     private let directory: URL
     private let calendar: Calendar
     private let fileManager: FileManager
+    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "Ripeline", category: "storage")
+    /// Which file each day lives in, learned by loading and saving. A day keeps its file even if
+    /// the calendar's time zone changes between launches.
+    private var fileForDay: [UUID: String] = [:]
 
     init(directory: URL, calendar: Calendar = .current, fileManager: FileManager = .default) {
         self.directory = directory
@@ -29,17 +34,39 @@ final class FileDayStore: DayStore {
 
     // MARK: DayStore
 
+    /// The day that started last. Files are judged two dates at a time (the newest two), because
+    /// a change of time zone can shift a day's date key by one; among those, the later start wins.
+    /// A file that cannot be read is logged and skipped, never fatal, so it cannot hide older days.
     func loadLatest() throws -> StoredDay? {
-        for name in try dayFileNames() {
-            let key = String(name.dropLast(".json".count))
-            switch try read(name) {
-            case let .snapshot(snapshot):
-                return StoredDay(key: key, snapshot: snapshot)
-            case .corrupt:
-                try setAside(name, suffix: "corrupt")
-            case .unsupported:
-                try setAside(name, suffix: "unsupported")
+        var remaining = try dayFiles()
+        while !remaining.isEmpty {
+            var batchDates: [String] = []
+            for file in remaining where !batchDates.contains(file.date) && batchDates.count < 2 {
+                batchDates.append(file.date)
             }
+            let batch = remaining.filter { batchDates.contains($0.date) }
+            remaining.removeAll { batchDates.contains($0.date) }
+
+            var best: StoredDay?
+            for file in batch {
+                do {
+                    switch try read(file.name) {
+                    case let .snapshot(snapshot):
+                        if let id = snapshot.plan.first?.id { fileForDay[id] = file.name }
+                        let day = StoredDay(key: String(file.name.dropLast(".json".count)), snapshot: snapshot)
+                        if let current = best?.snapshot.plan.first?.start,
+                           let start = snapshot.plan.first?.start, start <= current { continue }
+                        best = day
+                    case .corrupt:
+                        try setAside(file.name, suffix: "corrupt")
+                    case .unsupported:
+                        try setAside(file.name, suffix: "unsupported")
+                    }
+                } catch {
+                    logger.error("Skipping \(file.name, privacy: .public): \(error.localizedDescription, privacy: .public)")
+                }
+            }
+            if let best { return best }
         }
         return nil
     }
@@ -50,7 +77,9 @@ final class FileDayStore: DayStore {
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
         let data = try encoder.encode(Envelope(version: Self.currentVersion, snapshot: snapshot))
-        try data.write(to: file(named: try fileName(for: snapshot, startingAt: start)), options: .atomic)
+        let name = try fileName(for: snapshot, startingAt: start)
+        try data.write(to: file(named: name), options: .atomic)
+        if let id = snapshot.plan.first?.id { fileForDay[id] = name }
     }
 
     func quarantine(_ day: StoredDay) throws {
@@ -84,24 +113,32 @@ final class FileDayStore: DayStore {
         return .snapshot(envelope.snapshot)
     }
 
+    /// Renames a file so it is kept but no longer loaded. Never overwrites or deletes anything:
+    /// if the new name is taken it counts up (`.corrupt`, `.corrupt-2`, …).
     private func setAside(_ name: String, suffix: String) throws {
-        let source = file(named: name)
-        let target = file(named: "\(name).\(suffix)")
-        if fileManager.fileExists(atPath: target.path) { try fileManager.removeItem(at: target) }
-        try fileManager.moveItem(at: source, to: target)
+        var target = "\(name).\(suffix)"
+        var number = 2
+        while fileManager.fileExists(atPath: file(named: target).path) {
+            target = "\(name).\(suffix)-\(number)"
+            number += 1
+        }
+        try fileManager.moveItem(at: file(named: name), to: file(named: target))
     }
 
-    /// Day files, newest first: by date, then by number within a date.
-    private func dayFileNames() throws -> [String] {
+    private struct DayFile {
+        let name: String
+        let date: String
+        let sequence: Int
+    }
+
+    /// Day files, newest first by name: by date, then by number within a date.
+    private func dayFiles() throws -> [DayFile] {
         guard fileManager.fileExists(atPath: directory.path) else { return [] }
-        let parsed = try fileManager.contentsOfDirectory(atPath: directory.path).compactMap {
-            name -> (name: String, date: String, sequence: Int)? in
+        return try fileManager.contentsOfDirectory(atPath: directory.path).compactMap { name -> DayFile? in
             guard let match = name.wholeMatch(of: /(\d{4}-\d{2}-\d{2})(?:-(\d+))?\.json/) else { return nil }
-            return (name, String(match.1), match.2.flatMap { Int($0) } ?? 1)
+            return DayFile(name: name, date: String(match.1), sequence: match.2.flatMap { Int($0) } ?? 1)
         }
-        return parsed
-            .sorted { ($0.date, $0.sequence) > ($1.date, $1.sequence) }
-            .map(\.name)
+        .sorted { ($0.date, $0.sequence) > ($1.date, $1.sequence) }
     }
 
     /// The file this snapshot belongs in: its own file if it was saved before, otherwise the
@@ -109,6 +146,9 @@ final class FileDayStore: DayStore {
     private func fileName(for snapshot: SessionSnapshot, startingAt start: Date) throws -> String {
         let date = key(for: start)
         let dayID = snapshot.plan.first?.id
+        if let dayID, let known = fileForDay[dayID], fileManager.fileExists(atPath: file(named: known).path) {
+            return known
+        }
         var sequence = 1
         while true {
             let name = sequence == 1 ? "\(date).json" : "\(date)-\(sequence).json"
