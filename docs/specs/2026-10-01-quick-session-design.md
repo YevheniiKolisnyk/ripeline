@@ -81,7 +81,7 @@ A mode with no block length (a stopwatch); custom block lengths; a name or label
 
 | # | Decision |
 |---|---|
-| S1 | `appendSegments` catches the engine up to the clock first. If that finishes the session, the append is refused: a block cannot be added to a session that has already ended. |
+| S1 | `appendSegments` catches the engine up to the clock first. If that finishes the session, the append is refused: a block cannot be added to a session that has already ended. Since S11, time alone can no longer finish a quick session, so this guard only matters for a session that was ended by "Done" or a skip. |
 | S2 | The snapshot's `kind` is read with `decodeIfPresent` and defaults to `day`; a test decodes a literal old-format file to pin this. |
 | S3 | The combined plan (existing plus added segments) must be well formed, or the append fails with `invalidPlan` and nothing changes. An empty append fails with `emptyPlan`. |
 | S4 | The last segment of a quick session says "block finished", never "day finished": the notification kind depends on the session kind. |
@@ -91,4 +91,4 @@ A mode with no block length (a stopwatch); custom block lengths; a name or label
 | S8 | The remembered block length is stored as minutes under `quickBlockMinutes`; an unknown stored value falls back to 25. |
 | S9 | The Quick start section is shown whenever starting a day is allowed. Because it then holds the prominent Start button, "Plan day…" is an ordinary glass button. |
 | S10 | Popover buttons are laid out in rows of three, so a quick session's five buttons fit the fixed popover width. |
-
+| S11 | With auto-advance on, the last segment of a quick session waits in overtime instead of finishing the session (found in review); otherwise "Another block" would never be offered after a block ended on its own. |

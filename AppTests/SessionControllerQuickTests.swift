@@ -124,6 +124,21 @@ struct SessionControllerQuickTests {
         #expect(h.controller.phase == .onBreak)
     }
 
+    /// Review finding: with auto-advance on, the last block waits in overtime, so "Another block" is still there.
+    @Test func withAutoAdvanceTheLastBlockWaitsInOvertimeAndOffersAnotherBlock() async {
+        let h = Harness(session: SessionSettings(autoAdvanceWorkToBreak: true, autoAdvanceBreakToWork: true))
+        defer { h.cleanUp() }
+        await h.controller.startQuickSession(length: .short)
+        await settleBackgroundWork()
+        h.clock.set(t(9, 30)); h.controller.refresh()
+        #expect(h.controller.phase == .overtime(onBreak: false))
+        #expect(PopoverActions.visible(phase: h.controller.phase, isQuick: true, isAllowed: h.controller.isAllowed).contains(.addBlock))
+        h.controller.addBlock()
+        #expect(h.controller.plan.count == 3)
+        h.controller.advance()
+        #expect(h.controller.phase == .onBreak)
+    }
+
     @Test func manyBlocks() async {
         let h = await started(); defer { h.cleanUp() }
         for _ in 0..<5 { h.controller.addBlock() }

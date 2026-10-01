@@ -141,14 +141,13 @@ struct AppendSegmentsTests {
 
     // MARK: awkward moments (Review Focus 2)
 
-    @Test func appendingInTheInstantTheLastBlockEndsWithAutoAdvanceIsRefusedNotLost() throws {
+    @Test func appendingInTheInstantTheLastBlockEndsWithAutoAdvanceWorks() throws {
         var (quick, clock) = try session(settings: SessionSettings(autoAdvanceWorkToBreak: true))
         try quick.start()
         clock.set(t(9, 25))                                                     // exactly the end
-        #expect(throws: SessionError.notAllowed(.append)) { try quick.appendSegments(self.nextBlock(quick)) }
-        #expect(quick.state == .finished)
-        #expect(quick.snapshot.actuals[0].status == .completed)
-        #expect(quick.snapshot.plan.count == 1)
+        try quick.appendSegments(nextBlock(quick))
+        #expect(quick.state == .overtime(segmentIndex: 0, since: t(9, 25)))
+        #expect(quick.snapshot.plan.count == 3)
     }
 
     @Test func appendingInTheSameInstantWithoutAutoAdvanceWorks() throws {
@@ -192,9 +191,9 @@ struct AppendSegmentsTests {
         try quick.appendSegments(nextBlock(quick))
         clock.set(t(11))
         quick.tick()
-        #expect(quick.state == .finished)
+        #expect(quick.state == .overtime(segmentIndex: 2, since: t(9, 55)))   // the last block waits for "Done" or another
         let actuals = quick.snapshot.actuals
-        #expect(actuals.map(\.status) == [.completed, .completed, .completed])
+        #expect(actuals.map(\.status) == [.completed, .completed, .active])
         #expect(actuals[0].intervals.last?.end == t(9, 25))
         #expect(actuals[1].intervals.first?.start == t(9, 25) && actuals[1].intervals.last?.end == t(9, 30))
         #expect(actuals[2].intervals.last?.end == t(9, 55))
@@ -210,5 +209,43 @@ struct AppendSegmentsTests {
         #expect(restored.isAllowed(.append))
         try restored.appendSegments(nextBlock(restored))
         #expect(restored.snapshot.plan.count == 5)
+    }
+
+    // MARK: auto-advance (review finding)
+
+    /// With auto-advance on, the last block of a quick session waits in overtime instead of ending the
+    /// session, so "Another block" can still be added; a day still finishes by itself.
+    @Test(arguments: [true, false])
+    func theLastBlockOfAQuickSessionWaitsInOvertimeWhateverTheAutoAdvanceSetting(workToBreak: Bool) throws {
+        let settings = SessionSettings(autoAdvanceWorkToBreak: workToBreak, autoAdvanceBreakToWork: true)
+        var (quick, clock) = try session(settings: settings)
+        try quick.start()
+        clock.set(t(9, 40))
+        quick.tick()
+        #expect(quick.state == .overtime(segmentIndex: 0, since: t(9, 25)))
+        #expect(quick.isAllowed(.append))
+        try quick.appendSegments(nextBlock(quick))
+        #expect(quick.snapshot.plan.count == 3)
+    }
+
+    @Test func anAddedBlockStillAutoAdvancesFromTheBlockBeforeIt() throws {
+        var (quick, clock) = try session(settings: SessionSettings(autoAdvanceWorkToBreak: true, autoAdvanceBreakToWork: true))
+        try quick.start()
+        clock.set(t(9, 20))
+        try quick.appendSegments(nextBlock(quick))                      // work, break, work
+        clock.set(t(9, 40))
+        quick.tick()
+        #expect(quick.state == .running(segmentIndex: 2, endsAt: t(9, 55)))   // moved on by itself through the break
+        clock.set(t(10, 10))
+        quick.tick()
+        #expect(quick.state == .overtime(segmentIndex: 2, since: t(9, 55)))   // and waits at the end
+    }
+
+    @Test func aDayStillFinishesByItselfWithAutoAdvance() throws {
+        var (day, clock) = try session(kind: .day, settings: SessionSettings(autoAdvanceWorkToBreak: true))
+        try day.start()
+        clock.set(t(9, 40))
+        day.tick()
+        #expect(day.state == .finished)
     }
 }

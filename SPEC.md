@@ -27,7 +27,8 @@ At the start of the day the user picks a preset (e.g. 50 min work / 10 min break
 45 min long break) and defines a day plan. The app generates the plan once, as a list of
 segments.
 
-The plan is **fixed**: it is never recalculated after the day starts. The timer walks
+The plan is **fixed**: it is never recalculated after the day starts. The one exception is a
+quick session (see section 4.4 and decision D-Q1), whose plan only grows at its end. The timer walks
 through the segments, and for each segment the app records what actually happened.
 
 The UI shows two timelines on a shared time axis: **planned** and **actual**.
@@ -151,8 +152,14 @@ Overtime is recorded in the **current** segment with that segment's kind
 (work → `.work`, break → `.rest`). This is how "the 45-minute segment actually took 47"
 is captured.
 
-Actions: `startDay(plan, settings)`, `start`, `pause`, `resume`, `extend(minutes)`,
-`skip`, `advance` (leave overtime / go to the next segment), `endDay`.
+Actions: `startDay(plan, settings, kind)`, `start`, `pause`, `resume`, `extend(minutes)`,
+`skip`, `advance` (leave overtime / go to the next segment), `endDay`, and, for a quick
+session only, `appendSegments`.
+
+A snapshot has a `kind`: `day` (the default, also for files written before it existed) or
+`quick`. A quick session is started from one block and has segments added to its end while it
+runs, is paused or is in overtime; an ordinary day never accepts them. The last segment of a
+quick session never auto-advances: it waits in overtime, so another block can still be added.
 
 After a sleep or a long gap, when the engine is ticked with a later "now", it catches up
 correctly:
@@ -217,6 +224,15 @@ Cover with tests:
 ## 5. Decisions log
 
 Clarifications of this specification are recorded here as they are made.
+
+### Quick session
+
+- **D-Q1 — A plan that grows.** Only a quick session (`SessionKind.quick`) can have segments
+  appended, and only to the end of its plan: they continue the indices and start where the plan
+  ends. Ordinary days keep their fixed plan. Old files without `kind` read as days.
+- **D-Q2 — The last block waits.** With auto-advance on, the last segment of a quick session still
+  enters overtime instead of finishing the session, so "Another block" is not lost. Found in
+  review; ordinary days finish by themselves as before.
 
 ### Units and input validation
 

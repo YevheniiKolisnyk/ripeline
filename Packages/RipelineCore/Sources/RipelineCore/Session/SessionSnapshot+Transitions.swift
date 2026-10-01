@@ -94,11 +94,12 @@ extension SessionSnapshot {
     }
 
     /// Plays out every segment that ran out before `now`: either by moving on by itself
-    /// (auto-advance) or by waiting in overtime. Intervals get their real times.
+    /// (auto-advance) or by waiting in overtime. Intervals get their real times. The last segment of a
+    /// quick session never moves on by itself: it waits in overtime so another block can still be added.
     mutating func catchUp(to now: Date) {
         while case let .running(index, endsAt) = state, endsAt <= now {
             closeOpenInterval(at: endsAt)
-            if autoAdvances(from: plan[index].kind) {
+            if autoAdvances(from: plan[index].kind) && !(kind == .quick && index + 1 == plan.count) {
                 leave(segment: index, as: .completed, at: endsAt)
             } else {
                 state = .overtime(segmentIndex: index, since: endsAt)
