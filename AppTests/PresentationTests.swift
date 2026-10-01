@@ -29,12 +29,12 @@ struct PresentationTests {
 
     @Test func workingShowsCountdown() {
         let model = MenuBarLabelModel(phase: .working, remaining: 1930, overtimeElapsed: nil, showTime: true)
-        #expect(model == MenuBarLabelModel(symbolName: "timer", text: "32:10"))
+        #expect(model == MenuBarLabelModel(icon: .symbol("timer"), text: "32:10"))
     }
 
     @Test func breakShowsCountdownWithBreakSymbol() {
         let model = MenuBarLabelModel(phase: .onBreak, remaining: 90, overtimeElapsed: nil, showTime: true)
-        #expect(model.symbolName == "cup.and.saucer.fill")
+        #expect(model.icon == .symbol("cup.and.saucer.fill"))
         #expect(model.text == "1:30")
     }
 
@@ -58,7 +58,6 @@ struct PresentationTests {
     func hidingTheTimeLeavesOnlyTheIcon(phase: Phase) {
         let model = MenuBarLabelModel(phase: phase, remaining: 600, overtimeElapsed: 60, showTime: false)
         #expect(model.text == nil)
-        #expect(!model.symbolName.isEmpty)
     }
 
     /// With the time hidden, the icon alone must tell a day that is not running from one that is.
@@ -69,5 +68,37 @@ struct PresentationTests {
     @Test func eachKindOfPhaseHasItsOwnSymbol() {
         let symbols = [Phase.idle, .working, .onBreak, .paused(onBreak: false), .overtime(onBreak: false), .finished].map(\.symbolName)
         #expect(Set(symbols).count == symbols.count)
+    }
+
+    // MARK: the growing tomato
+
+    @Test(arguments: [Phase.working, .overtime(onBreak: false)])
+    func aWorkBlockShowsItsTomato(phase: Phase) {
+        let model = MenuBarLabelModel(phase: phase, remaining: 600, overtimeElapsed: 60, showTime: true, tomatoGrowth: 0.4)
+        #expect(model.icon == .tomato(growth: 0.4, frozen: false))
+        #expect(model.text != nil)
+    }
+
+    @Test func aPausedWorkBlockShowsItsTomatoFrozen() {
+        let model = MenuBarLabelModel(phase: .paused(onBreak: false), remaining: 600, overtimeElapsed: nil, showTime: true, tomatoGrowth: 0.7)
+        #expect(model.icon == .tomato(growth: 0.7, frozen: true))
+        #expect(model.text == "10:00")
+    }
+
+    @Test(arguments: [Phase.onBreak, .paused(onBreak: true), .overtime(onBreak: true), .idle, .finished])
+    func otherStatesKeepTheirSymbolEvenIfATomatoIsGiven(phase: Phase) {
+        let model = MenuBarLabelModel(phase: phase, remaining: 600, overtimeElapsed: 60, showTime: true, tomatoGrowth: 0.4)
+        #expect(model.icon == .symbol(phase.symbolName))
+    }
+
+    @Test func aWorkBlockWithoutATomatoFallsBackToTheSymbol() {
+        let model = MenuBarLabelModel(phase: .working, remaining: 600, overtimeElapsed: nil, showTime: true, tomatoGrowth: nil)
+        #expect(model.icon == .symbol("timer"))
+    }
+
+    @Test func hidingTheTimeLeavesTheTomato() {
+        let model = MenuBarLabelModel(phase: .working, remaining: 600, overtimeElapsed: nil, showTime: false, tomatoGrowth: 1.0)
+        #expect(model.icon == .tomato(growth: 1.0, frozen: false))
+        #expect(model.text == nil)
     }
 }

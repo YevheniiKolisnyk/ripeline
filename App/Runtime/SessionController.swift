@@ -113,6 +113,12 @@ final class SessionController {
         return engine.tomatoes()
     }
 
+    /// How grown the tomato of the work block that is running, paused or in overtime is; `nil` on a break or with no day.
+    var currentTomatoGrowth: Double? {
+        guard let segment = currentSegment, segment.kind == .work else { return nil }
+        return tomatoes.first { $0.segmentIndex == segment.index }?.growth
+    }
+
     /// Whether the running or last session is a quick session rather than an ordinary day.
     var isQuickSession: Bool {
         let snapshot = engine.snapshot
