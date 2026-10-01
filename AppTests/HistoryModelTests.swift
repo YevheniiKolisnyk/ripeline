@@ -205,13 +205,13 @@ struct HistoryModelTests {
         #expect(f.model.selection == "2026-01-14")
     }
 
-    @Test func aSelectionThatVanishedFallsToTheNewest() throws {
+    @Test func aSelectionThatVanishedAtTheEndFallsToTheNearestDay() throws {
         let f = fixture(try threeDays())
         f.model.refresh()
         f.model.select("2026-01-13")
         f.store.days?.removeAll { $0.key == "2026-01-13" }
         f.model.refresh()
-        #expect(f.model.selection == "2026-01-15")
+        #expect(f.model.selection == "2026-01-14")
     }
 
     @Test func aLoadFailureKeepsWhatWasShown() throws {
@@ -224,5 +224,52 @@ struct HistoryModelTests {
         f.store.failLoad = false
         f.model.refresh()
         #expect(!f.model.loadFailed)
+    }
+
+    // MARK: review findings
+
+    @Test func theDeleteFailedNoteGoesAwayWhenTheUserMovesOn() throws {
+        let f = fixture(try threeDays())
+        f.model.refresh()
+        f.store.failDelete = true
+        f.model.requestDelete("2026-01-14"); f.model.confirmDelete()
+        #expect(f.model.deleteFailed)
+        f.model.select("2026-01-13")
+        #expect(!f.model.deleteFailed)
+
+        f.model.requestDelete("2026-01-14"); f.model.confirmDelete()
+        #expect(f.model.deleteFailed)
+        f.model.requestDelete("2026-01-15")
+        #expect(!f.model.deleteFailed)
+
+        f.model.confirmDelete()
+        #expect(f.model.deleteFailed)
+        f.store.failDelete = false
+        f.model.refresh()
+        #expect(!f.model.deleteFailed)
+    }
+
+    @Test func aVanishedSelectionFallsToItsNeighbour() throws {
+        let f = fixture(try threeDays())
+        f.model.refresh()
+        f.model.select("2026-01-14")
+        f.store.days?.removeAll { $0.key == "2026-01-14" }
+        f.model.refresh()
+        #expect(f.model.selection == "2026-01-13")                 // the next older day, where it was
+
+        f.model.select("2026-01-13")
+        f.store.days?.removeAll { $0.key == "2026-01-13" }
+        f.model.refresh()
+        #expect(f.model.selection == "2026-01-15")                 // no older day left: the newer neighbour
+    }
+
+    @Test func aChangedDayInTheFileIsReportedNotDeleted() throws {
+        let f = fixture(try threeDays())
+        f.model.refresh()
+        f.store.failDeleteWith = DayStoreError.dayChanged
+        f.model.requestDelete("2026-01-14")
+        f.model.confirmDelete()
+        #expect(f.model.deleteFailed)
+        #expect(f.model.entries.count == 3)
     }
 }

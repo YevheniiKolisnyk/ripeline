@@ -86,13 +86,13 @@ final class FileDayStore: DayStore {
         try setAside("\(day.key).json", suffix: "corrupt")
     }
 
-    /// Listing changes nothing: a file that cannot be read is logged and skipped.
+    /// Listing changes nothing, not even the memory of where each day lives: a file that cannot be
+    /// read is logged and skipped.
     func loadAll() throws -> [StoredDay] {
         var days: [(day: StoredDay, sequence: Int)] = []
         for file in try dayFiles() {
             do {
                 guard case let .snapshot(snapshot) = try read(file.name) else { continue }
-                if let id = snapshot.plan.first?.id { fileForDay[id] = file.name }
                 days.append((StoredDay(key: String(file.name.dropLast(".json".count)), snapshot: snapshot), file.sequence))
             } catch {
                 logger.error("Skipping \(file.name, privacy: .public): \(error.localizedDescription, privacy: .public)")
@@ -108,8 +108,15 @@ final class FileDayStore: DayStore {
     func delete(_ day: StoredDay) throws {
         guard day.key.wholeMatch(of: /\d{4}-\d{2}-\d{2}(?:-\d+)?/) != nil else { throw DayStoreError.invalidKey }
         let name = "\(day.key).json"
-        guard fileManager.fileExists(atPath: file(named: name).path) else { return }
-        try fileManager.removeItem(at: file(named: name))
+        let url = file(named: name)
+        guard fileManager.fileExists(atPath: url.path) else { return }
+        // Only the day that was asked for, and only a plain file: never another day that took this
+        // name since the entry was shown, and never a directory (which removal would take whole).
+        guard try url.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile == true,
+              case let .snapshot(stored)? = try? read(name),
+              stored.plan.first?.id == day.snapshot.plan.first?.id
+        else { throw DayStoreError.dayChanged }
+        try fileManager.removeItem(at: url)
         fileForDay = fileForDay.filter { $0.value != name }
     }
 

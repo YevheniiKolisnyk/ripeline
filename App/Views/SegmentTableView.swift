@@ -21,7 +21,7 @@ struct SegmentTableView: View {
                     Text(verbatim: row.status == .notStarted ? Bundle.main.localizedString(forKey: "overview.noValue", value: nil, table: nil) : SetupText.duration(row.actual, locale: locale))
                     // A segment still to come or still running has no difference yet.
                     Text(verbatim: hasDifference(row) ? OverviewText.delta(row.delta, locale: locale) : "")
-                        .foregroundStyle(deltaColour(row.delta))
+                        .foregroundStyle(Self.deltaColour(row.delta, status: row.status))
                     Text(verbatim: OverviewText.status(row.status))
                         .foregroundStyle(row.status == .skipped ? .secondary : .primary)
                 }
@@ -38,9 +38,10 @@ struct SegmentTableView: View {
         Text(key).font(.caption).foregroundStyle(.secondary)
     }
 
-    /// Later than planned is orange, earlier is green; within a minute is plain.
-    private func deltaColour(_ delta: TimeInterval) -> Color {
-        if abs(delta) < 60 { return .secondary }
+    /// Later than planned is orange, earlier is green; within a minute is plain. A skipped segment
+    /// was cut short on purpose, so its difference is not a win and stays plain.
+    static func deltaColour(_ delta: TimeInterval, status: SegmentStatus) -> Color {
+        if status == .skipped || abs(delta) < 60 { return .secondary }
         return delta > 0 ? .orange : .green
     }
 }

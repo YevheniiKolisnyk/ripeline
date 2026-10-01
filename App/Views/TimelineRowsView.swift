@@ -56,7 +56,7 @@ struct TimelineRowsView: View {
             RoundedRectangle(cornerRadius: 4).fill(Color.primary.opacity(0.05)).frame(width: width, height: rowHeight)
             ForEach(Array(blocks.enumerated()), id: \.offset) { _, block in
                 let drawn = max(CGFloat(block.width) * width, minimumBlockWidth)
-                let height = Self.height(for: block.kind, full: rowHeight)
+                let height = rowHeight * Self.heightFraction(for: block.kind)
                 BlockShape(kind: block.kind, emphasis: emphasis)
                     .frame(width: drawn, height: height)
                     .offset(x: min(CGFloat(block.x) * width, max(0, width - drawn)), y: (rowHeight - height) / 2)
@@ -68,11 +68,18 @@ struct TimelineRowsView: View {
         .frame(width: width, height: rowHeight, alignment: .topLeading)
     }
 
-    /// Work is the full height; breaks and paused time are lower, so colour is not the only cue.
-    private static func height<Kind>(for kind: Kind, full: CGFloat) -> CGFloat {
-        if let planned = kind as? SegmentKind { return planned == .work ? full : full * 0.6 }
-        if let actual = kind as? ActualKind { return actual == .work ? full : full * 0.6 }
-        return full
+    /// How tall a block is, as a fraction of its row. Work is full height, the long break a little
+    /// lower, the short break and paused time lower still, so colour is not the only cue.
+    static func heightFraction<Kind>(for kind: Kind) -> CGFloat {
+        if let planned = kind as? SegmentKind {
+            switch planned {
+            case .work: return 1
+            case .longBreak: return 0.8
+            case .shortBreak: return 0.6
+            }
+        }
+        if let actual = kind as? ActualKind { return actual == .work ? 1 : 0.6 }
+        return 1
     }
 
     // MARK: Axis

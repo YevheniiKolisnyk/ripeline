@@ -15,6 +15,8 @@ final class MemoryDayStore: DayStore {
     var failLoad = false
     var failSave = false
     var failDelete = false
+    /// A specific error to throw from `delete`.
+    var failDeleteWith: (any Error)?
     /// The days `loadAll` returns, newest first; defaults to the latest day alone.
     var days: [StoredDay]?
     private(set) var deleted: [StoredDay] = []
@@ -40,6 +42,7 @@ final class MemoryDayStore: DayStore {
     }
 
     func delete(_ day: StoredDay) throws {
+        if let error = failDeleteWith { throw error }
         if failDelete { throw Failure() }
         deleted.append(day)
         days?.removeAll { $0.key == day.key }

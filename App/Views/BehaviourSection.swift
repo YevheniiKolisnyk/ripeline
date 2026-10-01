@@ -20,9 +20,9 @@ struct BehaviourSection: View {
 
     private func binding(_ keyPath: WritableKeyPath<SessionSettings, Bool>) -> Binding<Bool> {
         Binding(
-            get: { settings.session[keyPath: keyPath] },
+            get: { controller.effectiveSessionSettings[keyPath: keyPath] },
             set: { newValue in
-                var changed = settings.session
+                var changed = controller.effectiveSessionSettings
                 changed[keyPath: keyPath] = newValue
                 controller.updateSessionSettings(changed)
             }

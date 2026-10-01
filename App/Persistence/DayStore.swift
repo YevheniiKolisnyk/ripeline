@@ -12,6 +12,9 @@ enum DayStoreError: Error, Equatable {
     case emptyPlan
     /// The key is not the name of a day file, so it must not be turned into a path.
     case invalidKey
+    /// The file under the key is not the day that was asked to be deleted (or is not a regular
+    /// file), so nothing was removed.
+    case dayChanged
 }
 
 /// Where days are kept between launches.

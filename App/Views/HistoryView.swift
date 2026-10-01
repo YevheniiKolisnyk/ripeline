@@ -18,6 +18,8 @@ struct HistoryView: View {
             }
         }
         .onAppear { model.refresh() }
+        // The axis of an open day is drawn for the time zone in force when it was built.
+        .onReceive(NotificationCenter.default.publisher(for: .NSSystemTimeZoneDidChange)) { _ in model.refresh() }
         .confirmationDialog(
             "history.deleteTitle", isPresented: $confirming, titleVisibility: .visible, presenting: model.pendingDelete
         ) { entry in
