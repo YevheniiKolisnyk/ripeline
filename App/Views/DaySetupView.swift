@@ -1,15 +1,16 @@
 import RipelineCore
 import SwiftUI
 
-/// Identifies the day setup window scene.
-enum DaySetupWindow {
-    static let id = "day-setup"
+/// Identifies the app's one window.
+enum MainWindow {
+    static let id = "ripeline"
 }
 
 /// The day setup window: a form on the left, the plan it makes on the right, and the start button.
 struct DaySetupView: View {
     @Bindable var model: DaySetupModel
     let controller: SessionController
+    let settings: AppSettings
     @Environment(\.dismissWindow) private var dismissWindow
     @Environment(\.locale) private var locale
 
@@ -18,7 +19,6 @@ struct DaySetupView: View {
             content
                 .onChange(of: context.date) { model.refresh() }
         }
-        .frame(width: 600, height: 640)
         .onAppear { model.refresh() }
     }
 
@@ -32,6 +32,9 @@ struct DaySetupView: View {
                     Divider()
                     PlanPreviewView(result: model.result).frame(maxWidth: .infinity)
                 }
+                Divider()
+                BehaviourSection(controller: controller, settings: settings)
+                    .padding(.horizontal, 16).padding(.vertical, 10)
                 Divider()
                 bottomBar
             }
@@ -163,11 +166,10 @@ struct DaySetupView: View {
     private var bottomBar: some View {
         HStack {
             Spacer()
-            Button("setup.close") { dismissWindow(id: DaySetupWindow.id) }
+            Button("setup.close") { dismissWindow(id: MainWindow.id) }
             Button("ui.startDay") {
-                Task {
-                    if await model.startDay() { dismissWindow(id: DaySetupWindow.id) }
-                }
+                // The window stays open: it switches to the day screen by itself.
+                Task { await model.startDay() }
             }
             .buttonStyle(.borderedProminent)
             .keyboardShortcut(.defaultAction)

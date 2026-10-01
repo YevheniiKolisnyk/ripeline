@@ -7,13 +7,13 @@ struct PopoverActionsTests {
 
     @Test(arguments: [
         (Phase.idle, [PopoverAction.planDay]),
-        (.finished, [.planDay]),
-        (.working, [.pause, .extend, .skip, .endDay]),
-        (.onBreak, [.pause, .extend, .skip, .endDay]),
-        (.paused(onBreak: false), [.resume, .extend, .skip, .endDay]),
-        (.paused(onBreak: true), [.resume, .extend, .skip, .endDay]),
-        (.overtime(onBreak: false), [.next, .extend, .endDay]),
-        (.overtime(onBreak: true), [.next, .extend, .endDay]),
+        (.finished, [.summary]),
+        (.working, [.pause, .extend, .skip, .endDay, .overview]),
+        (.onBreak, [.pause, .extend, .skip, .endDay, .overview]),
+        (.paused(onBreak: false), [.resume, .extend, .skip, .endDay, .overview]),
+        (.paused(onBreak: true), [.resume, .extend, .skip, .endDay, .overview]),
+        (.overtime(onBreak: false), [.next, .extend, .endDay, .overview]),
+        (.overtime(onBreak: true), [.next, .extend, .endDay, .overview]),
     ])
     func buttonsForEachPhase(phase: Phase, expected: [PopoverAction]) {
         #expect(PopoverActions.visible(phase: phase, isAllowed: everything) == expected)
@@ -21,7 +21,7 @@ struct PopoverActionsTests {
 
     @Test func onlyAllowedActionsAreShown() {
         let onlyPause: (SessionAction) -> Bool = { $0 == .pause }
-        #expect(PopoverActions.visible(phase: .working, isAllowed: onlyPause) == [.pause])
+        #expect(PopoverActions.visible(phase: .working, isAllowed: onlyPause) == [.pause, .overview])
     }
 
     @Test func nothingIsShownWhenStartingIsNotAllowed() {
@@ -30,7 +30,7 @@ struct PopoverActionsTests {
 
     @Test func nextIsTiedToAdvance() {
         let onlyAdvance: (SessionAction) -> Bool = { $0 == .advance }
-        #expect(PopoverActions.visible(phase: .overtime(onBreak: false), isAllowed: onlyAdvance) == [.next])
+        #expect(PopoverActions.visible(phase: .overtime(onBreak: false), isAllowed: onlyAdvance) == [.next, .overview])
     }
 
     @Test func skipIsHiddenInOvertimeEvenIfAllowed() {
@@ -43,5 +43,25 @@ struct PlanDayActionTests {
     @Test func planDayIsTiedToStartDay() {
         #expect(PopoverAction.planDay.sessionAction == .startDay)
         #expect(PopoverAction.planDay.titleKey == "ui.planDay")
+    }
+}
+
+struct OverviewActionTests {
+    @Test(arguments: [Phase.working, .onBreak, .paused(onBreak: false), .overtime(onBreak: false), .finished])
+    func theOverviewIsAlwaysOffered(phase: Phase) {
+        let shown = PopoverActions.visible(phase: phase, isAllowed: { _ in false })
+        #expect(shown == (phase == .finished ? [.summary] : [.overview]))
+    }
+
+    @Test func theOverviewActionsAreNotEngineActions() {
+        #expect(PopoverAction.overview.sessionAction == nil)
+        #expect(PopoverAction.summary.sessionAction == nil)
+        #expect(PopoverAction.pause.sessionAction == .pause)
+        #expect(PopoverAction.next.sessionAction == .advance)
+    }
+
+    @Test func titles() {
+        #expect(PopoverAction.overview.titleKey == "ui.overview")
+        #expect(PopoverAction.summary.titleKey == "ui.summary")
     }
 }

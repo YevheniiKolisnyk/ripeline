@@ -60,15 +60,21 @@ struct PopoverView: View {
 
     private var actions: some View {
         let visible = PopoverActions.visible(phase: controller.phase, isAllowed: controller.isAllowed)
-        return GlassEffectContainer(spacing: 8) {
-            HStack(spacing: 8) {
-                ForEach(Array(visible.enumerated()), id: \.offset) { index, action in
-                    if index == 0 {
-                        button(for: action).buttonStyle(.glassProminent)
-                    } else {
-                        button(for: action).buttonStyle(.glass)
+        let buttons = visible.filter { $0 != .overview }
+        return VStack(alignment: .leading, spacing: 10) {
+            GlassEffectContainer(spacing: 8) {
+                HStack(spacing: 8) {
+                    ForEach(Array(buttons.enumerated()), id: \.offset) { index, action in
+                        if index == 0 {
+                            button(for: action).buttonStyle(.glassProminent)
+                        } else {
+                            button(for: action).buttonStyle(.glass)
+                        }
                     }
                 }
+            }
+            if visible.contains(.overview) {
+                button(for: .overview).buttonStyle(.link)
             }
         }
     }
@@ -79,8 +85,8 @@ struct PopoverView: View {
 
     private func perform(_ action: PopoverAction) {
         switch action {
-        case .planDay:
-            openWindow(id: DaySetupWindow.id)
+        case .planDay, .overview, .summary:
+            openWindow(id: MainWindow.id)
             // An app without a Dock icon does not come to the front by itself.
             NSApplication.shared.activate()
         case .pause: controller.pause()

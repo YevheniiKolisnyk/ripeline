@@ -1504,22 +1504,6 @@
           }
         }
       }
-    },
-    "window.setup.title": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Plan your day"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "План дня"
-          }
-        }
-      }
     }
   },
   "version": "1.0"
