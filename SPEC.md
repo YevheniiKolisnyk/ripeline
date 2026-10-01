@@ -213,3 +213,78 @@ Cover with tests:
 ## 5. Decisions log
 
 Clarifications of this specification are recorded here as they are made.
+
+### Units and input validation
+
+- **D2 — Units.** Inputs stay in whole minutes (preset, focus, `minMinutes`, `extend`).
+  Computed durations are `TimeInterval` (seconds); the UI formats them.
+- **D3 — Invalid input.** `PlanGenerator.generate` throws `PlanError` for non-positive
+  preset values, `end <= start`, `focusMinutes <= 0`, `afterWorkBlock(n < 1)` and
+  `minMinutes < 1`. A valid request whose day is too short for any block returns `[]`.
+
+### Plan generation
+
+- **D6 — Day shorter than one block.** `.shortBlock(min)`: one block filling the whole
+  window if it is at least `min`, otherwise `[]`. `.leaveFree` and `.stretchBlocks`: `[]`
+  (there is no full block to stretch).
+- **D7 — Stretch rounding.** Extra time is spread in whole minutes, earliest blocks first.
+  Any sub-minute residue (only possible with non-minute-aligned input) goes to the last
+  block.
+- **D8 — `.netFocus`.** `remainderStrategy` is ignored.
+- **D4 — Long break junction.** A junction's time is the end of the work block before it,
+  measured on the nominal layout (full blocks, short breaks). Candidates are tried
+  closest-first (earlier wins a tie). If placing the long break pushes out the block after
+  it (so the junction no longer exists), the next candidate is tried. If none fits, the plan
+  has no long break. `.afterWorkBlock(n)` past the last junction gives no long break.
+  The junction is chosen before stretching, so `.stretchBlocks` may move the long break later.
+  The junction after the plain plan's last block is also a candidate, because a long break
+  shorter than a short break can make room for one more work block.
+- **D5 — Long break and remainder.** With `.shortBlock`, if the remainder block follows the
+  long-break junction, the long break is used there (it replaces the short one).
+
+### Session engine
+
+- **D1 — Naming.** `Settings` is `SessionSettings` (avoids clashing with SwiftUI's `Settings`
+  scene). The clock protocol is `WallClock` (avoids Swift's `Clock`). The states enum is
+  `SessionState`; the full persisted value is `SessionSnapshot`.
+- **D12 — Segment statuses (part 1).** `endDay` while running or paused marks the current
+  segment `.skipped` and keeps what was recorded. Untouched segments stay `.notStarted`.
+- **D13 — `startDay` scope.** Valid only when idle or finished. A day in progress must be
+  ended first.
+- **D14 — Interval recording.** Every state change closes the open interval and opens the
+  next one, so a segment holds one interval per stretch of running, paused or overtime.
+  Zero-length intervals are dropped. Merging adjacent intervals is the timeline's job.
+- **D9 — Manual moves.** `start` is valid only when idle and starts segment 0. `skip` and
+  `advance` start the next segment immediately. The auto-advance flags only decide what
+  happens when time runs out.
+- **D10 — Which flag applies.** Chosen by the kind of the segment that is ending: work uses
+  `autoAdvanceWorkToBreak`; any break uses `autoAdvanceBreakToWork`. After the last segment
+  with the flag on the day is `finished`; with it off the engine waits in overtime and
+  `advance` finishes the day.
+- **D11 — Pause and extend scope.** `pause` is valid only while running (not in overtime:
+  use `advance` or `extend`). `extend` is valid while running, paused or in overtime; from
+  overtime it returns to running with `endsAt = now + minutes`.
+- **D12 — Segment statuses (part 2).** `skip` while running or paused gives `.skipped`
+  (recorded intervals are kept). `skip` in overtime behaves like `advance` and gives
+  `.completed`. `endDay` in overtime gives `.completed`.
+- **D15 — Clock going backwards.** The engine uses `max(clock.now, latest recorded instant)`,
+  so it never produces negative or reordered intervals.
+
+### Read models
+
+- **D17 — Lag when finished.** `projectedEnd` is the actual end of the day (the end of the
+  last recorded interval). `ScheduleStatus` is `nil` for an empty plan, or when the day
+  finished with nothing recorded. Segments that ran out before `now` are accounted for even
+  if the engine was not ticked.
+- **D16 — Comparison.** Per-segment `delta = (work + rest + untracked) - planned`, i.e.
+  wall-clock overrun, so for a segment still in progress it is negative. `actualEnd` is the
+  end of the last recorded interval once the day is `finished`, and `nil` before that. The
+  planned end of the day is the end of the last planned segment.
+- **D18 — Small additions to the engine API.** `updateSettings(_:)` changes settings for
+  future transitions only (an open pause interval keeps its kind). `isAllowed(_:)` lets the UI
+  enable or disable controls. `remainingTime()` and `overtimeElapsed()` feed the countdown and
+  never change the engine. `state` and `isAllowed(_:)` are evaluated as of the current time,
+  so they are correct between ticks; `snapshot` is the stored state and catches up on `tick()`
+  and on actions. `Timeline.bounds` gives the span for the shared axis.
+  `SessionEngine(restoring:clock:)` validates a stored snapshot and throws
+  `SessionError.invalidSnapshot` if it is inconsistent.

@@ -34,3 +34,6 @@ Config/Local.xcconfig
 *.swp
 .claude/settings.local.json
 CLAUDE.local.md
+
+# Local agent workspace
+.superpowers/

@@ -1,0 +1,50 @@
+import Foundation
+
+/// How far the day is from its plan.
+public struct ScheduleStatus: Sendable, Equatable {
+    /// When the plan said the day would end.
+    public let plannedEnd: Date
+    /// When the day will end if everything left takes exactly its planned time.
+    /// Once the day is finished, when it actually ended.
+    public let projectedEnd: Date
+
+    /// `projectedEnd - plannedEnd` in seconds. Positive: behind schedule. Negative: ahead.
+    public var lag: TimeInterval { projectedEnd.timeIntervalSince(plannedEnd) }
+
+    /// The status of `snapshot` at `now`, or `nil` when there is nothing to compare: no plan,
+    /// or a finished day in which nothing was recorded.
+    ///
+    /// Segments that ran out before `now` are accounted for even if the engine was not ticked.
+    public init?(snapshot: SessionSnapshot, now: Date) {
+        guard let plannedEnd = snapshot.plan.last?.end else { return nil }
+        var current = snapshot
+        current.catchUp(to: now)
+
+        let projectedEnd: Date
+        switch current.state {
+        case .finished:
+            guard let actualEnd = current.lastRecordedInstant else { return nil }
+            projectedEnd = actualEnd
+        case .idle, .running, .paused, .overtime:
+            let currentRemaining: TimeInterval
+            switch current.state {
+            case let .running(_, endsAt): currentRemaining = max(0, endsAt.timeIntervalSince(now))
+            case let .paused(_, remaining): currentRemaining = remaining
+            default: currentRemaining = 0
+            }
+            let notStarted = zip(current.plan, current.actuals)
+                .filter { $0.1.status == .notStarted }
+                .reduce(0) { $0 + $1.0.duration }
+            projectedEnd = now.addingTimeInterval(currentRemaining + notStarted)
+        }
+        self.plannedEnd = plannedEnd
+        self.projectedEnd = projectedEnd
+    }
+}
+
+extension SessionEngine {
+    /// The lag indicator as of the current time, or `nil` when there is nothing to compare.
+    public func scheduleStatus() -> ScheduleStatus? {
+        ScheduleStatus(snapshot: snapshot, now: currentInstant())
+    }
+}
