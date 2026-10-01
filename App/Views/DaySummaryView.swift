@@ -1,0 +1,33 @@
+import SwiftUI
+
+/// Focus, rest and paused time (actual / planned) and the end of the day, planned and projected or final.
+struct DaySummaryView: View {
+    let model: DayOverviewModel
+    @Environment(\.locale) private var locale
+
+    var body: some View {
+        if let summary = model.summary {
+            Grid(alignment: .leading, horizontalSpacing: 20, verticalSpacing: 6) {
+                GridRow { Text("summary.focus"); value("\(duration(summary.focusActual)) / \(duration(summary.focusPlanned))") }
+                GridRow { Text("summary.rest"); value("\(duration(summary.restActual)) / \(duration(summary.restPlanned))") }
+                GridRow { Text("summary.untracked"); value(duration(summary.untracked)) }
+                GridRow { Text("summary.plannedEnd"); value(time(summary.plannedEnd)) }
+                GridRow {
+                    Text(summary.endIsFinal ? "summary.finishedAt" : "summary.projectedEnd")
+                    value(time(summary.endsAt))
+                }
+            }
+        }
+    }
+
+    private func value(_ text: String) -> some View {
+        Text(verbatim: text).font(.body.weight(.medium)).monospacedDigit()
+    }
+
+    private func duration(_ seconds: TimeInterval) -> String { SetupText.duration(seconds, locale: locale) }
+
+    private func time(_ date: Date?) -> String {
+        guard let date else { return Bundle.main.localizedString(forKey: "overview.noValue", value: nil, table: nil) }
+        return SetupText.time(date, locale: locale, timeZone: .autoupdatingCurrent)
+    }
+}

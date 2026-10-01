@@ -39,7 +39,8 @@ The UI shows two timelines on a shared time axis: **planned** and **actual**.
 | 1 | Domain logic only (`RipelineCore` package). |
 | 2a | App shell and runtime: Xcode project, menu bar item and popover, ticking, sleep/wake, persistence, notifications. Done; see `docs/specs/2026-10-01-stage-2a-app-shell-design.md`. |
 | 2b | Day setup screen: form, live plan preview, start from now. Done; see `docs/specs/2026-10-01-stage-2b-day-setup-design.md`. |
-| 2c–2d | Day screen (timelines, lag, summary, session settings) and history. Not specified yet. |
+| 2c | Day screen: timelines, lag, summary, segment table, session settings, one window. Done; see `docs/specs/2026-10-01-stage-2c-day-screen-design.md`. |
+| 2d | History of past days. Not specified yet. |
 
 ## 4. Stage 1 — Domain logic
 
@@ -298,4 +299,5 @@ Clarifications of this specification are recorded here as they are made.
 
 Decisions for the app (stage 2) are recorded in the specs of the sub-projects:
 [2a](docs/specs/2026-10-01-stage-2a-app-shell-design.md) (section 10) and
-[2b](docs/specs/2026-10-01-stage-2b-day-setup-design.md) (section 8).
+[2b](docs/specs/2026-10-01-stage-2b-day-setup-design.md) (section 8) and
+[2c](docs/specs/2026-10-01-stage-2c-day-screen-design.md) (section 8).

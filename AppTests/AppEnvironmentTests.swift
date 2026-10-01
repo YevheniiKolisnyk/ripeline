@@ -43,5 +43,9 @@ struct AppEnvironmentTests {
 
         #expect(listing() == before)
         #expect(environment.controller.phase == .working)    // it still works, in memory
+
+        environment.overviewModel.refresh()
+        #expect(environment.overviewModel.mode == .running)
+        #expect(listing() == before)
     }
 }

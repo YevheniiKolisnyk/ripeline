@@ -8,6 +8,7 @@ final class AppEnvironment {
     let settings: AppSettings
     let controller: SessionController
     let setupModel: DaySetupModel
+    let overviewModel: DayOverviewModel
     let store: any DayStore
     let notifier: any Notifier
     /// `true` when running under XCTest: nothing real is touched.
@@ -20,6 +21,7 @@ final class AppEnvironment {
     ) {
         self.settings = settings
         self.controller = controller
+        overviewModel = DayOverviewModel(source: controller)
         setupModel = DaySetupModel(
             settings: settings, clock: SystemClock(),
             canStart: { [weak controller] in controller?.isAllowed(.startDay) ?? false },

@@ -28,7 +28,7 @@ struct LocalizationCatalogTests {
     }
 
     /// Product names and the like may legitimately read the same in both languages.
-    private let sameInBothLanguages: Set<String> = ["app.name"]
+    private let sameInBothLanguages: Set<String> = ["app.name", "overview.noValue"]
 
     @Test func ukrainianDiffersFromEnglish() throws {
         let english = try strings("en")

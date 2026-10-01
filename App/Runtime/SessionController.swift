@@ -95,6 +95,18 @@ final class SessionController {
         return engine.scheduleStatus()
     }
 
+    /// The planned and actual blocks of the day as of the current time.
+    var timeline: Timeline {
+        _ = now
+        return engine.timeline()
+    }
+
+    /// Plan versus reality, per segment and for the day, as of the current time.
+    var comparison: DayComparison {
+        _ = now
+        return engine.comparison()
+    }
+
     func isAllowed(_ action: SessionAction) -> Bool { engine.isAllowed(action) }
 
     // MARK: Launch
@@ -180,6 +192,17 @@ final class SessionController {
         didRequestAuthorization = true
         let notifier = notifier
         Task { @MainActor in await notifier.requestAuthorization() }
+    }
+
+    /// Changes how sessions behave. Effective from the next transition: recorded time is not
+    /// rewritten and an open pause keeps its kind. Also applies to the next day.
+    func updateSessionSettings(_ new: SessionSettings) {
+        // Settle any segment whose end has already passed with the settings that were in force then,
+        // not the new ones.
+        engine.tick()
+        settings.session = new
+        engine.updateSettings(new)
+        didChange()
     }
 
     func start() { act(.start) { try $0.start() } }
@@ -279,5 +302,17 @@ final class SessionController {
             failedSave = (snapshot, now)
             logger.error("Could not save the day: \(error.localizedDescription, privacy: .public)")
         }
+    }
+}
+
+extension SessionController: DayOverviewSource {
+    var hasDay: Bool { !plan.isEmpty }
+    var overviewPhase: Phase { phase }
+    var overviewTimeline: Timeline { timeline }
+    var overviewComparison: DayComparison { comparison }
+    var overviewStatus: ScheduleStatus? { scheduleStatus }
+    var overviewNow: Date {
+        _ = now
+        return clock.now
     }
 }
