@@ -85,3 +85,34 @@ func standardRequest(at now: Date) -> DayPlanRequest {
 func utcDate(_ year: Int, _ month: Int, _ day: Int, _ hour: Int = 0, _ minute: Int = 0) -> Date {
     DateComponents(calendar: utc, year: year, month: month, day: day, hour: hour, minute: minute).date!
 }
+
+/// A day played on a real engine and returned as a snapshot. `script` receives the engine and the
+/// clock, which starts at the plan's first segment.
+func playedDay(
+    plan: [PlannedSegment] = fivePlan(), settings: SessionSettings = SessionSettings(),
+    _ script: (inout SessionEngine, TestClock) throws -> Void
+) throws -> SessionSnapshot {
+    let clock = TestClock(plan[0].start)
+    var engine = SessionEngine(clock: clock)
+    try engine.startDay(plan: plan, settings: settings)
+    try script(&engine, clock)
+    return engine.snapshot
+}
+
+/// A day on `fivePlan(start:)` started at its start and ended thirty minutes later.
+func finishedDay(start: Date = t(9)) throws -> SessionSnapshot {
+    try playedDay(plan: fivePlan(start: start)) { engine, clock in
+        try engine.start()
+        clock.set(start.addingTimeInterval(1800))
+        try engine.endDay()
+    }
+}
+
+/// A day started at `start`, paused for five minutes after half an hour, and left running: never ended.
+func abandonedDay(start: Date = t(9)) throws -> SessionSnapshot {
+    try playedDay(plan: fivePlan(start: start)) { engine, clock in
+        try engine.start()
+        clock.set(start.addingTimeInterval(1800)); try engine.pause()
+        clock.set(start.addingTimeInterval(2100)); try engine.resume()
+    }
+}

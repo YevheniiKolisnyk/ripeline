@@ -10,6 +10,8 @@ struct StoredDay: Equatable, Sendable {
 enum DayStoreError: Error, Equatable {
     /// A snapshot without a plan has nothing to store and no date to store it under.
     case emptyPlan
+    /// The key is not the name of a day file, so it must not be turned into a path.
+    case invalidKey
 }
 
 /// Where days are kept between launches.
@@ -23,4 +25,12 @@ enum DayStoreError: Error, Equatable {
 
     /// Sets the day's file aside as `<key>.json.corrupt`: kept, but no longer loaded.
     func quarantine(_ day: StoredDay) throws
+
+    /// Every readable day, newest first by the start of its plan. Damaged and newer-version files, and
+    /// anything that cannot be read, are skipped without being renamed or removed.
+    func loadAll() throws -> [StoredDay]
+
+    /// Removes the day's file. A file that is already gone is not an error. Files that were set
+    /// aside (`.corrupt`, `.unsupported`) are never touched.
+    func delete(_ day: StoredDay) throws
 }
