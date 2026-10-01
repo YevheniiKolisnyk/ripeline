@@ -5,6 +5,8 @@ import Foundation
 /// Time is always derived from `Date`s (`endsAt - now`), never from a counter that is
 /// decremented, so the engine stays correct after the Mac sleeps.
 public struct SessionEngine: Sendable {
+    /// The stored state, exactly as last recorded. It is what gets persisted. It only catches up
+    /// with the clock on `tick()` and on actions; `state` and the read models are always current.
     public private(set) var snapshot: SessionSnapshot
     private let clock: any WallClock
 
@@ -24,11 +26,14 @@ public struct SessionEngine: Sendable {
         self.clock = clock
     }
 
-    public var state: SessionState { snapshot.state }
+    /// Where the engine is as of the current time. A segment that has run out already shows
+    /// as overtime (or as the next segment, with auto-advance) without waiting for `tick()`.
+    public var state: SessionState { caughtUp().state }
 
     /// Whether `action` is valid right now, so the UI can enable or disable its controls.
+    /// Judged as of the current time, like `state`.
     public func isAllowed(_ action: SessionAction) -> Bool {
-        snapshot.isAllowed(action)
+        caughtUp().isAllowed(action)
     }
 
     // MARK: Actions

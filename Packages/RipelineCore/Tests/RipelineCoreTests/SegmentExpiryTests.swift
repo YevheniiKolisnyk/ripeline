@@ -202,4 +202,16 @@ struct SegmentExpiryTests {
         engine.tick()
         #expect(engine.snapshot == before)
     }
+
+    // MARK: reads reflect the current time without a tick
+
+    /// Review finding: the UI reads `state` and `isAllowed` between ticks and after waking.
+    @Test func stateAndAllowedActionsAreCurrentEvenBeforeATick() throws {
+        let (engine, clock) = try started()
+        clock.set(t(9, 51))
+        #expect(engine.state == .overtime(segmentIndex: 0, since: t(9, 50)))
+        #expect(engine.isAllowed(.pause) == false)
+        #expect(engine.isAllowed(.advance) == true)
+        #expect(engine.isAllowed(.extend) == true)
+    }
 }
