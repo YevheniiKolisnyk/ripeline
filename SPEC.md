@@ -274,3 +274,7 @@ Clarifications of this specification are recorded here as they are made.
   last recorded interval). `ScheduleStatus` is `nil` for an empty plan, or when the day
   finished with nothing recorded. Segments that ran out before `now` are accounted for even
   if the engine was not ticked.
+- **D16 — Comparison.** Per-segment `delta = (work + rest + untracked) - planned`, i.e.
+  wall-clock overrun, so for a segment still in progress it is negative. `actualEnd` is the
+  end of the last recorded interval once the day is `finished`, and `nil` before that. The
+  planned end of the day is the end of the last planned segment.
