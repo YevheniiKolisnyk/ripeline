@@ -51,4 +51,14 @@ struct TomatoLookTests {
         #expect(TomatoPalette.body(ripeness: 7) == TomatoPalette.red)
         #expect(TomatoPalette.body(ripeness: -1) == TomatoPalette.green)
     }
+
+    @Test func theMenuBarTomatoGrowsFromEightToEighteenPoints() {
+        #expect(abs(TomatoLook.menuBarDiameter(growth: 0) - 8) < 1e-9)
+        #expect(abs(TomatoLook.menuBarDiameter(growth: 2) - 18) < 1e-9)
+        #expect(abs(TomatoLook.menuBarDiameter(growth: 9) - 18) < 1e-9)
+        let sizes = stride(from: 0.0, through: 2.5, by: 0.01).map { TomatoLook.menuBarDiameter(growth: $0) }
+        #expect(zip(sizes, sizes.dropFirst()).allSatisfy { $0 <= $1 })
+        let full = TomatoLook.menuBarDiameter(growth: 1)
+        #expect(full > 12 && full < 15)
+    }
 }

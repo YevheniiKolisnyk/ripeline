@@ -238,6 +238,10 @@ Every work block is a tomato; breaks give none. The core derives the tomatoes fr
 - **The crate** (History tab) shows the picked tomatoes of the stored days, the newest 300 by block
   start, with the total on it. A tomato's size there is read at the last record of its day. Deleting a
   day forgets its tomatoes. With Reduce Motion the pile lies still.
+- **The menu bar item** shows the tomato of the work block that is running or in overtime, drawn as
+  grown so far (8 pt for a seedling up to 18 pt for the biggest), with the timer next to it unless
+  the user hides the time; a paused work block shows its tomato frozen and faded. On a break, with no
+  day, and when a day has ended it shows the phase's symbol as before.
 
 ## 5. Decisions log
 
@@ -267,6 +271,9 @@ Clarifications of this specification are recorded here as they are made.
 - **D-T6 — A stored day is settled.** For a day that is not running (stored), a block that was still
   active when it was last recorded counts as over, so its tomato can be picked (the app may have been
   closed in the middle of a block).
+
+- **D-T7 — A colour picture in the menu bar.** The tomato is rendered once per look and size into a
+  non-template `NSImage`, so the menu bar does not tint it and does not re-render it every second.
 
 ### Units and input validation
 

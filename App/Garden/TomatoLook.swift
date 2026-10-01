@@ -73,6 +73,13 @@ struct TomatoLook: Equatable, Sendable {
         face = g < Self.ripeFrom ? .sleepy : (g < Self.grinFrom ? .smile : .grin)
     }
 
+    /// How tall the tomato is in the menu bar, in points: 8 for a seedling up to 18 for the biggest, following the display scale.
+    static func menuBarDiameter(growth: Double) -> Double {
+        let smallest = 0.35, biggest = 1.5
+        let fraction = (TomatoLook(growth: growth).scale - smallest) / (biggest - smallest)
+        return 8 + 10 * min(1, max(0, fraction))
+    }
+
     /// Bigger than 100% by enough to grin and sparkle.
     var isBig: Bool { face == .grin }
 
