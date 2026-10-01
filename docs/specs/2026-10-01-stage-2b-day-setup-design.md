@@ -60,6 +60,7 @@ Issues, which block "Start":
 
 - `endNotAfterNow`: in `.untilTime`, the end time is at or before now.
 - `dayTooShort`: the generated plan is empty.
+- `invalidInput`: the generator refused the request. It cannot happen after the form is normalized; it exists so a refusal is never mistaken for a short day.
 
 Notices, which do not block:
 
