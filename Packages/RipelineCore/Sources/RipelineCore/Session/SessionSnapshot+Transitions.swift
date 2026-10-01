@@ -82,6 +82,17 @@ extension SessionSnapshot {
         leave(segment: index, as: .completed, at: now)
     }
 
+    /// Adds segments to the end of a quick session's plan, with an empty record each. They must continue
+    /// the indices, start where the plan ends and have a positive length; if not, nothing changes.
+    mutating func appendSegments(_ segments: [PlannedSegment]) throws(SessionError) {
+        guard isAllowed(.append) else { throw .notAllowed(.append) }
+        guard !segments.isEmpty else { throw .emptyPlan }
+        let combined = plan + segments
+        guard Self.isWellFormed(combined) else { throw .invalidPlan }
+        plan = combined
+        actuals += segments.map { _ in SegmentActual() }
+    }
+
     /// Plays out every segment that ran out before `now`: either by moving on by itself
     /// (auto-advance) or by waiting in overtime. Intervals get their real times.
     mutating func catchUp(to now: Date) {

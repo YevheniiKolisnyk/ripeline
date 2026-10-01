@@ -116,6 +116,7 @@ public struct SessionSnapshot: Codable, Sendable, Equatable {
         case (.running, .extend), (.paused, .extend), (.overtime, .extend): true
         case (.running, .skip), (.paused, .skip), (.overtime, .skip): true
         case (.overtime, .advance): true
+        case (.running, .append), (.paused, .append), (.overtime, .append): kind == .quick
         case (.running, .endDay), (.paused, .endDay), (.overtime, .endDay): true
         default: false
         }

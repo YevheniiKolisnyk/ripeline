@@ -23,6 +23,8 @@ public enum SessionAction: String, Sendable, Equatable, CaseIterable {
     case skip
     case advance
     case endDay
+    /// Adds segments to a quick session while it runs.
+    case append
 }
 
 /// Why the engine refused an action or a stored snapshot.

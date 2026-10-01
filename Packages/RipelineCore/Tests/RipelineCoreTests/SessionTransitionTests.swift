@@ -158,6 +158,7 @@ struct SessionTransitionTests {
         case .skip: try engine.skip()
         case .advance: try engine.advance()
         case .endDay: try engine.endDay()
+        case .append: try engine.appendSegments(makePlan(start: t(10, 50), [(.shortBreak, 5)]))
         }
     }
 

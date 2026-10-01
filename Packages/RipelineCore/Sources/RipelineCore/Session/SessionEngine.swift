@@ -78,6 +78,14 @@ public struct SessionEngine: Sendable {
         try snapshot.advance(at: syncedNow())
     }
 
+    /// Adds segments to the end of a quick session's plan while it runs. They must continue the
+    /// indices, start exactly where the plan ends and have a positive length, else `invalidPlan`.
+    /// The engine first catches up with the clock: if that finishes the session, this is refused.
+    public mutating func appendSegments(_ segments: [PlannedSegment]) throws(SessionError) {
+        _ = syncedNow()
+        try snapshot.appendSegments(segments)
+    }
+
     /// Brings the engine up to the current time. Call it on a timer, and after waking from sleep.
     public mutating func tick() {
         _ = syncedNow()
