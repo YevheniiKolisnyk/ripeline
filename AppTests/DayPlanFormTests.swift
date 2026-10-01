@@ -105,9 +105,29 @@ struct DayPlanFormTests {
         #expect(try JSONDecoder().decode(DayPlanForm.self, from: JSONEncoder().encode(form)) == form)
     }
 
-    @Test func anUnknownCaseFailsToDecode() throws {
-        let json = try String(decoding: JSONEncoder().encode(DayPlanForm.standard), as: UTF8.self)
-            .replacingOccurrences(of: "deepWork", with: "mystery")
-        #expect(throws: DecodingError.self) { try JSONDecoder().decode(DayPlanForm.self, from: Data(json.utf8)) }
+    @Test func anUnknownCaseResetsOnlyThatField() throws {
+        var form = DayPlanForm.standard
+        form.focusMinutes = 100
+        form.mode = .netFocus
+        let json = try String(decoding: JSONEncoder().encode(form), as: UTF8.self)
+            .replacingOccurrences(of: "deepWork", with: "removedInALaterVersion")
+        let decoded = try JSONDecoder().decode(DayPlanForm.self, from: Data(json.utf8))
+        #expect(decoded.presetChoice == DayPlanForm.standard.presetChoice)
+        #expect(decoded.focusMinutes == 100)
+        #expect(decoded.mode == .netFocus)
+    }
+
+    @Test func missingFieldsTakeTheirDefaults() throws {
+        let decoded = try JSONDecoder().decode(DayPlanForm.self, from: Data(#"{"focusMinutes": 90}"#.utf8))
+        var expected = DayPlanForm.standard
+        expected.focusMinutes = 90
+        #expect(decoded == expected)
+        #expect(try JSONDecoder().decode(DayPlanForm.self, from: Data("{}".utf8)) == .standard)
+    }
+
+    @Test func aFieldOfTheWrongTypeResetsOnlyThatField() throws {
+        let decoded = try JSONDecoder().decode(DayPlanForm.self, from: Data(#"{"focusMinutes": "lots", "minBlockMinutes": 20}"#.utf8))
+        #expect(decoded.focusMinutes == DayPlanForm.standard.focusMinutes)
+        #expect(decoded.minBlockMinutes == 20)
     }
 }

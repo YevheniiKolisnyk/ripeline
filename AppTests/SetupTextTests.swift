@@ -59,9 +59,16 @@ struct SetupTextTests {
         #expect(!notLong.isEmpty && !notLong.hasPrefix("setup."))
         #expect(notLong != SetupText.message(for: .longBreakNotPlaced, locale: uk, bundle: ukrainian))
 
+        let passedEn = SetupText.message(for: .longBreakTimePassed, locale: en, bundle: english)
+        let passedUk = SetupText.message(for: .longBreakTimePassed, locale: uk, bundle: ukrainian)
+        #expect(!passedEn.isEmpty && !passedEn.hasPrefix("setup."))
+        #expect(!passedUk.isEmpty && !passedUk.hasPrefix("setup.") && passedUk != passedEn)
+
         let freeEn = SetupText.message(for: .remainderLeftFree(minutes: 10), locale: Locale(identifier: "en"), bundle: english)
         #expect(freeEn.contains("10 min"))
         #expect(!freeEn.hasPrefix("setup."))
+        let oneEn = SetupText.message(for: .remainderLeftFree(minutes: 1), locale: Locale(identifier: "en"), bundle: english)
+        #expect(!oneEn.contains(" are "), "the notice must read correctly for 1 minute")
         let freeUk = SetupText.message(for: .remainderLeftFree(minutes: 75), locale: uk, bundle: ukrainian)
         #expect(freeUk.contains("1 год, 15 хв"))
     }

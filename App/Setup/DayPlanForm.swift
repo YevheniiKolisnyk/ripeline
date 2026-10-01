@@ -92,3 +92,25 @@ struct DayPlanForm: Codable, Equatable, Sendable {
         return form
     }
 }
+
+extension DayPlanForm {
+    private enum CodingKeys: String, CodingKey {
+        case presetChoice, customPreset, mode, endTime, focusMinutes, longBreak, remainder, minBlockMinutes
+    }
+
+    /// Reads each field on its own, so a field that is missing, was added later, or holds a case
+    /// this version does not know resets only itself to its default and keeps the rest of the
+    /// stored choices. A value that is not an object at all still fails.
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let standard = DayPlanForm.standard
+        presetChoice = (try? container.decode(PresetChoice.self, forKey: .presetChoice)) ?? standard.presetChoice
+        customPreset = (try? container.decode(Preset.self, forKey: .customPreset)) ?? standard.customPreset
+        mode = (try? container.decode(DayModeChoice.self, forKey: .mode)) ?? standard.mode
+        endTime = (try? container.decode(TimeOfDay.self, forKey: .endTime)) ?? standard.endTime
+        focusMinutes = (try? container.decode(Int.self, forKey: .focusMinutes)) ?? standard.focusMinutes
+        longBreak = (try? container.decode(LongBreakChoice.self, forKey: .longBreak)) ?? standard.longBreak
+        remainder = (try? container.decode(RemainderChoice.self, forKey: .remainder)) ?? standard.remainder
+        minBlockMinutes = (try? container.decode(Int.self, forKey: .minBlockMinutes)) ?? standard.minBlockMinutes
+    }
+}

@@ -12,7 +12,8 @@ enum Phase: Equatable, Sendable {
     /// SF Symbol shown in the menu bar.
     var symbolName: String {
         switch self {
-        case .idle, .working: "timer"
+        case .idle: "circle.dashed"
+        case .working: "timer"
         case .onBreak: "cup.and.saucer.fill"
         case .paused: "pause.circle.fill"
         case .overtime: "exclamationmark.circle.fill"

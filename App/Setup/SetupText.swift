@@ -16,6 +16,8 @@ enum SetupText {
         switch notice {
         case .longBreakNotPlaced:
             return bundle.localizedString(forKey: "setup.notice.longBreakNotPlaced", value: nil, table: nil)
+        case .longBreakTimePassed:
+            return bundle.localizedString(forKey: "setup.notice.longBreakTimePassed", value: nil, table: nil)
         case let .remainderLeftFree(minutes):
             let format = bundle.localizedString(forKey: "setup.notice.remainderLeftFree", value: nil, table: nil)
             return String(format: format, duration(TimeInterval(minutes) * 60, locale: locale))

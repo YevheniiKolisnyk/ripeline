@@ -181,4 +181,29 @@ struct DaySetupTests {
         #expect(parts.hour == 3)
         #expect(!preview.segments.isEmpty)
     }
+
+    // MARK: minor findings
+
+    /// The second pass through the repeated hour: 01:45 EST with an end of 01:50 is five minutes away.
+    @Test func theSecondPassThroughARepeatedHourStillHasItsEndAhead() throws {
+        let newYork = calendar(zone: "America/New_York")
+        let now = utcDate(2026, 11, 1, 6, 45)               // 01:45 EST, the second 01:45
+        let f = form { $0.endTime = TimeOfDay(hour: 1, minute: 50); $0.remainder = .shortBlock; $0.minBlockMinutes = 1 }
+        let (request, _, _) = try ready(DaySetup.evaluate(form: f, now: now, calendar: newYork))
+        guard case let .untilTime(_, end) = request.mode else { Issue.record("not untilTime"); return }
+        #expect(end == utcDate(2026, 11, 1, 6, 50))
+    }
+
+    @Test func aLongBreakTimeThatHasPassedIsReported() throws {
+        let f = form { $0.longBreak = .atTime(TimeOfDay(hour: 13, minute: 0)); $0.remainder = .leaveFree }
+        let (_, preview, notices) = try ready(DaySetup.evaluate(form: f, now: t(14), calendar: utc))
+        #expect(notices.contains(.longBreakTimePassed))
+        #expect(kinds(preview).contains(.longBreak))        // the core still places it at the nearest break
+    }
+
+    @Test func aLongBreakTimeStillAheadIsNotReported() throws {
+        let f = form { $0.longBreak = .atTime(TimeOfDay(hour: 13, minute: 0)) }
+        let (_, _, notices) = try ready(DaySetup.evaluate(form: f, now: t(9), calendar: utc))
+        #expect(!notices.contains(.longBreakTimePassed))
+    }
 }

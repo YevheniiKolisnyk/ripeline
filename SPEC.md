@@ -295,3 +295,7 @@ Clarifications of this specification are recorded here as they are made.
   and on actions. `Timeline.bounds` gives the span for the shared axis.
   `SessionEngine(restoring:clock:)` validates a stored snapshot and throws
   `SessionError.invalidSnapshot` if it is inconsistent.
+
+Decisions for the app (stage 2) are recorded in the specs of the sub-projects:
+[2a](docs/specs/2026-10-01-stage-2a-app-shell-design.md) (section 10) and
+[2b](docs/specs/2026-10-01-stage-2b-day-setup-design.md) (section 8).

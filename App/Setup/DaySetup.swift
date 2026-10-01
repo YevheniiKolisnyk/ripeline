@@ -16,6 +16,8 @@ enum DaySetupIssue: Equatable, Sendable {
 enum DaySetupNotice: Equatable, Sendable {
     /// A long break was requested but did not fit, so the plan has none.
     case longBreakNotPlaced
+    /// The time asked for the long break is already past, so it went to the nearest break.
+    case longBreakTimePassed
     /// Part of the day, in whole minutes, is left without a block.
     case remainderLeftFree(minutes: Int)
 }
@@ -39,6 +41,16 @@ enum DaySetupResult: Equatable, Sendable {
 
 /// Turns what the user entered into a plan, as of a moment. The plan always starts at `now`.
 enum DaySetup {
+    /// `time` on the day of `now`. On a day where an hour repeats, the first occurrence may already
+    /// be behind `now` while the second is still ahead (the second pass through the hour); that one
+    /// is taken then.
+    private static func resolve(_ time: TimeOfDay, now: Date, calendar: Calendar) -> Date {
+        let first = time.date(on: now, calendar: calendar)
+        guard first <= now else { return first }
+        let second = time.date(on: now, calendar: calendar, repeatedTimePolicy: .last)
+        return second > now ? second : first
+    }
+
     static func evaluate(form: DayPlanForm, now: Date, calendar: Calendar) -> DaySetupResult {
         let form = form.normalized()
 
@@ -46,7 +58,7 @@ enum DaySetup {
         var requestedEnd: Date?
         switch form.mode {
         case .untilTime:
-            let end = form.endTime.date(on: now, calendar: calendar)
+            let end = resolve(form.endTime, now: now, calendar: calendar)
             guard end > now else { return .invalid(.endNotAfterNow) }
             mode = .untilTime(start: now, end: end)
             requestedEnd = end
@@ -55,9 +67,13 @@ enum DaySetup {
         }
 
         let longBreak: DayPlanRequest.LongBreak
+        var longBreakTimePassed = false
         switch form.longBreak {
         case .none: longBreak = .none
-        case let .atTime(time): longBreak = .atTime(time.date(on: now, calendar: calendar))
+        case let .atTime(time):
+            let resolved = resolve(time, now: now, calendar: calendar)
+            longBreakTimePassed = resolved <= now
+            longBreak = .atTime(resolved)
         case let .afterBlock(block): longBreak = .afterWorkBlock(block)
         }
 
@@ -82,6 +98,7 @@ enum DaySetup {
         )
 
         var notices: [DaySetupNotice] = []
+        if longBreakTimePassed { notices.append(.longBreakTimePassed) }
         if form.longBreak != .none, !plan.contains(where: { $0.kind == .longBreak }) {
             notices.append(.longBreakNotPlaced)
         }

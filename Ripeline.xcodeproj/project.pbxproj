@@ -291,6 +291,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				GENERATE_INFOPLIST_FILE = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(inherited).Tests";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Ripeline.app/Contents/MacOS/Ripeline";
 			};
 			name = Debug;
@@ -301,6 +302,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				GENERATE_INFOPLIST_FILE = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(inherited).Tests";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Ripeline.app/Contents/MacOS/Ripeline";
 			};
 			name = Release;

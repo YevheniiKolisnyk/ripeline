@@ -25,8 +25,12 @@ struct TimeOfDay: Codable, Equatable, Hashable, Sendable {
     }
 
     /// This time on the calendar day that contains `day`. A time that does not exist that day
-    /// (skipped by a daylight saving change) becomes the next time that does.
-    func date(on day: Date, calendar: Calendar) -> Date {
-        calendar.date(bySettingHour: hour, minute: minute, second: 0, of: day, matchingPolicy: .nextTime) ?? day
+    /// (skipped by a daylight saving change) becomes the next time that does; a time that happens
+    /// twice (repeated by one) is the first occurrence unless `repeatedTimePolicy` says `.last`.
+    func date(on day: Date, calendar: Calendar, repeatedTimePolicy: Calendar.RepeatedTimePolicy = .first) -> Date {
+        calendar.date(
+            bySettingHour: hour, minute: minute, second: 0, of: day,
+            matchingPolicy: .nextTime, repeatedTimePolicy: repeatedTimePolicy
+        ) ?? day
     }
 }

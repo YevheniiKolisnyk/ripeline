@@ -8,7 +8,7 @@ import Testing
 struct SessionControllerBookkeepingTests {
     private let allAuto = SessionSettings(autoAdvanceWorkToBreak: true, autoAdvanceBreakToWork: true)
 
-    /// A harness with a day started through the quick-start plan (work 50, break 10, …).
+    /// A harness with the standard day started (four hours of focus, work 50, break 10, …).
     private func started(session: SessionSettings? = nil) async -> Harness {
         let h = Harness(session: session)
         await h.startStandardDay()

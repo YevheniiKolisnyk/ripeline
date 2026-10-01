@@ -174,4 +174,45 @@ struct DaySetupModelTests {
         f.recorder.outcome = true
         #expect(await f.model.startDay() == true)
     }
+
+    // MARK: long break kind
+
+    @Test func theLongBreakKindFollowsTheForm() {
+        let f = makeFixture(); defer { f.cleanUp() }
+        #expect(f.model.longBreakKind == .none)
+        f.model.form.longBreak = .atTime(TimeOfDay(hour: 12, minute: 0))
+        #expect(f.model.longBreakKind == .atTime)
+        f.model.form.longBreak = .afterBlock(3)
+        #expect(f.model.longBreakKind == .afterBlock)
+    }
+
+    @Test func switchingTheKindUsesDefaultsFirstAndThenRemembersWhatWasEntered() {
+        let f = makeFixture(); defer { f.cleanUp() }
+        f.model.longBreakKind = .atTime
+        #expect(f.model.form.longBreak == .atTime(TimeOfDay(hour: 13, minute: 0)))
+        f.model.form.longBreak = .atTime(TimeOfDay(hour: 15, minute: 30))
+
+        f.model.longBreakKind = .afterBlock
+        #expect(f.model.form.longBreak == .afterBlock(2))
+        f.model.form.longBreak = .afterBlock(5)
+
+        f.model.longBreakKind = .none
+        #expect(f.model.form.longBreak == LongBreakChoice.none)
+        f.model.longBreakKind = .atTime
+        #expect(f.model.form.longBreak == .atTime(TimeOfDay(hour: 15, minute: 30)))
+        f.model.longBreakKind = .afterBlock
+        #expect(f.model.form.longBreak == .afterBlock(5))
+    }
+
+    @Test func aStoredLongBreakIsRemembered() {
+        let suite = "ripeline-tests-\(UUID().uuidString)"
+        defer { UserDefaults().removePersistentDomain(forName: suite) }
+        var stored = DayPlanForm.standard
+        stored.longBreak = .afterBlock(4)
+        AppSettings(defaults: UserDefaults(suiteName: suite)!).dayPlanForm = stored
+        let model = makeFixture(suite: suite).model
+        model.longBreakKind = .none
+        model.longBreakKind = .afterBlock
+        #expect(model.form.longBreak == .afterBlock(4))
+    }
 }

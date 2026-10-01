@@ -35,10 +35,16 @@ final class TaskTicker: Ticker {
         let interval = interval
         let sleep = sleep
         task = Task { @MainActor in
+            let clock = ContinuousClock()
+            var deadline = clock.now.advanced(by: interval)
             while !Task.isCancelled {
-                do { try await sleep(interval) } catch { break }
+                let now = clock.now
+                // Ticks missed while the Mac slept are skipped, not replayed in a burst.
+                if deadline <= now { deadline = now.advanced(by: interval) }
+                do { try await sleep(deadline - now) } catch { break }
                 guard !Task.isCancelled else { break }
                 handler()
+                deadline = deadline.advanced(by: interval)
             }
         }
     }
@@ -47,4 +53,6 @@ final class TaskTicker: Ticker {
         task?.cancel()
         task = nil
     }
+
+    isolated deinit { task?.cancel() }
 }

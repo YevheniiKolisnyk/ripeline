@@ -80,3 +80,8 @@ func standardRequest(at now: Date) -> DayPlanRequest {
         preset: Preset(workMinutes: 50, shortBreakMinutes: 10, longBreakMinutes: 45)
     )
 }
+
+/// An instant given in UTC, for dates outside the test day.
+func utcDate(_ year: Int, _ month: Int, _ day: Int, _ hour: Int = 0, _ minute: Int = 0) -> Date {
+    DateComponents(calendar: utc, year: year, month: month, day: day, hour: hour, minute: minute).date!
+}

@@ -10,6 +10,8 @@ final class MemoryDayStore: DayStore {
     var latest: StoredDay?
     private(set) var saved: [SessionSnapshot] = []
     private(set) var quarantined: [StoredDay] = []
+    /// How many times a save was attempted, including ones that failed.
+    private(set) var saveAttempts = 0
     var failLoad = false
     var failSave = false
 
@@ -21,6 +23,7 @@ final class MemoryDayStore: DayStore {
     }
 
     func save(_ snapshot: SessionSnapshot) throws {
+        saveAttempts += 1
         if failSave { throw Failure() }
         guard !snapshot.plan.isEmpty else { throw DayStoreError.emptyPlan }
         saved.append(snapshot)
