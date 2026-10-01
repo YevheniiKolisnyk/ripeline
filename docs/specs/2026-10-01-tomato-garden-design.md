@@ -40,7 +40,7 @@ Make tracked focus time feel good. A work block is a tomato; the more you really
 
 Pure, `Foundation` only, no text. The core exposes values; the app draws and words them.
 
-- `Tomato`: `id` (the segment's id), `segmentIndex`, `workTime` (seconds of recorded work), `plannedTime`, `growth` (`workTime / plannedTime`, 1.0 is 100%, not capped) and `availability`: `.growing` (the block is running or paused), `.pickable` (T9) or `.empty` (no work recorded and the block is over).
+- `Tomato`: `id` (the segment's id), `segmentIndex`, `workTime` (seconds of recorded work), `plannedTime`, `growth` (`workTime / plannedTime`, 1.0 is 100%, not capped) and `availability`: `.upcoming` (the block has not started, and its day is not over), `.growing` (the block is running or paused), `.pickable` (T9) or `.empty` (the block is over, or its day ended before it started, and no work was recorded in it).
 - `Tomatoes.of(_ snapshot: SessionSnapshot, at now: Date) -> [Tomato]`: one entry per work segment, in plan order. It reads `plan` and `actuals(at:)`, so an open interval counts up to `now`, and an extended or overtime block counts its extra work. Paused and untracked intervals are not work. Breaks are left out.
 - The functions are pure over the snapshot, so growth is derived, never stored, and survives relaunch, sleep and catch-up unchanged. The snapshot and the day files do not change.
 
@@ -50,12 +50,12 @@ Pure, `Foundation` only, no text. The core exposes values; the app draws and wor
 
 - `HarvestStore` protocol with a file implementation and an in-memory one for tests, like `DayStore`. One file, `harvest.json` next to the day folder: `{"version":1,"picked":["<segment id>", …]}`. Writes are atomic.
 - `pick(_ id)` adds an id; picking an id twice is harmless. Only `Tomatoes.of(...)` entries that are `.pickable` can be picked.
-- On load the set is intersected with the work segments of the days that exist. A deleted day takes its tomatoes with it. The file is rewritten only when the set changed.
+- A tomato counts for the crate only while its day exists, so the crate is the picked set intersected with the work segments of the stored days. Deleting a day also removes its ids from the set (the file is rewritten only when the set changed). Nothing is pruned on load: a day that cannot be read for a moment must not lose its picks.
 - A missing or unreadable file reads as nothing picked; an unreadable file is renamed aside, as the day store already does, and never crashes the app.
 
 ### 4.2 Garden model
 
-`GardenModel` (main actor, observable) holds the tomatoes of the running day and the picked set, and offers `pick(_:)`. It is driven by the controller's tick, like the other models, so the live tomato needs no timer of its own. `CrateModel` produces the crate's content: picked tomatoes of all stored days, newest 300 by segment start, plus the total.
+`GardenModel` (main actor, observable) holds the tomatoes of the running day and the picked set, and offers `pick(_:)`. It is driven by the controller's tick, like the other models, so the live tomato needs no timer of its own. `CrateModel` produces the crate's content: picked tomatoes of all stored days, newest 300 by segment start, plus the total. A tomato's size in the crate is read at the last record of its day, so a tomato picked in overtime grows to its final size once the block closes.
 
 ### 4.3 Look (T6, T13)
 
@@ -66,7 +66,7 @@ Pure, `Foundation` only, no text. The core exposes values; the app draws and wor
 - **Past 100%:** bigger and rounder, with a tiny sparkle. Display scale is capped at the equivalent of 200% so the layout and the physics stay sane; the figures stay honest.
 - **Face:** two dot eyes and a small mouth. Sleepy while growing, a smile when ripe, a wide grin when it is bigger than 100%. Faces are cheap to remove if they are not liked.
 - **Bed:** a strip of soil with a wooden edge under the timeline. **Crate:** a wooden crate with slats and rope handles, a cartoon wood grain, the total on a small plank.
-- Colors are tokens from the asset catalog, with dark appearance variants. The art works at a few sizes: popover, timeline, crate.
+- Colors are a fixed palette in code, the same in light and dark appearance: a cartoon keeps its colors. The art works at a few sizes: popover, timeline, crate.
 
 The numbers above (the 25/60/100% steps, the 200% cap) are starting values, tuned by eye during implementation.
 
@@ -77,12 +77,12 @@ The numbers above (the 25/60/100% steps, the 200% cap) are starting values, tune
 - **History:** a crate view above or beside the list of days. Tomatoes fall into the crate when it is opened; picking a tomato while the history is open drops it in. Selecting a day lifts that day's tomatoes with a glow. The total is shown on the crate.
 - **Reduce Motion:** no falling and no wiggle; the crate appears already filled and the tomatoes are static.
 - **VoiceOver:** each tomato says what it is, its percentage and whether it can be picked; picking is an accessibility action, not only a click.
-- **Localization:** new text only for labels and accessibility; counts use plural variations in `en` and `uk`.
+- **Localization:** new text only for labels, counts and accessibility. Counts are written as a label and a number ("Picked: 3"), so no plural variations are needed.
 
 ## 6. Testing and verification
 
 - **Core:** growth for a block worked exactly as planned, less, and more; a "+5 min" extension and overtime counted as extra work; a pause not counted; a block skipped with and without work; an open interval counted up to `now`; a quick session with added blocks; breaks give no tomato; availability in each state.
-- **App:** the harvest store round trip, atomic write, harmless double pick, pruning of deleted days, a damaged file; `GardenModel` picking only pickable tomatoes; `CrateModel` taking the newest 300 and reporting the total; a relaunch keeping the picked set; deleting a day removing its tomatoes; the catalog is complete.
+- **App:** the harvest store round trip, atomic write, harmless double pick, forgetting the ids of a deleted day, a damaged file; `GardenModel` picking only pickable tomatoes; `CrateModel` taking the newest 300 and reporting the total; a relaunch keeping the picked set; deleting a day removing its tomatoes; the catalog is complete.
 - **End to end:** record days over real files, pick tomatoes, relaunch, the same crate content.
 - **Not covered by tests, so on the PR checklist:** the look of the tomatoes and the crate, the physics feel, the animations, Reduce Motion and the dark appearance, and the layout of the popover in Ukrainian.
 - Before the PR: both suites green, a warning-free build, a run of the app.
@@ -91,7 +91,7 @@ The numbers above (the 25/60/100% steps, the 200% cap) are starting values, tune
 
 1. **Physics cost and jitter** with hundreds of bodies. Mitigation: the 300 cap, bodies put to sleep when they rest, a fixed seed for the drop order, a performance check on the checklist.
 2. **SpriteKit inside SwiftUI** is a new dependency of the app. Mitigation: it stays in one view; no other screen needs it.
-3. **Picking state that drifts from the days.** Mitigation: pruning on load; the id is the segment's id, which is stable.
+3. **Picking state that drifts from the days.** Mitigation: the crate intersects the picked set with the stored days, and deleting a day forgets its ids; the id is the segment's id, which is stable.
 4. **Art that does not please.** Mitigation: all drawing is behind `TomatoArt` and tuned by eye; the faces and the sparkle are optional.
 5. **A pick during overtime, then more overtime.** The tomato's size is always derived from the final record, so the crate shows the final size. Accepted: the harvest is the block, not a moment.
 
