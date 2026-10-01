@@ -14,10 +14,17 @@ struct ScheduleStatusTests {
         engine.scheduleStatus()?.lag
     }
 
-    @Test func idleBeforeThePlannedStartIsOnSchedule() throws {
+    @Test func idleAtTheExactPlannedStartIsOnSchedule() throws {
         let (engine, _) = try engine()
         let status = try #require(engine.scheduleStatus())
         #expect(status.plannedEnd == t(11, 50))
+        #expect(status.projectedEnd == t(11, 50))
+        #expect(status.lag == 0)
+    }
+
+    @Test func idleLongBeforeThePlannedStartIsStillOnSchedule() throws {
+        let (engine, _) = try engine(startingAt: t(7))
+        let status = try #require(engine.scheduleStatus())
         #expect(status.projectedEnd == t(11, 50))
         #expect(status.lag == 0)
     }
