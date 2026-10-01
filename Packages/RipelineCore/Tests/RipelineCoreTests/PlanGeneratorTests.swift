@@ -129,15 +129,7 @@ struct PlanGeneratorTests {
 
     @Test(arguments: PlanGeneratorTests.sampleRequests)
     func plansAreWellFormed(request: DayPlanRequest) throws {
-        let plan = try PlanGenerator.generate(request)
-        #expect(plan.map(\.index) == Array(0..<plan.count))
-        #expect(Set(plan.map(\.id)).count == plan.count)
-        for (previous, next) in zip(plan, plan.dropFirst()) {
-            #expect(next.start == previous.end)
-            #expect(previous.kind.isBreak != next.kind.isBreak)
-        }
-        #expect(plan.allSatisfy { $0.duration > 0 })
-        #expect(plan.last.map { $0.kind == .work } ?? true)
+        expectWellFormed(try PlanGenerator.generate(request))
     }
 
     static let sampleRequests: [DayPlanRequest] = {

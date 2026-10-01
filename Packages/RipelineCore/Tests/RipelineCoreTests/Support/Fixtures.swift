@@ -1,4 +1,5 @@
 import Foundation
+import Testing
 @testable import RipelineCore
 
 /// Fixed calendar so tests never depend on the machine's time zone or locale.
@@ -42,4 +43,16 @@ func longBreak(_ start: Date, _ end: Date) -> Block { Block(kind: .longBreak, st
 /// Total planned work time of `plan`, in minutes.
 func focusMinutes(_ plan: [PlannedSegment]) -> Double {
     plan.filter { $0.kind == .work }.reduce(0) { $0 + $1.duration } / 60
+}
+
+/// Structural invariants every generated plan must satisfy.
+func expectWellFormed(_ plan: [PlannedSegment], sourceLocation: SourceLocation = #_sourceLocation) {
+    #expect(plan.map(\.index) == Array(0..<plan.count), sourceLocation: sourceLocation)
+    #expect(Set(plan.map(\.id)).count == plan.count, sourceLocation: sourceLocation)
+    for (previous, next) in zip(plan, plan.dropFirst()) {
+        #expect(next.start == previous.end, sourceLocation: sourceLocation)
+        #expect(previous.kind.isBreak != next.kind.isBreak, sourceLocation: sourceLocation)
+    }
+    #expect(plan.allSatisfy { $0.duration > 0 }, sourceLocation: sourceLocation)
+    #expect(plan.last.map { $0.kind == .work } ?? true, sourceLocation: sourceLocation)
 }

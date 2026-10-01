@@ -231,3 +231,11 @@ Clarifications of this specification are recorded here as they are made.
   Any sub-minute residue (only possible with non-minute-aligned input) goes to the last
   block.
 - **D8 — `.netFocus`.** `remainderStrategy` is ignored.
+- **D4 — Long break junction.** A junction's time is the end of the work block before it,
+  measured on the nominal layout (full blocks, short breaks). Candidates are tried
+  closest-first (earlier wins a tie). If placing the long break pushes out the block after
+  it (so the junction no longer exists), the next candidate is tried. If none fits, the plan
+  has no long break. `.afterWorkBlock(n)` past the last junction gives no long break.
+  The junction is chosen before stretching, so `.stretchBlocks` may move the long break later.
+- **D5 — Long break and remainder.** With `.shortBlock`, if the remainder block follows the
+  long-break junction, the long break is used there (it replaces the short one).
