@@ -18,6 +18,23 @@
         }
       }
     },
+    "a11y.crate" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crate, tomatoes: %lld"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ящик, помідорів: %lld"
+          }
+        }
+      }
+    },
     "a11y.historyLag" : {
       "localizations" : {
         "en" : {
@@ -100,6 +117,23 @@
         }
       }
     },
+    "a11y.pickTomato" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pick the tomato"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Зібрати помідор"
+          }
+        }
+      }
+    },
     "a11y.segment" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -146,6 +180,57 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Залишилось часу"
+          }
+        }
+      }
+    },
+    "a11y.tomatoGrowing" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomato, %lld%% grown"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Помідор, виріс на %lld%%"
+          }
+        }
+      }
+    },
+    "a11y.tomatoPicked" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Picked tomato, %lld%%"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Зібраний помідор, %lld%%"
+          }
+        }
+      }
+    },
+    "a11y.tomatoReady" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomato, %lld%% grown, ready to pick"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Помідор, виріс на %lld%%, можна зібрати"
           }
         }
       }
@@ -242,6 +327,91 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Поведінка"
+          }
+        }
+      }
+    },
+    "crate.empty" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The crate is empty"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ящик порожній"
+          }
+        }
+      }
+    },
+    "crate.emptyHint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pick a ripe tomato after a work block and it lands here."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Збери стиглий помідор після робочого блоку, і він упаде сюди."
+          }
+        }
+      }
+    },
+    "crate.total" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld in the crate"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "У ящику: %lld"
+          }
+        }
+      }
+    },
+    "garden.basket" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Picked: %lld"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Зібрано: %lld"
+          }
+        }
+      }
+    },
+    "garden.pick" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pick"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Зібрати"
           }
         }
       }
