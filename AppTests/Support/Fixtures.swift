@@ -89,12 +89,12 @@ func utcDate(_ year: Int, _ month: Int, _ day: Int, _ hour: Int = 0, _ minute: I
 /// A day played on a real engine and returned as a snapshot. `script` receives the engine and the
 /// clock, which starts at the plan's first segment.
 func playedDay(
-    plan: [PlannedSegment] = fivePlan(), settings: SessionSettings = SessionSettings(),
+    plan: [PlannedSegment] = fivePlan(), settings: SessionSettings = SessionSettings(), kind: SessionKind = .day,
     _ script: (inout SessionEngine, TestClock) throws -> Void
 ) throws -> SessionSnapshot {
     let clock = TestClock(plan[0].start)
     var engine = SessionEngine(clock: clock)
-    try engine.startDay(plan: plan, settings: settings)
+    try engine.startDay(plan: plan, settings: settings, kind: kind)
     try script(&engine, clock)
     return engine.snapshot
 }

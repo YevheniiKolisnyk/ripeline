@@ -107,6 +107,12 @@ final class SessionController {
         return engine.comparison()
     }
 
+    /// Whether the running or last session is a quick session rather than an ordinary day.
+    var isQuickSession: Bool {
+        let snapshot = engine.snapshot
+        return snapshot.kind == .quick && !snapshot.plan.isEmpty
+    }
+
     /// The settings the switches show: those the running day was started with (a restored day keeps
     /// the ones stored with it), or the defaults for the next day when none is running.
     var effectiveSessionSettings: SessionSettings {
@@ -204,6 +210,32 @@ final class SessionController {
         return true
     }
 
+    /// Starts a quick session: one block of `length` from now, without planning a day. Remembers the
+    /// length. Refused, with `false`, when starting is not allowed now.
+    @discardableResult
+    func startQuickSession(length: QuickBlockLength) async -> Bool {
+        guard engine.isAllowed(.startDay) else { return false }
+        settings.quickBlockLength = length
+        do {
+            try engine.startDay(
+                plan: QuickSession.plan(length: length, start: clock.now), settings: settings.session, kind: .quick
+            )
+            try engine.start()
+        } catch {
+            logger.error("Could not start the quick session: \(error.localizedDescription, privacy: .public)")
+            didChange()
+            return false
+        }
+        didChange()
+        requestAuthorizationOnce()
+        return true
+    }
+
+    /// Adds a short break and another block to the running quick session.
+    func addBlock() {
+        act(.append) { try $0.appendSegments(QuickSession.nextBlocks(after: $0.snapshot.plan)) }
+    }
+
     /// Asks for notification permission the first time a day starts, without waiting for the answer.
     private func requestAuthorizationOnce() {
         guard !didRequestAuthorization else { return }
@@ -260,14 +292,15 @@ final class SessionController {
 
     /// What a notification about the end of segment `index` should say.
     private func signalKind(endOfSegment index: Int) -> SignalKind {
-        if index == plan.count - 1 { return .dayFinished }
+        // The last segment of a quick session is only the last so far: it never means the day is over.
+        if engine.snapshot.kind == .day, index == plan.count - 1 { return .dayFinished }
         return plan[index].kind == .work ? .workEnded : .breakEnded
     }
 
     /// The signal for the segment that ended most recently, judging by the current state.
     private func lastEndedSegmentSignal() -> SignalKind? {
         switch engine.state {
-        case .finished: .dayFinished
+        case .finished: isQuickSession ? signalKind(endOfSegment: plan.count - 1) : .dayFinished
         case let .overtime(index, _): signalKind(endOfSegment: index)
         case let .running(index, _): index > 0 ? signalKind(endOfSegment: index - 1) : nil
         case .idle, .paused: nil
