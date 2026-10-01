@@ -1,6 +1,6 @@
 # Tomato garden: design
 
-Status: proposed. Parent specs: [`SPEC.md`](../../SPEC.md), stages 1 and 2a–2d, the quick session. Adds a reward for work that was actually done: every work block is a tomato that grows while you work, can be picked when the block is over, and ends up in a big crate in the history.
+Status: implemented. Parent specs: [`SPEC.md`](../../SPEC.md), stages 1 and 2a–2d, the quick session. Adds a reward for work that was actually done: every work block is a tomato that grows while you work, can be picked when the block is over, and ends up in a big crate in the history.
 
 ## 1. Goal
 
@@ -98,3 +98,15 @@ The numbers above (the 25/60/100% steps, the 200% cap) are starting values, tune
 ## 8. Out of scope
 
 Menu-bar icon animation; varieties and unlockables; achievements, streaks and goals; sound; sharing or exporting the crate; any penalty for unpicked tomatoes; a stored picking time; drawn bitmap assets.
+
+## 9. Decisions made during planning and implementation
+
+| # | Decision |
+|---|---|
+| G1 | `Tomato.availability` has a fourth case, `.upcoming`: a block that has not started, in a day that is not over. A block never started in a finished day is `.empty`. |
+| G2 | Deleting a day forgets its ids; nothing is pruned on load, so a day unreadable for a moment cannot lose its picks. |
+| G3 | The palette is fixed in code, not asset-catalog tokens with dark variants. |
+| G4 | Counts are "label: number" strings, so no plural variations. |
+| G5 | A tomato's size in the crate is read at the last record of its day. |
+| G6 | The palette goes from green through yellow (at 70% ripeness) to red, with an ease-in on the green leg, so a tomato that is 40% grown still looks green. |
+| G7 | The popover row shows the newest six unpicked tomatoes; older ones stay pickable on the day screen's bed. |

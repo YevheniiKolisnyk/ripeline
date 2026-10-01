@@ -43,6 +43,7 @@ The UI shows two timelines on a shared time axis: **planned** and **actual**.
 | 2c | Day screen: timelines, lag, summary, segment table, session settings, one window. Done; see `docs/specs/2026-10-01-stage-2c-day-screen-design.md`. |
 | 2d | History: a tab listing recorded days with the day screen's details, and deleting a day. Done; see `docs/specs/2026-10-01-stage-2d-history-design.md`. |
 | Quick session | Quick start from the popover: pick a block length, start at once, add five minutes or another block, press Done. Done; see `docs/specs/2026-10-01-quick-session-design.md`. |
+| Tomato garden | A reward for work done: every work block is a tomato that grows, can be picked, and ends up in a crate in the history. Done; see `docs/specs/2026-10-01-tomato-garden-design.md`. |
 
 ## 4. Stage 1 — Domain logic
 
@@ -221,6 +222,23 @@ Cover with tests:
 - the Xcode app project;
 - persistence (everything is just made `Codable`).
 
+### 4.10 Tomato garden
+
+Every work block is a tomato; breaks give none. The core derives the tomatoes from the record
+(`Tomatoes.of(snapshot, at:)`, `SessionEngine.tomatoes()`); nothing is stored in a day file.
+
+- **Growth** is the recorded work in the block divided by its planned length: 1.0 is 100%. Pauses
+  and breaks do not grow it; a "+5 min" extension and overtime do, past 100%.
+- **Availability:** `upcoming` (not started, day not over), `growing` (running or paused),
+  `pickable` (over, or waiting in overtime, with some work recorded), `empty` (over with no work,
+  or never started in a finished day).
+- **Picking** is the only thing that is stored: the ids of picked tomatoes (the work segment's id)
+  in the app's own `harvest.json`. A tomato that is not picked waits as long as needed: nothing is
+  punished.
+- **The crate** (History tab) shows the picked tomatoes of the stored days, the newest 300 by block
+  start, with the total on it. A tomato's size there is read at the last record of its day. Deleting a
+  day forgets its tomatoes. With Reduce Motion the pile lies still.
+
 ## 5. Decisions log
 
 Clarifications of this specification are recorded here as they are made.
@@ -233,6 +251,19 @@ Clarifications of this specification are recorded here as they are made.
 - **D-Q2 — The last block waits.** With auto-advance on, the last segment of a quick session still
   enters overtime instead of finishing the session, so "Another block" is not lost. Found in
   review; ordinary days finish by themselves as before.
+
+### Tomato garden
+
+- **D-T1 — Derived, not stored.** A tomato's growth is computed from the record every time, so it
+  survives relaunch, sleep and catch-up unchanged, and day files are never rewritten.
+- **D-T2 — Own file for picking.** Picked ids live in `harvest.json`, not in the day files. A
+  damaged or newer-version file is set aside, never overwritten; a file that could not be read is
+  never written to.
+- **D-T3 — Forget on delete, no prune on load.** Deleting a day removes its ids from the picked
+  set. Nothing is pruned when the file is read, so a day that is unreadable for a moment cannot lose
+  its picks; the crate only shows picked tomatoes of days that exist.
+- **D-T4 — A fixed palette.** The cartoon colours are the same in light and dark appearance.
+- **D-T5 — Counts without plurals.** Counts are written as a label and a number ("Picked: 3").
 
 ### Units and input validation
 
