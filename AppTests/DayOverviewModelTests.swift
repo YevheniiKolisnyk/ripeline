@@ -192,6 +192,27 @@ struct DayOverviewModelTests {
         #expect(summary.endsAt == source.engine.scheduleStatus()?.projectedEnd)
     }
 
+    // MARK: finished days (review)
+
+    /// A day cut short is not "ahead of schedule": the chip is for a day that is still going.
+    @Test func aFinishedDayHasNoLagChip() throws {
+        let finished = model(try scriptedDay())
+        #expect(finished.mode == .finished)
+        #expect(finished.lag == nil)
+
+        let source = try EngineSource(plan: fivePlan())
+        try source.at(t(9)) { try $0.start() }
+        try source.at(t(9, 30)) { try $0.endDay() }          // ended two hours before the plan
+        #expect(model(source).lag == nil)
+    }
+
+    @Test func aRunningDayStillHasIt() throws {
+        let source = try EngineSource(plan: fivePlan(), at: t(9, 15))
+        try source.at(t(9, 15)) { try $0.start() }
+        try source.at(t(9, 30))
+        #expect(model(source).lag == .behind(minutes(15)))
+    }
+
     // MARK: odd data (Review Focus 4)
 
     @Test func aDayEndedBeforeAnythingWasRecorded() throws {

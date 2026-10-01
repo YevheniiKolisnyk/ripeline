@@ -48,6 +48,29 @@ cp Config/Local.example.xcconfig Config/Local.xcconfig
 
 `Config/Local.xcconfig` is gitignored.
 
+## Running the app
+
+Ripeline lives in the menu bar and has no Dock icon: after it starts, look for a dashed circle at the
+top right of the screen.
+
+**From Xcode** (Xcode 26 or later): open `Ripeline.xcodeproj`, choose the `Ripeline` scheme and a
+`My Mac` destination, and press ⌘R. A fresh clone runs without any setup (it is signed ad hoc); to sign
+with your own team, fill in `Config/Local.xcconfig` first (see above).
+
+**From the command line:**
+
+```sh
+xcodebuild build -project Ripeline.xcodeproj -scheme Ripeline -destination 'platform=macOS' -derivedDataPath build
+open build/Build/Products/Debug/Ripeline.app
+```
+
+To try it quickly: click the icon, choose "Plan day…", pick a preset (or "Custom" with 1-minute work
+and break) and "Net focus" of 15 minutes, press "Start day". The timer runs in the menu bar and the
+popover; after a minute a segment ends and a notification arrives (allow notifications when asked; an
+ad-hoc signed build may not be allowed to show them). The "Day overview…" link in the popover opens
+the day screen with the planned and actual timelines. Quit from the popover ("Quit Ripeline"), or stop
+the run in Xcode.
+
 ## Documentation
 
 - [SPEC.md](SPEC.md) — product and domain specification

@@ -114,7 +114,8 @@ final class DayOverviewModel {
         planned = timeline.planned.map { layout($0.kind, $0.start, $0.end, on: axis) }
         actual = timeline.actual.map { layout($0.kind, $0.start, $0.end, on: axis) }
         nowX = mode == .running ? axis?.x(for: now) : nil
-        lag = status.map(Self.lagState)
+        // Lag is for a day still going; for a finished day the summary compares the ends.
+        lag = mode == .running ? status.map(Self.lagState) : nil
 
         let totals = comparison.totals
         summary = DaySummary(

@@ -197,6 +197,9 @@ final class SessionController {
     /// Changes how sessions behave. Effective from the next transition: recorded time is not
     /// rewritten and an open pause keeps its kind. Also applies to the next day.
     func updateSessionSettings(_ new: SessionSettings) {
+        // Settle any segment whose end has already passed with the settings that were in force then,
+        // not the new ones.
+        engine.tick()
         settings.session = new
         engine.updateSettings(new)
         didChange()

@@ -76,6 +76,24 @@ struct SessionControllerOverviewTests {
         #expect(h.controller.comparison.rows[0].rest == minutes(5))
     }
 
+    /// Review finding: a segment whose end has passed but was not ticked yet must be settled with the
+    /// settings that were in force when it ended, not with the ones chosen a moment later.
+    @Test func aSettingChangedJustAfterASegmentEndDoesNotApplyRetroactively() async {
+        let h = await started(); defer { h.cleanUp() }
+        h.clock.set(t(9, 50).addingTimeInterval(0.5))            // the end has passed; no tick yet
+        h.controller.updateSessionSettings(SessionSettings(autoAdvanceWorkToBreak: true))
+        h.controller.refresh()
+        #expect(h.controller.phase == .overtime(onBreak: false))
+    }
+
+    @Test func turningAutoAdvanceOffJustAfterTheEndDoesNotUndoTheAdvance() async {
+        let h = await started(session: SessionSettings(autoAdvanceWorkToBreak: true)); defer { h.cleanUp() }
+        h.clock.set(t(9, 50).addingTimeInterval(0.5))            // the break should already have begun
+        h.controller.updateSessionSettings(SessionSettings(autoAdvanceWorkToBreak: false))
+        h.controller.refresh()
+        #expect(h.controller.phase == .onBreak)
+    }
+
     @Test func enablingAutoAdvanceMidSegmentTakesEffectAtTheNextEnd() async {
         let h = await started(); defer { h.cleanUp() }
         h.clock.set(t(9, 20))

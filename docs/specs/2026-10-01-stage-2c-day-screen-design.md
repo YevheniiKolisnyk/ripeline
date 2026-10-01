@@ -112,3 +112,6 @@ History of past days (2d); export; zooming the axis; editing recorded time; remi
 | R10 | The window chooses its content from the controller's phase, not from the model's last refresh, so it switches to the day screen the moment a day starts. |
 | R11 | The Difference column is shown only for finished and skipped segments: a running segment has simply not finished, so its negative difference would mislead. |
 | R12 | A finished day is not restored as the active one after a relaunch (2a rule P9), so its summary is visible only until the app is closed; the file is kept for the history stage (2d). |
+| R13 | The lag chip is shown only while the day runs. For a finished day it would read actual end minus planned end, so a day cut short would be reported as "ahead of schedule"; the summary compares the planned and final ends instead. |
+| R14 | The planned end and the projected (or final) end are in the summary, not in the header (spec §4 item 1 listed them in the header). |
+| R15 | `updateSessionSettings` ticks the engine first, so a segment whose end has passed but was not ticked yet is settled with the settings that were in force when it ended. |
