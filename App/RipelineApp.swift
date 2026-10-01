@@ -6,7 +6,7 @@ struct RipelineApp: App {
 
     var body: some Scene {
         MenuBarExtra {
-            PopoverView(controller: environment.controller, settings: environment.settings)
+            PopoverView(controller: environment.controller, settings: environment.settings, router: environment.router)
         } label: {
             MenuBarLabel(controller: environment.controller, settings: environment.settings)
         }
@@ -15,6 +15,7 @@ struct RipelineApp: App {
         Window("app.name", id: MainWindow.id) {
             RipelineWindowView(
                 setupModel: environment.setupModel, overviewModel: environment.overviewModel,
+                historyModel: environment.historyModel, router: environment.router,
                 controller: environment.controller, settings: environment.settings
             )
         }

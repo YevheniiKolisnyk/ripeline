@@ -1,1546 +1,1818 @@
 {
-  "sourceLanguage" : "en",
-  "strings" : {
-    "a11y.block" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@: %@, from %@ to %@"
+  "sourceLanguage": "en",
+  "strings": {
+    "a11y.block": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@: %@, from %@ to %@"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@: %@, з %@ до %@"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@: %@, з %@ до %@"
           }
         }
       }
     },
-    "a11y.overtime" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ over the plan"
+    "a11y.historyRow": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@, from %@ to %@, %@, focus %@ of %@"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ понад план"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@, з %@ до %@, %@, фокус %@ із %@"
           }
         }
       }
     },
-    "a11y.segment" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, from %@ to %@"
+    "a11y.historyRowStarted": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@, from %@, %@, focus %@ of %@"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@, з %@ до %@"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@, з %@, %@, фокус %@ із %@"
           }
         }
       }
     },
-    "a11y.startBlocked" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Start is unavailable"
+    "a11y.overtime": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ over the plan"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Старт недоступний"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ понад план"
           }
         }
       }
     },
-    "a11y.timer" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Time left"
+    "a11y.segment": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@, from %@ to %@"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Залишилось часу"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@, з %@ до %@"
           }
         }
       }
     },
-    "app.name" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ripeline"
+    "a11y.startBlocked": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start is unavailable"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ripeline"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Старт недоступний"
           }
         }
       }
     },
-    "behaviour.autoBreak" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Start the break automatically when work ends"
+    "a11y.timer": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time left"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Автоматично починати перерву після роботи"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Залишилось часу"
           }
         }
       }
     },
-    "behaviour.autoWork" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Start work automatically when a break ends"
+    "app.name": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ripeline"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Автоматично починати роботу після перерви"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ripeline"
           }
         }
       }
     },
-    "behaviour.note" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Changes apply from the next transition."
+    "behaviour.autoBreak": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start the break automatically when work ends"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Зміни діють з наступного переходу."
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Автоматично починати перерву після роботи"
           }
         }
       }
     },
-    "behaviour.pausesAsRest" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Count pauses as rest"
+    "behaviour.autoWork": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start work automatically when a break ends"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Рахувати паузу як відпочинок"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Автоматично починати роботу після перерви"
           }
         }
       }
     },
-    "behaviour.title" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Behaviour"
+    "behaviour.note": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Changes apply from the next transition."
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Поведінка"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Зміни діють з наступного переходу."
           }
         }
       }
     },
-    "lag.ahead" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ ahead of schedule"
+    "behaviour.pausesAsRest": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Count pauses as rest"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Випереджаєш на %@"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Рахувати паузу як відпочинок"
           }
         }
       }
     },
-    "lag.behind" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ behind schedule"
+    "behaviour.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Behaviour"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Відстаєш на %@"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Поведінка"
           }
         }
       }
     },
-    "lag.onSchedule" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "On schedule"
+    "history.cancel": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancel"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Вчасно"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Скасувати"
           }
         }
       }
     },
-    "longBreak.afterBlock" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "After block no."
+    "history.delete": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete day…"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Після блоку №"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Видалити день…"
           }
         }
       }
     },
-    "longBreak.atTime" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "At a time"
+    "history.deleteConfirm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "На час"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Видалити"
           }
         }
       }
     },
-    "longBreak.none" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "None"
+    "history.deleteFailed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The day could not be deleted."
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Немає"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не вдалося видалити день."
           }
         }
       }
     },
-    "mode.netFocus" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Net focus"
+    "history.deleteMessage": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "It is removed from this Mac and cannot be restored."
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Чистий фокус"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Його буде видалено з цього Mac без можливості відновлення."
           }
         }
       }
     },
-    "mode.untilTime" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Until time"
+    "history.deleteTitle": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete this day?"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "До часу"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Видалити цей день?"
           }
         }
       }
     },
-    "notification.breakEnded.body" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Back to work."
+    "history.empty": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No days yet"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Час повертатися до роботи."
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Поки немає днів"
           }
         }
       }
     },
-    "notification.breakEnded.title" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Break is over"
+    "history.emptyHint": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Finished days appear here."
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Перерва закінчилась"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Завершені дні зʼявляться тут."
           }
         }
       }
     },
-    "notification.dayFinished.body" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nice work!"
+    "history.finished": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Finished"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Гарна робота!"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Завершено"
           }
         }
       }
     },
-    "notification.dayFinished.title" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Day finished"
+    "history.lastRecord": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Last record at"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "День завершено"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Останній запис о"
           }
         }
       }
     },
-    "notification.workEnded.body" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Time for a break."
+    "history.loadFailed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The days could not be read."
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Час на перерву."
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не вдалося прочитати дні."
           }
         }
       }
     },
-    "notification.workEnded.title" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Work block finished"
+    "history.notFinished": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not finished"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Робочий блок завершено"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не завершено"
           }
         }
       }
     },
-    "overview.actual" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Actual"
+    "lag.ahead": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ ahead of schedule"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Факт"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Випереджаєш на %@"
           }
         }
       }
     },
-    "overview.kind.rest" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rest"
+    "lag.behind": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ behind schedule"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Відпочинок"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Відстаєш на %@"
           }
         }
       }
     },
-    "overview.newDay" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "New day"
+    "lag.onSchedule": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "On schedule"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Новий день"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Вчасно"
           }
         }
       }
     },
-    "overview.noValue" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "—"
+    "longBreak.afterBlock": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "After block no."
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "—"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Після блоку №"
           }
         }
       }
     },
-    "overview.now" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Now"
+    "longBreak.atTime": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "At a time"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Зараз"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "На час"
           }
         }
       }
     },
-    "overview.plan" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Plan"
+    "longBreak.none": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "None"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "План"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Немає"
           }
         }
       }
     },
-    "phase.break" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Break"
+    "mode.netFocus": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Net focus"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Перерва"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Чистий фокус"
           }
         }
       }
     },
-    "phase.finished" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Day finished"
+    "mode.untilTime": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Until time"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "День завершено"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "До часу"
           }
         }
       }
     },
-    "phase.idle" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No day started"
+    "notification.breakEnded.body": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back to work."
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "День не розпочато"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Час повертатися до роботи."
           }
         }
       }
     },
-    "phase.overtime" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Over plan"
+    "notification.breakEnded.title": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Break is over"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Понад план"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Перерва закінчилась"
           }
         }
       }
     },
-    "phase.paused" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Paused"
+    "notification.dayFinished.body": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nice work!"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "На паузі"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Гарна робота!"
           }
         }
       }
     },
-    "phase.working" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Work"
+    "notification.dayFinished.title": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Day finished"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Робота"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "День завершено"
           }
         }
       }
     },
-    "preset.classic" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Classic 25/5/15"
+    "notification.workEnded.body": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time for a break."
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Класичний 25/5/15"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Час на перерву."
           }
         }
       }
     },
-    "preset.custom" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Custom"
+    "notification.workEnded.title": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Work block finished"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Свій"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Робочий блок завершено"
           }
         }
       }
     },
-    "preset.deepWork" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Deep work 50/10/45"
+    "overview.actual": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actual"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Глибока робота 50/10/45"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Факт"
           }
         }
       }
     },
-    "preset.longBlocks" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Long blocks 90/15/30"
+    "overview.kind.rest": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rest"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Довгі блоки 90/15/30"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Відпочинок"
           }
         }
       }
     },
-    "remainder.leaveFree" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Leave free"
+    "overview.newDay": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New day"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Лишити вільним"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Новий день"
           }
         }
       }
     },
-    "remainder.shortBlock" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Short block"
+    "overview.noValue": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "—"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Короткий блок"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "—"
           }
         }
       }
     },
-    "remainder.stretch" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Stretch blocks"
+    "overview.now": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Now"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Розтягнути блоки"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Зараз"
           }
         }
       }
     },
-    "setup.close" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Close"
+    "overview.plan": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plan"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Закрити"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "План"
           }
         }
       }
     },
-    "setup.dayRunning" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "End the current day first."
+    "phase.break": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Break"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Спершу завершіть поточний день."
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Перерва"
           }
         }
       }
     },
-    "setup.endTime" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Day ends at"
+    "phase.finished": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Day finished"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "День закінчується о"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "День завершено"
           }
         }
       }
     },
-    "setup.focus" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Focus time"
+    "phase.idle": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No day started"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Час фокусу"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "День не розпочато"
           }
         }
       }
     },
-    "setup.fromNow" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The plan starts now"
+    "phase.overtime": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Over plan"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "План починається зараз"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Понад план"
           }
         }
       }
     },
-    "setup.issue.dayTooShort" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The day is too short for a block with these settings."
+    "phase.paused": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paused"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "День закороткий для блоку з такими налаштуваннями."
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "На паузі"
           }
         }
       }
     },
-    "setup.issue.endNotAfterNow" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The end time must be later than now."
+    "phase.working": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Work"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Час завершення має бути пізніше за поточний."
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Робота"
           }
         }
       }
     },
-    "setup.issue.invalidInput" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "These settings cannot make a plan."
+    "preset.classic": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Classic 25/5/15"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "З цими налаштуваннями план неможливий."
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Класичний 25/5/15"
           }
         }
       }
     },
-    "setup.longBreak" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Long break"
+    "preset.custom": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Custom"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Довга перерва"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Свій"
           }
         }
       }
     },
-    "setup.longBreakBlock" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Block number"
+    "preset.deepWork": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deep work 50/10/45"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Номер блоку"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Глибока робота 50/10/45"
           }
         }
       }
     },
-    "setup.longBreakTime" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Long break at"
+    "preset.longBlocks": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Long blocks 90/15/30"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Довга перерва о"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Довгі блоки 90/15/30"
           }
         }
       }
     },
-    "setup.minBlock" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Smallest block"
+    "remainder.leaveFree": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Leave free"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Найменший блок"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Лишити вільним"
           }
         }
       }
     },
-    "setup.mode" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Day"
+    "remainder.shortBlock": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Short block"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "День"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Короткий блок"
           }
         }
       }
     },
-    "setup.notice.longBreakNotPlaced" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The long break does not fit and was left out."
+    "remainder.stretch": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stretch blocks"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Довга перерва не вмістилась і пропущена."
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Розтягнути блоки"
           }
         }
       }
     },
-    "setup.notice.longBreakTimePassed" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The long break time has already passed; it was moved to the nearest break."
+    "setup.close": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Close"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Час довгої перерви вже минув; її перенесено на найближчу перерву."
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Закрити"
           }
         }
       }
     },
-    "setup.notice.remainderLeftFree" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Left free at the end of the day: %@"
+    "setup.dayRunning": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "End the current day first."
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Лишається вільним наприкінці дня: %@"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Спершу завершіть поточний день."
           }
         }
       }
     },
-    "setup.preset" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Preset"
+    "setup.endTime": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Day ends at"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Пресет"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "День закінчується о"
           }
         }
       }
     },
-    "setup.remainder" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Leftover time"
+    "setup.focus": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Focus time"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Залишок часу"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Час фокусу"
           }
         }
       }
     },
-    "setup.shortBreak" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Short break"
+    "setup.fromNow": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The plan starts now"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Коротка перерва"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "План починається зараз"
           }
         }
       }
     },
-    "setup.work" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Work"
+    "setup.issue.dayTooShort": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The day is too short for a block with these settings."
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Робота"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "День закороткий для блоку з такими налаштуваннями."
           }
         }
       }
     },
-    "status.active" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Running"
+    "setup.issue.endNotAfterNow": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The end time must be later than now."
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Триває"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Час завершення має бути пізніше за поточний."
           }
         }
       }
     },
-    "status.completed" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Done"
+    "setup.issue.invalidInput": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "These settings cannot make a plan."
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Завершено"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "З цими налаштуваннями план неможливий."
           }
         }
       }
     },
-    "status.notStarted" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Planned"
+    "setup.longBreak": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Long break"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Заплановано"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Довга перерва"
           }
         }
       }
     },
-    "status.skipped" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Skipped"
+    "setup.longBreakBlock": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Block number"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Пропущено"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Номер блоку"
           }
         }
       }
     },
-    "summary.ends" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ends at"
+    "setup.longBreakTime": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Long break at"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Завершення о"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Довга перерва о"
           }
         }
       }
     },
-    "summary.finishedAt" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Finished at"
+    "setup.minBlock": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Smallest block"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Завершено о"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Найменший блок"
           }
         }
       }
     },
-    "summary.focus" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Focus"
+    "setup.mode": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Day"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Фокус"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "День"
           }
         }
       }
     },
-    "summary.free" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Left free"
+    "setup.notice.longBreakNotPlaced": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The long break does not fit and was left out."
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Лишається вільним"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Довга перерва не вмістилась і пропущена."
           }
         }
       }
     },
-    "summary.plannedEnd" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Planned end"
+    "setup.notice.longBreakTimePassed": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The long break time has already passed; it was moved to the nearest break."
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Завершення за планом"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Час довгої перерви вже минув; її перенесено на найближчу перерву."
           }
         }
       }
     },
-    "summary.projectedEnd" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Projected end"
+    "setup.notice.remainderLeftFree": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Left free at the end of the day: %@"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Прогноз завершення"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Лишається вільним наприкінці дня: %@"
           }
         }
       }
     },
-    "summary.rest" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rest"
+    "setup.preset": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preset"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Відпочинок"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Пресет"
           }
         }
       }
     },
-    "summary.untracked" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Paused (not counted)"
+    "setup.remainder": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Leftover time"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Паузи без обліку"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Залишок часу"
           }
         }
       }
     },
-    "table.actual" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Actual"
+    "setup.shortBreak": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Short break"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Факт"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Коротка перерва"
           }
         }
       }
     },
-    "table.delta" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Difference"
+    "setup.work": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Work"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Різниця"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Робота"
           }
         }
       }
     },
-    "table.plan" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Plan"
+    "status.active": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Running"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "План"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Триває"
           }
         }
       }
     },
-    "table.segment" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Segment"
+    "status.completed": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Done"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Сегмент"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Завершено"
           }
         }
       }
     },
-    "table.start" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Start"
+    "status.notStarted": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Planned"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Початок"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Заплановано"
           }
         }
       }
     },
-    "table.status" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Status"
+    "status.skipped": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skipped"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Статус"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Пропущено"
           }
         }
       }
     },
-    "ui.endDay" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "End day"
+    "summary.ends": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ends at"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Завершити день"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Завершення о"
           }
         }
       }
     },
-    "ui.extend" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "+5 min"
+    "summary.finishedAt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Finished at"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "+5 хв"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Завершено о"
           }
         }
       }
     },
-    "ui.next" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Next"
+    "summary.focus": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Focus"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Далі"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Фокус"
           }
         }
       }
     },
-    "ui.overview" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Day overview…"
+    "summary.free": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Left free"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Огляд дня…"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Лишається вільним"
           }
         }
       }
     },
-    "ui.pause" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pause"
+    "summary.plannedEnd": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Planned end"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Пауза"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Завершення за планом"
           }
         }
       }
     },
-    "ui.planDay" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Plan day…"
+    "summary.projectedEnd": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Projected end"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Спланувати день…"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Прогноз завершення"
           }
         }
       }
     },
-    "ui.quit" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quit Ripeline"
+    "summary.rest": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rest"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Вийти з Ripeline"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Відпочинок"
           }
         }
       }
     },
-    "ui.resume" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Resume"
+    "summary.untracked": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paused (not counted)"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Продовжити"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Паузи без обліку"
           }
         }
       }
     },
-    "ui.showTime" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Show time in menu bar"
+    "tab.history": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "History"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Показувати час у рядку меню"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Історія"
           }
         }
       }
     },
-    "ui.skip" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Skip"
+    "tab.today": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Today"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Пропустити"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сьогодні"
           }
         }
       }
     },
-    "ui.startDay" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Start day"
+    "table.actual": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actual"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Почати день"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Факт"
           }
         }
       }
     },
-    "ui.summary" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Day summary…"
+    "table.delta": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Difference"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Підсумок дня…"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Різниця"
+          }
+        }
+      }
+    },
+    "table.plan": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plan"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "План"
+          }
+        }
+      }
+    },
+    "table.segment": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Segment"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сегмент"
+          }
+        }
+      }
+    },
+    "table.start": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Початок"
+          }
+        }
+      }
+    },
+    "table.status": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Status"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Статус"
+          }
+        }
+      }
+    },
+    "ui.endDay": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "End day"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Завершити день"
+          }
+        }
+      }
+    },
+    "ui.extend": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "+5 min"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "+5 хв"
+          }
+        }
+      }
+    },
+    "ui.history": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "History…"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Історія…"
+          }
+        }
+      }
+    },
+    "ui.next": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Next"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Далі"
+          }
+        }
+      }
+    },
+    "ui.overview": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Day overview…"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Огляд дня…"
+          }
+        }
+      }
+    },
+    "ui.pause": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pause"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Пауза"
+          }
+        }
+      }
+    },
+    "ui.planDay": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plan day…"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Спланувати день…"
+          }
+        }
+      }
+    },
+    "ui.quit": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quit Ripeline"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Вийти з Ripeline"
+          }
+        }
+      }
+    },
+    "ui.resume": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resume"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Продовжити"
+          }
+        }
+      }
+    },
+    "ui.showTime": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show time in menu bar"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Показувати час у рядку меню"
+          }
+        }
+      }
+    },
+    "ui.skip": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skip"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Пропустити"
+          }
+        }
+      }
+    },
+    "ui.startDay": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start day"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Почати день"
+          }
+        }
+      }
+    },
+    "ui.summary": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Day summary…"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Підсумок дня…"
           }
         }
       }
     }
   },
-  "version" : "1.0"
+  "version": "1.0"
 }

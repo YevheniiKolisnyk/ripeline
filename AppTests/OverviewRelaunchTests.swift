@@ -123,7 +123,7 @@ struct OverviewRelaunchTests {
         first.clock.set(t(9, 20)); first.controller.endDay()
         first.overview.refresh()
         #expect(first.overview.mode == .finished)
-        #expect(first.overview.summary?.endIsFinal == true)
+        #expect(first.overview.summary?.endKind == .final)
 
         let second = world.launch(at: t(12))
         #expect(second.controller.phase == .idle)

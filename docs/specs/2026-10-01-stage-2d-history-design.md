@@ -1,6 +1,6 @@
 # Stage 2d — History: design
 
-Status: draft for review. Parent specs: [`SPEC.md`](../../SPEC.md), [2a](2026-10-01-stage-2a-app-shell-design.md), [2b](2026-10-01-stage-2b-day-setup-design.md), [2c](2026-10-01-stage-2c-day-screen-design.md). Reads the per-day files that 2a writes; reuses the day screen views of 2c.
+Status: implemented. Parent specs: [`SPEC.md`](../../SPEC.md), [2a](2026-10-01-stage-2a-app-shell-design.md), [2b](2026-10-01-stage-2b-day-setup-design.md), [2c](2026-10-01-stage-2c-day-screen-design.md). Reads the per-day files that 2a writes; reuses the day screen views of 2c.
 
 ## 1. Goal
 
@@ -87,3 +87,20 @@ Before the PR: both suites green, a warning-free build, and a run of the app aga
 ## 7. Out of scope
 
 Export; statistics and charts across weeks; search and filters; editing a recorded day; restoring a deleted day; cloud sync.
+
+## 8. Decisions made during planning and implementation
+
+| # | Decision |
+|---|---|
+| X1 | `DaySummary.endIsFinal` became `endKind` (`projected`, `final`, `lastRecord`); `DayOverviewSource` gained `overviewLastRecord` with a default of `nil`. |
+| X2 | `loadAll()` skips damaged and newer-version files without renaming them, unlike `loadLatest()`; listing has no side effects. |
+| X3 | Order is by the plan's first start, newest first; ties by file name, higher number first. |
+| X4 | Deleting a day whose file is already gone is a silent success. |
+| X5 | The running day is the controller's day while it is working, on break, paused or in overtime, identified by its first segment's id; a finished current day is listed. |
+| X6 | A row shows its lag (actual end minus planned end) as a small signed text for a finished day. |
+| X7 | A row's start is the first recorded start (the plan's start if nothing was recorded); its end is the last recorded instant, `nil` if nothing was recorded. |
+| X8 | The date title uses the locale's abbreviated weekday, day and month; the VoiceOver label the wide forms. |
+| X9 | Starting a day on "Today" never switches the tab. |
+| X10 | `delete` refuses a key that is not a day file name (`YYYY-MM-DD` with an optional `-n`), so a key can never become a path outside the days directory (`DayStoreError.invalidKey`). |
+| X11 | The confirmation dialog's button acts on the day the dialog showed (`confirmDelete(_:)`), not on a pending request a dismissal may already have cleared; a day that is no longer listed, or that started running meanwhile, is left alone. |
+| X12 | A day ended before anything was recorded is listed as "Finished" with no end time and zero focus. |

@@ -1,11 +1,13 @@
 import RipelineCore
 import SwiftUI
 
-/// The app's one window: the planning form when there is no day, the day screen while one runs,
-/// and after it ended the day screen until the user asks for a new day.
+/// The app's one window. "Today": the planning form when there is no day, the day screen while one
+/// runs, and after it ended the day screen until the user asks for a new day. "History": the past days.
 struct RipelineWindowView: View {
     let setupModel: DaySetupModel
     let overviewModel: DayOverviewModel
+    let historyModel: HistoryModel
+    let router: AppRouter
     let controller: SessionController
     let settings: AppSettings
     /// The user pressed "New day" on a finished day.
@@ -23,14 +25,20 @@ struct RipelineWindowView: View {
     }
 
     var body: some View {
-        Group {
-            switch screen {
-            case .setup:
-                DaySetupView(model: setupModel, controller: controller, settings: settings)
-            case .day:
-                DayScreenView(model: overviewModel, controller: controller, settings: settings) {
-                    planningNew = true
-                }
+        @Bindable var router = router
+        VStack(spacing: 0) {
+            Picker("", selection: $router.tab) {
+                Text("tab.today").tag(WindowTab.today)
+                Text("tab.history").tag(WindowTab.history)
+            }
+            .pickerStyle(.segmented)
+            .labelsHidden()
+            .frame(width: 240)
+            .padding(.vertical, 10)
+            Divider()
+            switch router.tab {
+            case .today: today
+            case .history: HistoryView(model: historyModel)
             }
         }
         .frame(minWidth: 720, minHeight: 620)
@@ -38,6 +46,18 @@ struct RipelineWindowView: View {
             // A new day started (or the old one was ended from elsewhere): leave the planning view.
             if phase != .finished { planningNew = false }
             overviewModel.refresh()
+            historyModel.refresh()
+        }
+    }
+
+    @ViewBuilder private var today: some View {
+        switch screen {
+        case .setup:
+            DaySetupView(model: setupModel, controller: controller, settings: settings)
+        case .day:
+            DayScreenView(model: overviewModel, controller: controller, settings: settings) {
+                planningNew = true
+            }
         }
     }
 }

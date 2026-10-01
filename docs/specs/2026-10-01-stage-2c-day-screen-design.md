@@ -115,3 +115,4 @@ History of past days (2d); export; zooming the axis; editing recorded time; remi
 | R13 | The lag chip is shown only while the day runs. For a finished day it would read actual end minus planned end, so a day cut short would be reported as "ahead of schedule"; the summary compares the planned and final ends instead. |
 | R14 | The planned end and the projected (or final) end are in the summary, not in the header (spec §4 item 1 listed them in the header). |
 | R15 | `updateSessionSettings` ticks the engine first, so a segment whose end has passed but was not ticked yet is settled with the settings that were in force when it ended. |
+| R16 | A finished day keeps the settings it ran with: changing the Behaviour switches after the day ended updates `AppSettings` for the next day but does not touch the ended day's snapshot, so it is not written again (found in the 2d review: it would bring back a day the user had deleted from the history). |

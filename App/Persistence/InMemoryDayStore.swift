@@ -17,4 +17,10 @@ final class InMemoryDayStore: DayStore {
     func quarantine(_ day: StoredDay) throws {
         if latest == day { latest = nil }
     }
+
+    func loadAll() throws -> [StoredDay] { latest.map { [$0] } ?? [] }
+
+    func delete(_ day: StoredDay) throws {
+        if latest == day { latest = nil }
+    }
 }

@@ -5,6 +5,7 @@ import SwiftUI
 struct PopoverView: View {
     let controller: SessionController
     let settings: AppSettings
+    let router: AppRouter
     @Environment(\.openWindow) private var openWindow
     @Environment(\.locale) private var locale
 
@@ -60,7 +61,7 @@ struct PopoverView: View {
 
     private var actions: some View {
         let visible = PopoverActions.visible(phase: controller.phase, isAllowed: controller.isAllowed)
-        let buttons = visible.filter { $0 != .overview }
+        let buttons = visible.filter { $0 != .overview && $0 != .history }
         return VStack(alignment: .leading, spacing: 10) {
             GlassEffectContainer(spacing: 8) {
                 HStack(spacing: 8) {
@@ -76,6 +77,9 @@ struct PopoverView: View {
             if visible.contains(.overview) {
                 button(for: .overview).buttonStyle(.link)
             }
+            if visible.contains(.history) {
+                button(for: .history).buttonStyle(.link)
+            }
         }
     }
 
@@ -86,6 +90,12 @@ struct PopoverView: View {
     private func perform(_ action: PopoverAction) {
         switch action {
         case .planDay, .overview, .summary:
+            router.tab = .today
+            openWindow(id: MainWindow.id)
+            // An app without a Dock icon does not come to the front by itself.
+            NSApplication.shared.activate()
+        case .history:
+            router.tab = .history
             openWindow(id: MainWindow.id)
             // An app without a Dock icon does not come to the front by itself.
             NSApplication.shared.activate()
