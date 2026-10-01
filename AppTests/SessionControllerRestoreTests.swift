@@ -77,6 +77,7 @@ struct SessionControllerRestoreTests {
         #expect(h.controller.phase == .idle)
         #expect(h.store.quarantined.count == 1)
         #expect(h.store.quarantined.first?.snapshot == broken)
+        #expect(h.notifier.calls.contains(.cancelAll))     // an earlier run's request must not fire for it
     }
 
     @Test func aFailingStoreStartsFresh() throws {
@@ -84,6 +85,7 @@ struct SessionControllerRestoreTests {
         h.store.failLoad = true
         h.controller.restore()
         #expect(h.controller.phase == .idle)
+        #expect(h.notifier.calls.contains(.cancelAll))
     }
 
     @Test func todayFollowsTheCalendarTimeZone() throws {

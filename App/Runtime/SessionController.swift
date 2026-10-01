@@ -23,6 +23,9 @@ final class SessionController {
     private(set) var now: Date
 
     @ObservationIgnored private var lastSaved: SessionSnapshot?
+    /// The snapshot a save last failed for, and when; it is not retried for a while.
+    @ObservationIgnored private var failedSave: (snapshot: SessionSnapshot, at: Date)?
+    private static let saveRetryInterval: TimeInterval = 30
     /// The notification currently arranged: what it says, when the segment ends, and its id
     /// (the segment's id, so each segment has its own request).
     @ObservationIgnored private var scheduled: (kind: SignalKind, endsAt: Date, id: String)?
@@ -103,6 +106,7 @@ final class SessionController {
             stored = try store.loadLatest()
         } catch {
             logger.error("Could not load the stored day: \(error.localizedDescription, privacy: .public)")
+            discardEarlierRequests()
             return
         }
         guard let stored, !isStale(stored.snapshot) else { return }
@@ -111,6 +115,7 @@ final class SessionController {
         } catch {
             logger.error("Stored day is inconsistent; setting it aside")
             try? store.quarantine(stored)
+            discardEarlierRequests()
             return
         }
         lastSaved = stored.snapshot
@@ -126,6 +131,12 @@ final class SessionController {
     func refresh() {
         engine.tick()
         didChange()
+    }
+
+    /// A day the app cannot show must not leave a notification from an earlier run to fire for it.
+    private func discardEarlierRequests() {
+        notifier.cancelAllPending()
+        mayHavePending = false
     }
 
     /// A day is stale when it is finished, or its plan ended before today began.
@@ -252,14 +263,20 @@ final class SessionController {
         }
     }
 
-    /// Saves the snapshot if it differs from the last one saved. A failed save is retried on the next change.
+    /// Saves the snapshot if it differs from the last one saved. A save that fails is retried
+    /// only after a while, not on every tick, and logged once per attempt; a new change is
+    /// always tried at once.
     private func persistIfChanged() {
         let snapshot = engine.snapshot
         guard !snapshot.plan.isEmpty, snapshot != lastSaved else { return }
+        if let failed = failedSave, failed.snapshot == snapshot,
+           now.timeIntervalSince(failed.at) < Self.saveRetryInterval { return }
         do {
             try store.save(snapshot)
             lastSaved = snapshot
+            failedSave = nil
         } catch {
+            failedSave = (snapshot, now)
             logger.error("Could not save the day: \(error.localizedDescription, privacy: .public)")
         }
     }

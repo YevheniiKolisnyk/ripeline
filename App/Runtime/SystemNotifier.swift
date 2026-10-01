@@ -65,10 +65,10 @@ final class SystemNotifier: NSObject, Notifier, UNUserNotificationCenterDelegate
         }
     }
 
-    /// Show banner and sound even while the app is the active application.
+    /// Show banner and sound, and keep it in Notification Center, even while the app is active.
     nonisolated func userNotificationCenter(
         _ center: UNUserNotificationCenter, willPresent notification: UNNotification
     ) async -> UNNotificationPresentationOptions {
-        [.banner, .sound]
+        [.banner, .list, .sound]
     }
 }

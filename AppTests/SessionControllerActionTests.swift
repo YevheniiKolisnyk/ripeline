@@ -125,4 +125,37 @@ struct SessionControllerActionTests {
         #expect(h.controller.phase == .working)
         #expect(h.controller.remaining == minutes(30))
     }
+
+    // MARK: a failing store
+
+    @Test func aFailingSaveIsNotRetriedOnEveryTick() async {
+        let h = Harness(); defer { h.cleanUp() }
+        h.store.failSave = true
+        await h.startStandardDay()
+        #expect(h.store.saveAttempts == 1)
+        for second in 1...29 {
+            h.clock.set(t(9, 0, second)); h.controller.refresh()
+        }
+        #expect(h.store.saveAttempts == 1)                 // backed off
+        h.clock.set(t(9, 0, 31)); h.controller.refresh()
+        #expect(h.store.saveAttempts == 2)                 // tries again after thirty seconds
+    }
+
+    @Test func aStoreThatRecoversGetsTheDayAtTheNextRetry() async {
+        let h = Harness(); defer { h.cleanUp() }
+        h.store.failSave = true
+        await h.startStandardDay()
+        h.store.failSave = false
+        h.clock.set(t(9, 0, 31)); h.controller.refresh()
+        #expect(h.store.saved.count == 1)
+    }
+
+    @Test func aNewChangeIsSavedImmediatelyEvenDuringTheBackOff() async {
+        let h = Harness(); defer { h.cleanUp() }
+        h.store.failSave = true
+        await h.startStandardDay()
+        h.store.failSave = false
+        h.clock.set(t(9, 0, 5)); h.controller.pause()      // a different snapshot: no waiting
+        #expect(h.store.saved.count == 1)
+    }
 }
