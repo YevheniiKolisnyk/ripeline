@@ -13,10 +13,18 @@ struct DaySummaryView: View {
                 GridRow { Text("summary.untracked"); value(duration(summary.untracked)) }
                 GridRow { Text("summary.plannedEnd"); value(time(summary.plannedEnd)) }
                 GridRow {
-                    Text(summary.endIsFinal ? "summary.finishedAt" : "summary.projectedEnd")
+                    Text(endLabel(summary.endKind))
                     value(time(summary.endsAt))
                 }
             }
+        }
+    }
+
+    private func endLabel(_ kind: DaySummary.EndKind) -> LocalizedStringKey {
+        switch kind {
+        case .projected: "summary.projectedEnd"
+        case .final: "summary.finishedAt"
+        case .lastRecord: "history.lastRecord"
         }
     }
 

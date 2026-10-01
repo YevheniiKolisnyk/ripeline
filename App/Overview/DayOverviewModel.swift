@@ -11,6 +11,12 @@ import RipelineCore
     var overviewStatus: ScheduleStatus? { get }
     /// The clock's time, not the controller's last update: the marker must move even while paused.
     var overviewNow: Date { get }
+    /// The last instant anything was recorded, for a stored day that was never ended; `nil` otherwise.
+    var overviewLastRecord: Date? { get }
+}
+
+extension DayOverviewSource {
+    var overviewLastRecord: Date? { nil }
 }
 
 /// A block placed on the axis, as fractions of its width.
@@ -40,9 +46,17 @@ struct DaySummary: Equatable, Sendable {
     /// Paused time that counts as neither work nor rest.
     let untracked: TimeInterval
     let plannedEnd: Date?
-    /// The projected end while the day runs, the actual end once it is finished; `nil` if unknown.
+    /// The projected end while the day runs, the actual end once it is finished, or the last record
+    /// of a day that was never ended; `nil` if unknown.
     let endsAt: Date?
-    let endIsFinal: Bool
+    let endKind: EndKind
+
+    enum EndKind: Equatable, Sendable {
+        case projected
+        case final
+        /// The day was never ended: this is the last thing recorded.
+        case lastRecord
+    }
 }
 
 /// One line of the segment table.
@@ -118,12 +132,21 @@ final class DayOverviewModel {
         lag = mode == .running ? status.map(Self.lagState) : nil
 
         let totals = comparison.totals
+        let end: (date: Date?, kind: DaySummary.EndKind)
+        if mode == .running {
+            end = (status?.projectedEnd, .projected)
+        } else if let actualEnd = totals.actualEnd {
+            end = (actualEnd, .final)
+        } else if let lastRecord = source.overviewLastRecord {
+            end = (lastRecord, .lastRecord)
+        } else {
+            end = (nil, .final)
+        }
         summary = DaySummary(
             focusPlanned: totals.focusPlanned, focusActual: totals.focusActual,
             restPlanned: totals.restPlanned, restActual: totals.restActual,
             untracked: totals.untracked, plannedEnd: totals.plannedEnd,
-            endsAt: mode == .finished ? totals.actualEnd : status?.projectedEnd,
-            endIsFinal: mode == .finished
+            endsAt: end.date, endKind: end.kind
         )
         segments = comparison.rows.map {
             SegmentRow(

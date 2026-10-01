@@ -169,7 +169,7 @@ struct DayOverviewModelTests {
         #expect(summary.untracked == minutes(5))
         #expect(summary.plannedEnd == t(10, 50))
         #expect(summary.endsAt == t(10, 40))
-        #expect(summary.endIsFinal)
+        #expect(summary.endKind == .final)
     }
 
     @Test func theTableOfAFinishedDay() throws {
@@ -188,7 +188,7 @@ struct DayOverviewModelTests {
         try source.at(t(9, 30))
         m.refresh()
         let summary = try #require(m.summary)
-        #expect(!summary.endIsFinal)
+        #expect(summary.endKind == .projected)
         #expect(summary.endsAt == source.engine.scheduleStatus()?.projectedEnd)
     }
 
