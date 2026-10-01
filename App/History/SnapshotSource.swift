@@ -29,4 +29,5 @@ final class SnapshotSource: DayOverviewSource {
     var overviewNow: Date { instant }
     var overviewLastRecord: Date? { Self.lastRecordedInstant(of: snapshot) }
     var overviewIsQuick: Bool { snapshot.kind == .quick }
+    var overviewTomatoes: [Tomato] { Tomatoes.of(snapshot, at: instant) }
 }

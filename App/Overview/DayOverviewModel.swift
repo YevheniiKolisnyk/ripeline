@@ -16,11 +16,14 @@ import RipelineCore
     /// Whether this is a quick session: it has no plan to be ahead of or behind, so its lag, planned
     /// end and projected end are not shown.
     var overviewIsQuick: Bool { get }
+    /// The tomatoes of the day as of `overviewNow`.
+    var overviewTomatoes: [Tomato] { get }
 }
 
 extension DayOverviewSource {
     var overviewLastRecord: Date? { nil }
     var overviewIsQuick: Bool { false }
+    var overviewTomatoes: [Tomato] { [] }
 }
 
 /// A block placed on the axis, as fractions of its width.
@@ -78,6 +81,14 @@ struct SegmentRow: Equatable, Sendable {
     var delta: TimeInterval { actual - planned }
 }
 
+/// A tomato placed on the bed: the middle of its work block as a fraction of the axis, and the block's width.
+struct BedPlot: Equatable, Sendable, Identifiable {
+    let tomato: Tomato
+    let x: Double
+    let width: Double
+    var id: UUID { tomato.id }
+}
+
 /// The numbers and positions behind the day screen. The views only draw them.
 @MainActor @Observable
 final class DayOverviewModel {
@@ -99,6 +110,8 @@ final class DayOverviewModel {
     private(set) var axis: TimeAxis?
     private(set) var planned: [BlockLayout<SegmentKind>] = []
     private(set) var actual: [BlockLayout<ActualKind>] = []
+    /// The tomatoes that are growing or can be picked, each over its work block.
+    private(set) var bed: [BedPlot] = []
     /// Where "now" falls on the axis; only while the day runs.
     private(set) var nowX: Double?
     private(set) var lag: LagState?
@@ -134,6 +147,12 @@ final class DayOverviewModel {
 
         planned = timeline.planned.map { layout($0.kind, $0.start, $0.end, on: axis) }
         actual = timeline.actual.map { layout($0.kind, $0.start, $0.end, on: axis) }
+        bed = source.overviewTomatoes.compactMap { tomato in
+            guard tomato.availability == .growing || tomato.availability == .pickable,
+                  planned.indices.contains(tomato.segmentIndex) else { return nil }
+            let block = planned[tomato.segmentIndex]
+            return BedPlot(tomato: tomato, x: block.x + block.width / 2, width: block.width)
+        }
         nowX = mode == .running ? axis?.x(for: now) : nil
         // Lag is for a day still going; for a finished day the summary compares the ends.
         lag = mode == .running && !isQuick ? status.map(Self.lagState) : nil
@@ -169,6 +188,7 @@ final class DayOverviewModel {
         axis = nil
         planned = []
         actual = []
+        bed = []
         nowX = nil
         lag = nil
         summary = nil
