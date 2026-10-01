@@ -10,6 +10,7 @@ public enum ActualKind: String, Codable, Sendable, Equatable {
 
 /// A closed stretch of recorded time inside one segment.
 public struct ActualInterval: Codable, Sendable, Equatable {
+    /// What the time was spent on.
     public let kind: ActualKind
     public let start: Date
     public let end: Date
@@ -25,7 +26,9 @@ public struct ActualInterval: Codable, Sendable, Equatable {
 
 /// The stretch of time that is still being recorded. It closes at the next state change.
 public struct OpenInterval: Codable, Sendable, Equatable {
+    /// What the time since `start` is being spent on.
     public let kind: ActualKind
+    /// When the interval began.
     public let start: Date
 
     public init(kind: ActualKind, start: Date) {

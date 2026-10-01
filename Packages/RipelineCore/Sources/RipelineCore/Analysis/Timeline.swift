@@ -2,13 +2,24 @@ import Foundation
 
 /// A stretch of a timeline: what it was, and when.
 public struct TimelineBlock<Kind: Sendable & Equatable>: Sendable, Equatable {
+    /// What this stretch is.
     public let kind: Kind
+    /// When the stretch starts.
     public let start: Date
+    /// When the stretch ends.
     public let end: Date
+
+    /// A block of `kind` from `start` to `end`.
+    public init(kind: Kind, start: Date, end: Date) {
+        self.kind = kind
+        self.start = start
+        self.end = end
+    }
 }
 
 /// Everything the UI needs to draw the planned and actual rows on a shared time axis.
 public struct Timeline: Sendable, Equatable {
+    /// One block per planned segment, in plan order.
     public let planned: [TimelineBlock<SegmentKind>]
     /// Chronological. Touching intervals of the same kind are merged into one block.
     /// The interval being recorded runs up to `now`.
@@ -16,6 +27,8 @@ public struct Timeline: Sendable, Equatable {
     /// The span covering both rows, for sizing the axis. `nil` when both are empty.
     public let bounds: DateInterval?
 
+    /// - Parameter now: Used as given. Use `SessionEngine.timeline()` to also get the engine's
+    ///   protection against a clock that was set back.
     public init(snapshot: SessionSnapshot, now: Date) {
         var current = snapshot
         current.catchUp(to: now)
@@ -33,13 +46,25 @@ public struct Timeline: Sendable, Equatable {
         }
         actual = merged
 
-        let starts = planned.map(\.start) + merged.map(\.start)
-        let ends = planned.map(\.end) + merged.map(\.end)
-        if let first = starts.min(), let last = ends.max() {
-            bounds = DateInterval(start: first, end: last)
-        } else {
-            bounds = nil
-        }
+        bounds = Self.bounds(planned: planned, actual: merged)
+    }
+}
+
+extension Timeline {
+    /// Builds a timeline from ready-made blocks, for previews and tests.
+    public init(planned: [TimelineBlock<SegmentKind>], actual: [TimelineBlock<ActualKind>]) {
+        self.planned = planned
+        self.actual = actual
+        self.bounds = Self.bounds(planned: planned, actual: actual)
+    }
+
+    static func bounds(
+        planned: [TimelineBlock<SegmentKind>], actual: [TimelineBlock<ActualKind>]
+    ) -> DateInterval? {
+        let starts = planned.map(\.start) + actual.map(\.start)
+        let ends = planned.map(\.end) + actual.map(\.end)
+        guard let first = starts.min(), let last = ends.max() else { return nil }
+        return DateInterval(start: first, end: last)
     }
 }
 

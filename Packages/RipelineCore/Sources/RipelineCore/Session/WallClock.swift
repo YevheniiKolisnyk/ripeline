@@ -9,5 +9,6 @@ public protocol WallClock: Sendable {
 public struct SystemClock: WallClock {
     public init() {}
 
+    /// The current system time.
     public var now: Date { Date() }
 }
