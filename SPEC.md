@@ -238,6 +238,9 @@ Every work block is a tomato; breaks give none. The core derives the tomatoes fr
 - **The crate** (History tab) shows the picked tomatoes of the stored days, the newest 300 by block
   start, with the total on it. A tomato's size there is read at the last record of its day. Deleting a
   day forgets its tomatoes. With Reduce Motion the pile lies still.
+  A tomato can be grabbed with the mouse, dragged (it pushes the others) and thrown: on release it
+  keeps the speed of the hand over the last tenth of a second, at most 1800 pt/s, and a hand that
+  stopped just drops it. Nothing is grabbed with Reduce Motion.
 - **The menu bar item** shows the tomato of the work block that is running or in overtime, drawn as
   grown so far (8 pt for a seedling up to 18 pt for the biggest), with the timer next to it unless
   the user hides the time; a paused work block shows its tomato frozen and faded. On a break, with no

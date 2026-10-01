@@ -1,3 +1,4 @@
+import AppKit
 import SpriteKit
 
 /// The physics of the crate: tomatoes drop in, bounce and settle. The scene is transparent; the wooden crate is drawn around it.
@@ -8,6 +9,24 @@ final class CrateScene: SKScene {
     private var current: [CrateTomato] = []
     private var highlighted: String?
     private let walls = SKNode()
+
+    /// A tomato held by the mouse. It follows the pointer, ignores gravity, and is thrown on release.
+    private struct Grab {
+        let id: UUID
+        let node: SKSpriteNode
+        /// From the pointer to the tomato's centre, so it does not jump to the pointer.
+        let offset: CGVector
+        var target: CGPoint
+        /// Recent positions of the hand, newest last, to tell how fast it was moving on release.
+        var samples: [(time: TimeInterval, point: CGPoint)]
+    }
+
+    private var grab: Grab?
+
+    /// The fastest a tomato can be thrown, in points per second.
+    static let maxTossSpeed: CGFloat = 1800
+    /// Only the last moments of the hand count towards the toss.
+    private static let tossWindow: TimeInterval = 0.1
 
     /// With Reduce Motion the tomatoes lie still where they would end up, with no bodies and no falling.
     var reduceMotion = false {
@@ -20,6 +39,11 @@ final class CrateScene: SKScene {
     var nodeIdentities: Set<ObjectIdentifier> { Set(nodes.values.map { ObjectIdentifier($0) }) }
     var bodyIdentities: Set<ObjectIdentifier> { Set(nodes.values.compactMap { $0.physicsBody }.map { ObjectIdentifier($0) }) }
     var nodePositions: [CGPoint] { nodes.values.map(\.position) }
+    var isGrabbing: Bool { grab != nil }
+    var grabbedVelocity: CGVector? { grab?.node.physicsBody?.velocity }
+    var grabbedFeelsGravity: Bool? { grab?.node.physicsBody?.affectedByGravity }
+    var firstBodyVelocity: CGVector? { nodes.values.first?.physicsBody?.velocity }
+    var firstBodyFeelsGravity: Bool { nodes.values.first?.physicsBody?.affectedByGravity ?? false }
     /// The positions of the nodes of `tomatoes`, in that order; tomatoes without a node are left out.
     func nodePositions(inOrderOf tomatoes: [CrateTomato]) -> [CGPoint] { tomatoes.compactMap { nodes[$0.id]?.position } }
 
@@ -54,6 +78,7 @@ final class CrateScene: SKScene {
             node.removeFromParent()
             nodes[id] = nil
         }
+        if let held = grab, nodes[held.id] == nil { grab = nil }
         let diameter = CrateGeometry.baseDiameter(forCount: tomatoes.count)
         let interior = CrateGeometry.interior(in: size)
         for (index, tomato) in tomatoes.enumerated() {
@@ -72,6 +97,7 @@ final class CrateScene: SKScene {
     // MARK: Building
 
     private func respawn() {
+        grab = nil
         for node in nodes.values { node.removeFromParent() }
         nodes = [:]
         update(current, highlight: highlighted)
@@ -107,6 +133,10 @@ final class CrateScene: SKScene {
             y: size.height + diameter * 2
         )
         node.zRotation = CGFloat(tomato.id.uuid.1) / 255 * .pi
+        guard delay > 0 else {
+            addChild(node)
+            return
+        }
         let drop = SKAction.run { [weak self, weak node] in
             guard let self, let node, node.parent == nil, self.nodes.values.contains(node) else { return }
             self.addChild(node)
@@ -166,4 +196,80 @@ final class CrateScene: SKScene {
             }
         }
     }
+
+    // MARK: Grabbing and tossing
+
+    /// Picks up the tomato under `point`, if any. Not with Reduce Motion: there the pile is still.
+    @discardableResult
+    func beginGrab(at point: CGPoint, time: TimeInterval) -> Bool {
+        guard !reduceMotion, grab == nil else { return false }
+        var best: (id: UUID, node: SKSpriteNode, distance: CGFloat)?
+        for (id, node) in nodes where node.parent != nil && node.physicsBody != nil {
+            let distance = hypot(node.position.x - point.x, node.position.y - point.y)
+            guard distance <= node.size.width / 2 * 1.1, distance < (best?.distance ?? .infinity) else { continue }
+            best = (id, node, distance)
+        }
+        guard let (id, node, _) = best, let body = node.physicsBody else { return false }
+        body.affectedByGravity = false
+        body.velocity = .zero
+        body.angularVelocity = 0
+        node.zPosition = 2
+        grab = Grab(
+            id: id, node: node, offset: CGVector(dx: node.position.x - point.x, dy: node.position.y - point.y),
+            target: node.position, samples: [(time, node.position)]
+        )
+        return true
+    }
+
+    /// Moves the held tomato's target to follow the pointer, kept inside the scene.
+    func moveGrab(to point: CGPoint, time: TimeInterval) {
+        guard var held = grab else { return }
+        let x = min(max(point.x, 0), size.width), y = min(max(point.y, 0), size.height)
+        held.target = CGPoint(x: x + held.offset.dx, y: y + held.offset.dy)
+        held.samples.append((time, held.target))
+        if held.samples.count > 12 { held.samples.removeFirst() }
+        grab = held
+    }
+
+    /// Lets go: the tomato flies off with the speed of the hand, or just drops if the hand had stopped.
+    func endGrab(time: TimeInterval) {
+        guard let held = grab else { return }
+        grab = nil
+        held.node.zPosition = 0
+        guard let body = held.node.physicsBody else { return }
+        body.affectedByGravity = true
+        body.velocity = Self.tossVelocity(from: held.samples, releasedAt: time)
+    }
+
+    /// The speed of the hand over the last moments before `releasedAt`, at most `maxTossSpeed`.
+    static func tossVelocity(from samples: [(time: TimeInterval, point: CGPoint)], releasedAt: TimeInterval) -> CGVector {
+        let recent = samples.filter { releasedAt - $0.time <= tossWindow + 1e-9 }
+        guard let first = recent.first, let last = recent.last, last.time > first.time else { return .zero }
+        let span = CGFloat(last.time - first.time)
+        var dx = (last.point.x - first.point.x) / span, dy = (last.point.y - first.point.y) / span
+        let speed = hypot(dx, dy)
+        if speed > maxTossSpeed {
+            dx *= maxTossSpeed / speed
+            dy *= maxTossSpeed / speed
+        }
+        return CGVector(dx: dx, dy: dy)
+    }
+
+    /// Every frame the held tomato is steered towards the pointer, so it pushes the others instead of passing through them.
+    override func update(_ currentTime: TimeInterval) {
+        guard let held = grab, let body = held.node.physicsBody else { return }
+        body.affectedByGravity = false
+        var dx = (held.target.x - held.node.position.x) * 25, dy = (held.target.y - held.node.position.y) * 25
+        let speed = hypot(dx, dy)
+        if speed > Self.maxTossSpeed {
+            dx *= Self.maxTossSpeed / speed
+            dy *= Self.maxTossSpeed / speed
+        }
+        body.velocity = CGVector(dx: dx, dy: dy)
+        body.angularVelocity = 0
+    }
+
+    override func mouseDown(with event: NSEvent) { beginGrab(at: event.location(in: self), time: event.timestamp) }
+    override func mouseDragged(with event: NSEvent) { moveGrab(to: event.location(in: self), time: event.timestamp) }
+    override func mouseUp(with event: NSEvent) { endGrab(time: event.timestamp) }
 }
