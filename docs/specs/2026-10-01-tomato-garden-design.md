@@ -109,4 +109,7 @@ Menu-bar icon animation; varieties and unlockables; achievements, streaks and go
 | G4 | Counts are "label: number" strings, so no plural variations. |
 | G5 | A tomato's size in the crate is read at the last record of its day. |
 | G6 | The palette goes from green through yellow (at 70% ripeness) to red, with an ease-in on the green leg, so a tomato that is 40% grown still looks green. |
-| G7 | The popover row shows the newest six unpicked tomatoes; older ones stay pickable on the day screen's bed. |
+| G7 | The popover row shows the newest four unpicked tomatoes at 30 pt (so they fit the 268 pt of the popover with the count); older ones stay pickable on the day screen's bed. |
+| G8 | A stored day no longer runs: `Tomatoes.of(_:at:settled:)` treats a block that was still active when the day was last recorded as over (pickable if any work was recorded), and a block that never started as empty. Otherwise a tomato of a block the app was closed in would stay "growing" for ever (found in review). |
+| G9 | The History tab shows the crate whenever there is a tomato in it, even if no past day is listed: the running day is not listed, but the tomatoes picked from it are in the crate (found in review). |
+| G10 | Resizing the window keeps the tomatoes and moves them back inside the new crate; the staggered drop is for the first appearance only (found in review). |

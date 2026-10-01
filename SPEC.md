@@ -264,6 +264,9 @@ Clarifications of this specification are recorded here as they are made.
   its picks; the crate only shows picked tomatoes of days that exist.
 - **D-T4 — A fixed palette.** The cartoon colours are the same in light and dark appearance.
 - **D-T5 — Counts without plurals.** Counts are written as a label and a number ("Picked: 3").
+- **D-T6 — A stored day is settled.** For a day that is not running (stored), a block that was still
+  active when it was last recorded counts as over, so its tomato can be picked (the app may have been
+  closed in the middle of a block).
 
 ### Units and input validation
 
