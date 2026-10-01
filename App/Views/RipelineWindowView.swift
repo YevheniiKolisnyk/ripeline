@@ -24,13 +24,12 @@ struct RipelineWindowView: View {
     var body: some View {
         @Bindable var router = router
         VStack(spacing: 0) {
-            Picker("", selection: $router.tab) {
+            Picker("tab.label", selection: $router.tab) {
                 Text("tab.today").tag(WindowTab.today)
                 Text("tab.history").tag(WindowTab.history)
             }
             .pickerStyle(.segmented)
             .labelsHidden()
-            .accessibilityLabel(Text("tab.label"))
             .frame(width: 240)
             .padding(.vertical, 10)
             Divider()
