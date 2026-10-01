@@ -267,3 +267,10 @@ Clarifications of this specification are recorded here as they are made.
   `.completed`. `endDay` in overtime gives `.completed`.
 - **D15 — Clock going backwards.** The engine uses `max(clock.now, latest recorded instant)`,
   so it never produces negative or reordered intervals.
+
+### Read models
+
+- **D17 — Lag when finished.** `projectedEnd` is the actual end of the day (the end of the
+  last recorded interval). `ScheduleStatus` is `nil` for an empty plan, or when the day
+  finished with nothing recorded. Segments that ran out before `now` are accounted for even
+  if the engine was not ticked.

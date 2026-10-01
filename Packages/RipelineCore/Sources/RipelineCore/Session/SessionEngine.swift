@@ -97,7 +97,7 @@ public struct SessionEngine: Sendable {
 
     /// "Now", but never earlier than anything already recorded, so a clock that was set back
     /// cannot produce negative intervals.
-    private func currentInstant() -> Date {
+    func currentInstant() -> Date {
         max(clock.now, snapshot.lastRecordedInstant ?? .distantPast)
     }
 
