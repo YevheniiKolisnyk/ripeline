@@ -15,7 +15,7 @@ final class SnapshotSource: DayOverviewSource {
 
     /// The latest end of a recorded interval, or the start of the one still open; `nil` if nothing
     /// was recorded.
-    static func lastRecordedInstant(of snapshot: SessionSnapshot) -> Date? {
+    nonisolated static func lastRecordedInstant(of snapshot: SessionSnapshot) -> Date? {
         let closed = snapshot.actuals.flatMap(\.intervals).map(\.end)
         return (closed + [snapshot.openInterval?.start].compactMap { $0 }).max()
     }

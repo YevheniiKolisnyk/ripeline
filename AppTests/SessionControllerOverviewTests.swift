@@ -111,4 +111,24 @@ struct SessionControllerOverviewTests {
         await h.startStandardDay()
         #expect(h.store.saved.last?.settings == chosen)
     }
+
+    // MARK: the running day's identity
+
+    @Test func theActiveDayIsTheOneThatRuns() async {
+        let h = Harness(); defer { h.cleanUp() }
+        #expect(h.controller.activeDayID == nil)
+        await h.startStandardDay()
+        let id = h.controller.plan[0].id
+        #expect(h.controller.activeDayID == id)
+
+        h.clock.set(t(9, 10)); h.controller.pause()
+        #expect(h.controller.activeDayID == id)
+        h.controller.resume()
+        h.clock.set(t(9, 55)); h.controller.refresh()
+        #expect(h.controller.phase == .overtime(onBreak: false))
+        #expect(h.controller.activeDayID == id)
+
+        h.controller.endDay()
+        #expect(h.controller.activeDayID == nil)
+    }
 }
