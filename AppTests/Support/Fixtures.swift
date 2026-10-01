@@ -58,3 +58,25 @@ func tamperedSnapshot(_ snapshot: SessionSnapshot, edit: (inout [String: Any]) -
     edit(&object)
     return try JSONDecoder().decode(SessionSnapshot.self, from: JSONSerialization.data(withJSONObject: object))
 }
+
+/// A Gregorian calendar fixed at a UTC offset.
+func calendar(offsetHours: Int) -> Calendar {
+    var calendar = Calendar(identifier: .gregorian)
+    calendar.timeZone = TimeZone(secondsFromGMT: offsetHours * 3600)!
+    return calendar
+}
+
+/// A Gregorian calendar in a named time zone, for daylight saving tests.
+func calendar(zone: String) -> Calendar {
+    var calendar = Calendar(identifier: .gregorian)
+    calendar.timeZone = TimeZone(identifier: zone)!
+    return calendar
+}
+
+/// The plan 2a's quick start produced: net focus of four hours, 50/10/45, no long break.
+func standardRequest(at now: Date) -> DayPlanRequest {
+    DayPlanRequest(
+        mode: .netFocus(start: now, focusMinutes: 240), longBreak: .none, remainderStrategy: .leaveFree,
+        preset: Preset(workMinutes: 50, shortBreakMinutes: 10, longBreakMinutes: 45)
+    )
+}

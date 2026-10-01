@@ -6,8 +6,8 @@ struct PopoverActionsTests {
     private let everything: (SessionAction) -> Bool = { _ in true }
 
     @Test(arguments: [
-        (Phase.idle, [PopoverAction.startDay]),
-        (.finished, [.startDay]),
+        (Phase.idle, [PopoverAction.planDay]),
+        (.finished, [.planDay]),
         (.working, [.pause, .extend, .skip, .endDay]),
         (.onBreak, [.pause, .extend, .skip, .endDay]),
         (.paused(onBreak: false), [.resume, .extend, .skip, .endDay]),
@@ -36,5 +36,12 @@ struct PopoverActionsTests {
     @Test func skipIsHiddenInOvertimeEvenIfAllowed() {
         let actions = PopoverActions.visible(phase: .overtime(onBreak: false), isAllowed: everything)
         #expect(!actions.contains(.skip))
+    }
+}
+
+struct PlanDayActionTests {
+    @Test func planDayIsTiedToStartDay() {
+        #expect(PopoverAction.planDay.sessionAction == .startDay)
+        #expect(PopoverAction.planDay.titleKey == "ui.planDay")
     }
 }

@@ -10,10 +10,6 @@ import RipelineCore
 /// whenever it is read, however late the last tick was.
 @MainActor @Observable
 final class SessionController {
-    /// The temporary plan behind "Start day", until the setup screen exists (stage 2b).
-    static let quickStartPreset = Preset(workMinutes: 50, shortBreakMinutes: 10, longBreakMinutes: 45)
-    static let quickStartFocusMinutes = 240
-
     @ObservationIgnored private let clock: any WallClock
     @ObservationIgnored private let store: any DayStore
     @ObservationIgnored private let notifier: any Notifier
@@ -36,7 +32,7 @@ final class SessionController {
 
     init(
         clock: any WallClock, store: any DayStore, notifier: any Notifier, ticker: any Ticker,
-        settings: AppSettings, calendar: Calendar = .current
+        settings: AppSettings, calendar: Calendar = .autoupdatingCurrent
     ) {
         self.clock = clock
         self.store = store
@@ -140,26 +136,39 @@ final class SessionController {
 
     // MARK: Actions
 
-    /// Starts a day with the default plan: net focus of four hours, 50/10 minutes.
-    func startQuickDay() async {
-        guard engine.isAllowed(.startDay) else { return }
-        if !didRequestAuthorization {
-            didRequestAuthorization = true
-            await notifier.requestAuthorization()
+    /// Starts a day from `request`, at once. The plan is generated first, so a request the
+    /// generator rejects never triggers the permission prompt. Does nothing, and returns `false`,
+    /// when starting is not allowed now.
+    ///
+    /// The permission prompt is requested after the day has started and does not hold it up: it
+    /// can stay unanswered for minutes, and the countdown must begin at the click.
+    @discardableResult
+    func startDay(request: DayPlanRequest) async -> Bool {
+        guard engine.isAllowed(.startDay) else { return false }
+        let plan: [PlannedSegment]
+        do { plan = try PlanGenerator.generate(request) } catch {
+            logger.error("Could not generate the plan: \(error.localizedDescription, privacy: .public)")
+            return false
         }
-        guard engine.isAllowed(.startDay) else { return }
-        let request = DayPlanRequest(
-            mode: .netFocus(start: clock.now, focusMinutes: Self.quickStartFocusMinutes),
-            longBreak: .none, remainderStrategy: .leaveFree, preset: Self.quickStartPreset
-        )
         do {
-            let plan = try PlanGenerator.generate(request)
             try engine.startDay(plan: plan, settings: settings.session)
             try engine.start()
         } catch {
             logger.error("Could not start the day: \(error.localizedDescription, privacy: .public)")
+            didChange()
+            return false
         }
         didChange()
+        requestAuthorizationOnce()
+        return true
+    }
+
+    /// Asks for notification permission the first time a day starts, without waiting for the answer.
+    private func requestAuthorizationOnce() {
+        guard !didRequestAuthorization else { return }
+        didRequestAuthorization = true
+        let notifier = notifier
+        Task { @MainActor in await notifier.requestAuthorization() }
     }
 
     func start() { act(.start) { try $0.start() } }

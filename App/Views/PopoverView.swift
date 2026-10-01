@@ -5,6 +5,7 @@ import SwiftUI
 struct PopoverView: View {
     let controller: SessionController
     let settings: AppSettings
+    @Environment(\.openWindow) private var openWindow
 
     var body: some View {
         @Bindable var settings = settings
@@ -74,7 +75,10 @@ struct PopoverView: View {
 
     private func perform(_ action: PopoverAction) {
         switch action {
-        case .startDay: Task { await controller.startQuickDay() }
+        case .planDay:
+            openWindow(id: DaySetupWindow.id)
+            // An app without a Dock icon does not come to the front by itself.
+            NSApplication.shared.activate()
         case .pause: controller.pause()
         case .resume: controller.resume()
         case .extend: controller.extend(minutes: 5)

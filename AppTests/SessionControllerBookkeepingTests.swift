@@ -11,7 +11,7 @@ struct SessionControllerBookkeepingTests {
     /// A harness with a day started through the quick-start plan (work 50, break 10, …).
     private func started(session: SessionSettings? = nil) async -> Harness {
         let h = Harness(session: session)
-        await h.controller.startQuickDay()
+        await h.startStandardDay()
         return h
     }
 
@@ -19,7 +19,7 @@ struct SessionControllerBookkeepingTests {
 
     @Test func startingSchedulesTheEndOfTheFirstSegment() async {
         let h = await started(); defer { h.cleanUp() }
-        #expect(h.notifier.calls == [.authorize, .schedule(.workEnded, 3000)])
+        #expect(h.notifier.calls == [.schedule(.workEnded, 3000), .authorize])
         #expect(h.ticker.isRunning)
     }
 
@@ -181,14 +181,14 @@ struct SessionControllerBookkeepingTests {
     @Test func authorizationIsRequestedOncePerLaunch() async {
         let h = await started(); defer { h.cleanUp() }
         h.clock.set(t(9, 30)); h.controller.endDay()
-        await h.controller.startQuickDay()
+        await h.startStandardDay()
         #expect(h.notifier.calls.filter { $0 == .authorize }.count == 1)
     }
 
     @Test func theDayWorksWhenNotificationsAreUnavailable() async {
         let h = Harness(); defer { h.cleanUp() }
         h.notifier.recording = false
-        await h.controller.startQuickDay()
+        await h.startStandardDay()
         h.clock.set(t(9, 10)); h.controller.pause()
         h.clock.set(t(9, 15)); h.controller.resume()
         h.controller.skip()

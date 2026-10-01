@@ -7,6 +7,7 @@ import RipelineCore
 final class AppEnvironment {
     let settings: AppSettings
     let controller: SessionController
+    let setupModel: DaySetupModel
     let store: any DayStore
     let notifier: any Notifier
     /// `true` when running under XCTest: nothing real is touched.
@@ -19,6 +20,11 @@ final class AppEnvironment {
     ) {
         self.settings = settings
         self.controller = controller
+        setupModel = DaySetupModel(
+            settings: settings, clock: SystemClock(),
+            canStart: { [weak controller] in controller?.isAllowed(.startDay) ?? false },
+            start: { [weak controller] request in await controller?.startDay(request: request) ?? false }
+        )
         self.store = store
         self.notifier = notifier
         self.isInert = isInert

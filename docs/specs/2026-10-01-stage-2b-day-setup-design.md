@@ -1,6 +1,6 @@
 # Stage 2b — Day setup screen: design
 
-Status: draft for review. Parent specs: [`SPEC.md`](../../SPEC.md), [stage 2a](2026-10-01-stage-2a-app-shell-design.md). Builds on `RipelineCore` (`DayPlanRequest`, `PlanGenerator`) and the 2a app shell.
+Status: implemented. Parent specs: [`SPEC.md`](../../SPEC.md), [stage 2a](2026-10-01-stage-2a-app-shell-design.md). Builds on `RipelineCore` (`DayPlanRequest`, `PlanGenerator`) and the 2a app shell.
 
 ## 1. Goal
 
@@ -60,6 +60,7 @@ Issues, which block "Start":
 
 - `endNotAfterNow`: in `.untilTime`, the end time is at or before now.
 - `dayTooShort`: the generated plan is empty.
+- `invalidInput`: the generator refused the request. It cannot happen after the form is normalized; it exists so a refusal is never mistaken for a short day.
 
 Notices, which do not block:
 
@@ -77,7 +78,7 @@ Notices, which do not block:
 
 ### 3.4 Controller
 
-`SessionController.startDay(request:) async` replaces `startQuickDay`: guards `isAllowed(.startDay)`, awaits authorization once, generates the plan, calls `engine.startDay` and `start()`, saves once. The quick-start constants and tests are removed or migrated.
+`SessionController.startDay(request:) async` replaces `startQuickDay`: guards `isAllowed(.startDay)`, generates the plan, calls `engine.startDay` and `start()` at once, saves once, and only then asks for notification permission (once per launch) without waiting for the answer, because the prompt can stay open for minutes and the countdown must begin at the click. The quick-start constants and tests are removed or migrated.
 
 ## 4. Interface
 
@@ -114,3 +115,19 @@ Before the PR: both suites green, a warning-free build, and a run of the app. Th
 ## 7. Out of scope
 
 The day screen with timelines and the plan-vs-actual summary, and the session settings UI (2c); history (2d); a user-managed preset library; planning ahead or starting automatically at a time; days that cross midnight.
+
+## 8. Decisions made during planning and implementation
+
+| # | Decision |
+|---|---|
+| Q1 | `DaySetupIssue` has a defensive third case `invalidInput` (the generator refused the request); it cannot happen after normalization. |
+| Q2 | The 2a quick-start was kept as a thin wrapper while the popover moved to "Plan day…", then removed. |
+| Q3 | Out-of-range stored form values are clamped, never rounded to the stepper step. |
+| Q4 | A time of day that does not exist on a daylight-saving day becomes the next valid instant (`matchingPolicy: .nextTime`). |
+| Q5 | A second `startDay()` while one is in flight is ignored. |
+| Q6 | While a day runs, the window shows a notice and an "End day" button instead of the form. |
+| Q7 | Durations use the locale-aware `Duration.UnitsFormatStyle` (`6 hr, 15 min` / `6 год, 15 хв`); times use the locale's short time style. |
+| Q8 | The preview refreshes through a `TimelineView` every 30 seconds and when the window appears. |
+| Q9 | `startDay()` returns whether a day was started; the window closes only on `true`. |
+| Q10 | `SessionController.startDay(request:)` generates the plan before anything else, so a request the generator rejects never triggers the permission prompt, and it starts the day immediately; notification permission is requested afterwards in the background (found in review: waiting for the prompt before starting delayed the countdown behind the plan by however long the prompt stayed open). |
+| Q11 | The model, the store and the views use `Calendar.autoupdatingCurrent` / `TimeZone.autoupdatingCurrent`, so a time zone change while the app runs is followed (found in review: `Calendar.current` is a snapshot taken at launch). |
