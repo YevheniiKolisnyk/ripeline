@@ -30,6 +30,14 @@ struct Harness {
     }
 
     func cleanUp() { UserDefaults().removePersistentDomain(forName: suite) }
+
+    /// Starts the standard day (four hours of focus, 50/10) at the harness clock.
+    func startStandardDay() async { await controller.startDay(request: standardRequest(at: clock.now)) }
+}
+
+extension SessionController {
+    /// Starts the standard day at `now`, for tests that build controllers by hand.
+    func startStandardDay(at now: Date) async { await startDay(request: standardRequest(at: now)) }
 }
 
 /// A snapshot of a finished day.

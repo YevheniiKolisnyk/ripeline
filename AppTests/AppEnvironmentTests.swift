@@ -27,7 +27,7 @@ struct AppEnvironmentTests {
 
         let environment = AppEnvironment.make(processEnvironment: ["XCTestConfigurationFilePath": "x"])
         environment.controller.restore()
-        await environment.controller.startQuickDay()
+        await environment.controller.startStandardDay(at: Date())
         environment.controller.pause()
 
         #expect(listing() == before)

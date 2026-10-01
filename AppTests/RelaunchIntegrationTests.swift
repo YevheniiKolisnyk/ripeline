@@ -39,7 +39,7 @@ struct RelaunchIntegrationTests {
     @Test func aPausedDayContinuesAfterRelaunch() async {
         let world = World(); defer { world.cleanUp() }
         let (first, _, clock) = world.launch(at: t(9))
-        await first.startQuickDay()
+        await first.startStandardDay(at: t(9))
         clock.set(t(9, 20)); first.pause()
 
         let (second, _, _) = world.launch(at: t(9, 40))
@@ -53,7 +53,7 @@ struct RelaunchIntegrationTests {
     @Test func aRunningDayCountsTheTimeTheAppWasClosed() async {
         let world = World(); defer { world.cleanUp() }
         let (first, _, _) = world.launch(at: t(9))
-        await first.startQuickDay()
+        await first.startStandardDay(at: t(9))
 
         let (second, notifier, _) = world.launch(at: t(9, 20))
         #expect(second.phase == .working)
@@ -64,7 +64,7 @@ struct RelaunchIntegrationTests {
     @Test func sleepingThroughASegmentEndLandsInOvertimeWithASummary() async {
         let world = World(); defer { world.cleanUp() }
         let (first, _, _) = world.launch(at: t(9))
-        await first.startQuickDay()
+        await first.startStandardDay(at: t(9))
 
         let (second, notifier, _) = world.launch(at: t(9, 55))
         #expect(second.phase == .overtime(onBreak: false))
@@ -76,7 +76,7 @@ struct RelaunchIntegrationTests {
         let world = World(); defer { world.cleanUp() }
         let auto = SessionSettings(autoAdvanceWorkToBreak: true, autoAdvanceBreakToWork: true)
         let (first, _, _) = world.launch(at: t(9), session: auto)
-        await first.startQuickDay()
+        await first.startStandardDay(at: t(9))
 
         let (second, notifier, _) = world.launch(at: t(11, 15))
         // 09:00 W50, 09:50 B10, 10:00 W50, 10:50 B10, 11:00 W50 → third work block, 11:00–11:50.
@@ -89,7 +89,7 @@ struct RelaunchIntegrationTests {
     @Test func aFinishedDayStartsFreshButIsKeptOnDisk() async throws {
         let world = World(); defer { world.cleanUp() }
         let (first, _, clock) = world.launch(at: t(9))
-        await first.startQuickDay()
+        await first.startStandardDay(at: t(9))
         clock.set(t(9, 30)); first.endDay()
 
         let (second, _, _) = world.launch(at: t(12))
@@ -98,7 +98,7 @@ struct RelaunchIntegrationTests {
         #expect(try FileManager.default.contentsOfDirectory(atPath: world.directory.path) == ["2026-01-15.json"])
 
         // Starting another day the same date keeps the first.
-        await second.startQuickDay()
+        await second.startStandardDay(at: t(12))
         #expect(try FileManager.default.contentsOfDirectory(atPath: world.directory.path).sorted() == ["2026-01-15-2.json", "2026-01-15.json"])
     }
 }

@@ -7,7 +7,7 @@ import Testing
 struct SessionControllerActionTests {
     private func started() async -> Harness {
         let h = Harness()
-        await h.controller.startQuickDay()
+        await h.startStandardDay()
         return h
     }
 
@@ -25,7 +25,7 @@ struct SessionControllerActionTests {
 
     @Test func quickStartDoesNothingWhileADayIsRunning() async {
         let h = await started(); defer { h.cleanUp() }
-        await h.controller.startQuickDay()
+        await h.startStandardDay()
         #expect(h.store.saved.count == 1)
         #expect(h.notifier.calls.filter { $0 == .authorize }.count == 1)
     }
@@ -72,7 +72,7 @@ struct SessionControllerActionTests {
         h.controller.endDay()
         #expect(h.controller.phase == .finished)
         h.clock.set(t(11, 0))
-        await h.controller.startQuickDay()
+        await h.startStandardDay()
         #expect(h.controller.phase == .working)
         #expect(h.controller.plan[0].start == t(11, 0))
     }
@@ -89,7 +89,7 @@ struct SessionControllerActionTests {
     @Test func aFailingStoreDoesNotStopTheDay() async {
         let h = Harness(); defer { h.cleanUp() }
         h.store.failSave = true
-        await h.controller.startQuickDay()
+        await h.startStandardDay()
         #expect(h.controller.phase == .working)
         #expect(h.store.saved.isEmpty)
     }

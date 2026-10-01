@@ -72,3 +72,11 @@ func calendar(zone: String) -> Calendar {
     calendar.timeZone = TimeZone(identifier: zone)!
     return calendar
 }
+
+/// The plan 2a's quick start produced: net focus of four hours, 50/10/45, no long break.
+func standardRequest(at now: Date) -> DayPlanRequest {
+    DayPlanRequest(
+        mode: .netFocus(start: now, focusMinutes: 240), longBreak: .none, remainderStrategy: .leaveFree,
+        preset: Preset(workMinutes: 50, shortBreakMinutes: 10, longBreakMinutes: 45)
+    )
+}

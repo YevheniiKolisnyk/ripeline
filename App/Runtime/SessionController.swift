@@ -140,26 +140,43 @@ final class SessionController {
 
     // MARK: Actions
 
-    /// Starts a day with the default plan: net focus of four hours, 50/10 minutes.
-    func startQuickDay() async {
-        guard engine.isAllowed(.startDay) else { return }
+    /// Starts a day from `request`. The plan is generated first, so a request the generator
+    /// rejects never triggers the permission prompt. Does nothing, and returns `false`, when
+    /// starting is not allowed now.
+    @discardableResult
+    func startDay(request: DayPlanRequest) async -> Bool {
+        guard engine.isAllowed(.startDay) else { return false }
+        let plan: [PlannedSegment]
+        do { plan = try PlanGenerator.generate(request) } catch {
+            logger.error("Could not generate the plan: \(error.localizedDescription, privacy: .public)")
+            return false
+        }
         if !didRequestAuthorization {
             didRequestAuthorization = true
             await notifier.requestAuthorization()
         }
-        guard engine.isAllowed(.startDay) else { return }
-        let request = DayPlanRequest(
-            mode: .netFocus(start: clock.now, focusMinutes: Self.quickStartFocusMinutes),
-            longBreak: .none, remainderStrategy: .leaveFree, preset: Self.quickStartPreset
-        )
+        // The state may have changed while the permission prompt was open.
+        guard engine.isAllowed(.startDay) else { return false }
         do {
-            let plan = try PlanGenerator.generate(request)
             try engine.startDay(plan: plan, settings: settings.session)
             try engine.start()
         } catch {
             logger.error("Could not start the day: \(error.localizedDescription, privacy: .public)")
+            didChange()
+            return false
         }
         didChange()
+        return true
+    }
+
+    /// Starts a day with the default plan: net focus of four hours, 50/10 minutes.
+    /// Temporary: replaced by the day setup window.
+    func startQuickDay() async {
+        let request = DayPlanRequest(
+            mode: .netFocus(start: clock.now, focusMinutes: Self.quickStartFocusMinutes),
+            longBreak: .none, remainderStrategy: .leaveFree, preset: Self.quickStartPreset
+        )
+        await startDay(request: request)
     }
 
     func start() { act(.start) { try $0.start() } }
